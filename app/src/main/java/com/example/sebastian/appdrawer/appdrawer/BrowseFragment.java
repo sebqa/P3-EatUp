@@ -22,6 +22,8 @@ import java.util.List;
  * Created by Sebastian on 02-11-2016.
  */
 
+/* test comment */
+
 public class BrowseFragment extends Fragment {
     private static final int DATASET_COUNT = 60;
     ;
