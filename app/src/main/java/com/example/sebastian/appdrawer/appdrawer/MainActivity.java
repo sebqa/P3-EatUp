@@ -27,30 +27,36 @@ public class MainActivity extends AppCompatActivity
     boolean showSort = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_NoActionBar);
-        super.onCreate(savedInstanceState);
 
+        //Set theme to the one that shows splash screen before the super.onCreate
+        setTheme(R.style.AppTheme_NoActionBar);
+
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        //Create new object of the hamburger menu and define preliminary behaviour.
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //Set onClickListener to the menu, such that elements can be pressed independently.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
-
+        //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
         fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
-        fab = (FloatingActionButton)findViewById(R.id.fab);
 
+        //Set onClickListener to the floating action button, and make it start new activity.
+        fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
+    //Override onBackPressed such that it doesn't close the app, but only the hamburger menu if it's open.
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -74,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    //Initialize the menu layout
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -83,14 +90,12 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    //Handle the toolbar clicks
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //Check which element was pressed
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_sort){
@@ -101,6 +106,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+    //Handle hamburger menu clicks
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -109,20 +116,19 @@ public class MainActivity extends AppCompatActivity
 
 
         int id = item.getItemId();
-
+        //Check which element was pressed
         if (id == R.id.nav_main) {
+            //Replace current fragment with MainFragment
             fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
+
+            //Show floating action button
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_map) {
             fn.beginTransaction().replace(R.id.content_frame, new MapFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
-
-
         } else if (id == R.id.nav_favorites) {
             fn.beginTransaction().replace(R.id.content_frame, new FavoriteFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
-            showSort = false;
-
         } else if (id == R.id.nav_my_food) {
             fn.beginTransaction().replace(R.id.content_frame, new MyFoodFragment()).commit();
             fab.setVisibility(View.VISIBLE);
@@ -141,6 +147,8 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //Methods to hide/show the floating action button from fragments
     public void showFloatingActionButton() {
         fab.show();
     }

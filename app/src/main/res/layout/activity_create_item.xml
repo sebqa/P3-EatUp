@@ -30,7 +30,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_create_ad" />
+    <include layout="@layout/content_create_item" />
 
 
 
