@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,11 +71,13 @@ public class MainFragment extends Fragment{
             i++;
         }
 
-        adapter = new RecyclerAdapter(arrayList);
+        adapter = new RecyclerAdapter(arrayList,getActivity());
+
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
 
 
         toTop = (FloatingActionButton)rootView.findViewById(R.id.toTop);
@@ -130,6 +133,8 @@ public class MainFragment extends Fragment{
                     }
                 }
         );
+
+
         return rootView;
 
     }
