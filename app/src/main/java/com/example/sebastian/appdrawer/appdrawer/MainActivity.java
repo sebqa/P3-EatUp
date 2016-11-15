@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FloatingActionButton fab;
-    boolean showSort = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

@@ -11,8 +11,6 @@ import java.util.List;
 
 public class Item {
 
-
-
     public String title;
     public String creator;
     int photoId;
@@ -20,22 +18,17 @@ public class Item {
     public String price;
     public int distance;
 
-    public int getDistance() {
-        return distance;
-    }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
 
     public int amount;
     public int pickUpTime;
 
 
     public Item() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+        // Default constructor
     }
 
+    //Constructor for list
     public Item(String title, String creator, String price, int photoId) {
         this.title = title;
         this.creator = creator;
@@ -43,6 +36,12 @@ public class Item {
         this.photoId = photoId;
         this.distance = distance;
     }
+
+
+    //Getters and setters for all values.
+    public int getDistance() {return distance;}
+
+    public void setDistance(int distance) {this.distance = distance;}
 
     public String getTitle() {
         return title;

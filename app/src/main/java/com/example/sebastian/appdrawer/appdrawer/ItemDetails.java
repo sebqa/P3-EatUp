@@ -21,6 +21,8 @@ public class ItemDetails extends AppCompatActivity {
         txTitle = (TextView) findViewById(R.id.txTitle);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
+
+        //Retrieve parsed information
         d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
         txTitle.setText(getIntent().getStringExtra("item_title"));
         txCreator.setText(getIntent().getStringExtra("item_creator"));
