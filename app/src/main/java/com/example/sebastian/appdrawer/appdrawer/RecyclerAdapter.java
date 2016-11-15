@@ -19,9 +19,12 @@ import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
     int position;
+
     private ArrayList<Item> arrayList = new ArrayList<Item>();
 
     Context ctx;
+
+    //Constructor for the RecyclerAdapter
     public RecyclerAdapter(ArrayList<Item> arrayList,Context ctx){
         this.arrayList = arrayList;
         this.ctx =ctx;
@@ -30,6 +33,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     @Override
     public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        //Specify the layout of the RecyclerView, in this case 'item_layout'.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout,parent,false);
 
         RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view,ctx,arrayList);
@@ -40,6 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
 
+        //Attach the values we retrieve from the Item class to the values.
         Item item = arrayList.get(position);
         holder.imageView.setImageResource(item.getPhotoId());
         holder.title.setText(item.getTitle());
@@ -61,15 +67,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         ArrayList<Item> items = new ArrayList<Item>();
         Context ctx;
 
+        //Constructor for the view holder.
         public RecyclerViewHolder(View view, Context ctx, ArrayList<Item> items){
             super(view);
             this.items = items;
             this.ctx = ctx;
+
+            //Cast the values to a Text or ImageView in the layout.
             imageView = (ImageView)view.findViewById(R.id.img);
             title = (TextView)view.findViewById(R.id.itemTitle);
             creator = (TextView)view.findViewById(R.id.itemCreator);
             price = (TextView)view.findViewById(R.id.itemPrice);
             container = view.findViewById(R.id.item_container);
+
+            //Set an onClickListener to the entire view.
             view.setOnClickListener(this);
 
 
@@ -77,13 +88,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         @Override
         public void onClick(View view) {
+
+            //Find out which item was clicked
             int position = getAdapterPosition();
                 Item item = this.items.get(position);
+            //Create new intent that gets us to the next activity.
                 Intent intent = new Intent(ctx,ItemDetails.class);
+
+            //Parse the information between the activities.
             intent.putExtra("item_img",item.getPhotoId());
             intent.putExtra("item_creator",item.getCreator());
             intent.putExtra("item_price",item.getPrice());
             intent.putExtra("item_title",item.getTitle());
+
+            //Start the new activity.
             this.ctx.startActivity(intent);
 
 
