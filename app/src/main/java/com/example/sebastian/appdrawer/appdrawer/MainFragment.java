@@ -28,6 +28,9 @@ public class MainFragment extends Fragment{
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
+
+    //Arrays to draw dummy data from.(Here we would use data from the database).
+    //String arrays are found in values/strings
     String[] itemtitle,itemcreator,itemprice;
     int[] itemdistance;
     int[] Img_res = {R.drawable.ic_menu_camera,
@@ -48,22 +51,28 @@ public class MainFragment extends Fragment{
             R.drawable.ic_menu_send};
     ArrayList<Item> arrayList = new ArrayList<Item>();
 
-    String[] posts = new String[]{
-            "post1","post2","post3","post4"};
+
     FloatingActionButton toTop;
-    FloatingActionButton fab;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate the layout specific to this fragment
         final View rootView = inflater.inflate(R.layout.fragment_main,container,false);
 
+        //Cast the recyclerView such that we can manipulate it
         final RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
+        //Add a layout manager to control layout
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //Tie the new strings to the String arrays we prepared.
         itemtitle = getResources().getStringArray(R.array.itemTitles);
         itemcreator = getResources().getStringArray(R.array.itemCreators);
         itemprice = getResources().getStringArray(R.array.itemPrices);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swiperefresh);
 
+        //This for loop creates items with one element from each of the four arrays.
+        // It adds the item to the arraylist, that will be shown in the recyclerView.
         int i = 0;
         for (String title : itemtitle) {
             Item item = new Item(title, itemcreator[i]+" nr "+(i+1), itemprice[i], Img_res[i]);
@@ -71,8 +80,9 @@ public class MainFragment extends Fragment{
             i++;
         }
 
+        //New instance of our adapter class, which shows the arrayList.
+        //That instance is tied to the recyclerView.
         adapter = new RecyclerAdapter(arrayList,getActivity());
-
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -80,16 +90,18 @@ public class MainFragment extends Fragment{
 
 
 
+        //Casting the button that takes the user to the top.
         toTop = (FloatingActionButton)rootView.findViewById(R.id.toTop);
+        //The onClickListener that scrolls to position '0'.
         toTop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 recyclerView.smoothScrollToPosition(0);
-
-
             }
         });
 
+        //Adds an onScrollListener.
+        //Hides the 'toTop' button and the floating action button, when scrolling.
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
@@ -102,7 +114,7 @@ public class MainFragment extends Fragment{
 
                 }
             }
-
+            //Shows the 'toTop' button and the floating action button when not scrolling.
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
@@ -116,7 +128,7 @@ public class MainFragment extends Fragment{
             }
         });
 
-
+        //Supposed to clear the arrayList and add one new item.
         mSwipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override

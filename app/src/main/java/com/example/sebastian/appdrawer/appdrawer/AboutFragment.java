@@ -21,8 +21,12 @@ public class AboutFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate the layout of the fragment
         View rootView = inflater.inflate(R.layout.fragment_about,container,false);
+
+        //Force the method 'OnCreateOptionsMenu'
         setHasOptionsMenu(true);
+
         return rootView;
 
 
@@ -31,6 +35,7 @@ public class AboutFragment extends Fragment {
     public void onCreateOptionsMenu(
             Menu menu, MenuInflater inflater) {
 
+        //Find and hide items from the toolbar for this fragment.
         MenuItem item= menu.findItem(R.id.action_sort);
         item.setVisible(false);
         MenuItem item2 = menu.findItem(R.id.action_settings);
