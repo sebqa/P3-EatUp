@@ -21,7 +21,7 @@
         <activity android:name=".appdrawer.ItemDetails" />
         <activity
             android:name=".appdrawer.CreateAccountActivity"
-            android:label="@string/activity_create_account"
+            android:label="EatUp"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
