@@ -1,5 +1,6 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -89,11 +90,15 @@ public class CreateAccountActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-
+                        if(task.isSuccessful()) {
+                            Toast.makeText(CreateAccountActivity.this, "Account creation successful",
+                                    Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(CreateAccountActivity.this,MainActivity.class));
+                        }
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
+                        else if (!task.isSuccessful()) {
                             Toast.makeText(CreateAccountActivity.this, "Account creation failed",
                                     Toast.LENGTH_SHORT).show();
                         }
