@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1098132791693",
+    "firebase_url": "https://p3-eatup.firebaseio.com",
+    "project_id": "p3-eatup",
+    "storage_bucket": "p3-eatup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098132791693:android:73beb51b1ac83a83",
+        "android_client_info": {
+          "package_name": "com.example.sebastian.appdrawer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098132791693-uqus72qql56taflu0hhv3freptq22k7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sebastian.appdrawer",
+            "certificate_hash": "541AADE8EEFA71449CEAA42958E41FBCA6F8BA0E"
+          }
+        },
+        {
+          "client_id": "1098132791693-q2d8hpnrfmp86p6hv5dr9dmeglf0cqj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzkQlfcSmiMt_vVoTFgoPoGeCImpTnd6c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098132791693-q2d8hpnrfmp86p6hv5dr9dmeglf0cqj6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
