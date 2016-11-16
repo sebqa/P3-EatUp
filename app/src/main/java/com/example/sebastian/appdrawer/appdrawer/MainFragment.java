@@ -33,22 +33,22 @@ public class MainFragment extends Fragment{
     //String arrays are found in values/strings
     String[] itemtitle,itemcreator,itemprice;
     int[] itemdistance;
-    int[] Img_res = {R.drawable.ic_menu_camera,
-            R.drawable.ic_menu_gallery,
-            R.drawable.ic_menu_manage,
-            R.drawable.ic_menu_send,R.drawable.ic_menu_camera,
-            R.drawable.ic_menu_gallery,
-            R.drawable.ic_menu_manage,
-            R.drawable.ic_menu_send,R.drawable.ic_menu_camera,
-            R.drawable.ic_menu_gallery,
-            R.drawable.ic_menu_manage,
-            R.drawable.ic_menu_send,R.drawable.ic_menu_camera,
-            R.drawable.ic_menu_gallery,
-            R.drawable.ic_menu_manage,
-            R.drawable.ic_menu_send,R.drawable.ic_menu_camera,
-            R.drawable.ic_menu_gallery,
-            R.drawable.ic_menu_manage,
-            R.drawable.ic_menu_send};
+    int[] Img_res = {R.drawable.hjemmelavetburger,
+            R.drawable.hakkeboef,
+            R.drawable.flaeskesteg,
+            R.drawable.lasagne,R.drawable.hjemmelavetburger,
+            R.drawable.hakkeboef,
+            R.drawable.flaeskesteg,
+            R.drawable.lasagne,R.drawable.hjemmelavetburger,
+            R.drawable.hakkeboef,
+            R.drawable.flaeskesteg,
+            R.drawable.lasagne,R.drawable.hjemmelavetburger,
+            R.drawable.hakkeboef,
+            R.drawable.flaeskesteg,
+            R.drawable.lasagne,R.drawable.hjemmelavetburger,
+            R.drawable.hakkeboef,
+            R.drawable.flaeskesteg,
+            R.drawable.lasagne};
     ArrayList<Item> arrayList = new ArrayList<Item>();
 
 
