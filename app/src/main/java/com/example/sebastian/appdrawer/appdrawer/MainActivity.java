@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     Button signOutBtn;
     NavigationView navigationView;
+    String userEmail;
+    TextView tvEmail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -48,11 +51,8 @@ public class MainActivity extends AppCompatActivity
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
+        userEmail = getIntent().getStringExtra("userEmail");
 
-        if(loggedin){
-
-
-        }
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -69,6 +69,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
+
+        View headerview = navigationView.getHeaderView(0);
+        tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
+        tvEmail.setText(getIntent().getStringExtra("userEmail"));
+        signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
+        signOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(MainActivity.this,CreateAccountActivity.class));
+            }
+        });
 
         //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
@@ -168,11 +180,7 @@ public class MainActivity extends AppCompatActivity
             fn.beginTransaction().replace(R.id.content_frame, new AboutFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         }
-        else if (id == R.id.nav_logout) {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MainActivity.this,CreateAccountActivity.class));
 
-        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
