@@ -1,13 +1,16 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.sebastian.appdrawer.R;
@@ -45,13 +48,20 @@ public class CreateItem extends AppCompatActivity {
         });
 
         // Method for adding a new TextView when ENTER is pressed
-        itemTag.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+        itemTag.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 // If the event is a key-down event on the "enter" button
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        (actionId == KeyEvent.KEYCODE_ENTER)) {
                     // Perform action on key press
-
+                     Toast.makeText(CreateItem.this, itemTag.getText(), Toast.LENGTH_LONG).show();
+                    // Adding a TextView "tag" when ENTER is pressed
+                    /* TextView tag = new TextView(CreateItem.this);
+                    tag.setPadding(10, 10, 10, 10);
+                    tag.setBackgroundColor(Color.parseColor("#BDBDBD"));
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(0, 20, 0, 0); */
                     return true;
                 }
                 return false;
