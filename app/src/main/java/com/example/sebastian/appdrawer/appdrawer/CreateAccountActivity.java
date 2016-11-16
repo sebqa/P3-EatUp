@@ -55,6 +55,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
+                    intent.putExtra("isLoggedIn",true);
+
+                    startActivity(intent);
+
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");

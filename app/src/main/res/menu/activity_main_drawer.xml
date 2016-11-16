@@ -45,5 +45,9 @@
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_menu_send"
             android:title="About" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Log in" />
     </group>
 </menu>
