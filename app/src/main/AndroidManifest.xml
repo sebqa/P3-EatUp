@@ -13,18 +13,22 @@
             android:name=".appdrawer.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".appdrawer.CreateItem"
             android:label="@string/title_activity_create_ad"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".appdrawer.ItemDetails" />
-        <activity android:name=".appdrawer.CreateAccountActivity"></activity>
+        <activity
+            android:name=".appdrawer.CreateAccountActivity"
+            android:label="@string/activity_create_account"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
