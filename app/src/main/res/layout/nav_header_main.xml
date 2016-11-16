@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/signOutBtn"
         android:layout_gravity="right"
-        android:paddingTop="0dp"
+        android:textAlignment="center"
         android:text="Log out"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
