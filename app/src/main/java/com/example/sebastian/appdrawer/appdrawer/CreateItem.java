@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
+import android.view.KeyEvent;
 
 
 import com.example.sebastian.appdrawer.R;
@@ -31,10 +34,8 @@ public class CreateItem extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
-
-
         // Added tagsArea as LinearLayout view
-       final View linearLayout =  findViewById(R.id.tagsArea);
+        final View linearLayout = findViewById(R.id.tagsArea);
 
 
         //
@@ -47,28 +48,29 @@ public class CreateItem extends AppCompatActivity {
             }
         });
 
-        // Method for adding a new TextView when ENTER is pressed
-        itemTag.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (actionId == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                     Toast.makeText(CreateItem.this, itemTag.getText(), Toast.LENGTH_LONG).show();
-                    // Adding a TextView "tag" when ENTER is pressed
-                    /* TextView tag = new TextView(CreateItem.this);
-                    tag.setPadding(10, 10, 10, 10);
-                    tag.setBackgroundColor(Color.parseColor("#BDBDBD"));
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(0, 20, 0, 0); */
-                    return true;
+
+        itemTag.setOnKeyListener(new View.OnKeyListener()
+        {
+            public boolean onKey(View v, int keyCode, KeyEvent event)
+            {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                {
+                    switch (keyCode)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            addTag();
+                            return true;
+                        default:
+                            break;
+                    }
                 }
                 return false;
             }
         });
+    }
 
-
-
+    public void addTag(){
+        itemTag.setText("Virker");
     }
 }
