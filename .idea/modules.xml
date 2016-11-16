@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AppDrawer.iml" filepath="$PROJECT_DIR$/AppDrawer.iml" />
       <module fileurl="file://$PROJECT_DIR$/P3-EatUp.iml" filepath="$PROJECT_DIR$/P3-EatUp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/P3-EatUp.iml" filepath="$PROJECT_DIR$/P3-EatUp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
