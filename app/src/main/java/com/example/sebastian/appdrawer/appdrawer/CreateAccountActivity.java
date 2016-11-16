@@ -60,6 +60,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                     intent.putExtra("userEmail",userEmail);
 
                     startActivity(intent);
+                    finish();
 
                 } else {
                     // User is signed out
@@ -86,7 +87,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
-        userEmail= email;
+        userEmail= editTextEmail.getText().toString();
         if (!validateForm()) {
             return;
         }

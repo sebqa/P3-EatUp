@@ -1,5 +1,7 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -124,9 +126,46 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Exit");
+            builder.setMessage("Are you sure you want to exit?").setCancelable(false)
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                    onYesClick();
+
+                                }
+
+
+                            }).setNegativeButton("No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                            onNoClick();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
+    private void onYesClick() {
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
+
+        MainActivity.this.finish();
+
+
+
+    }private void onNoClick() {
+
+
+    }
+
+
+
 
 
     //Initialize the menu layout
