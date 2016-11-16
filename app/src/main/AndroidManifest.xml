@@ -23,7 +23,8 @@
             android:name=".appdrawer.CreateItem"
             android:label="@string/title_activity_create_ad"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".appdrawer.ItemDetails"></activity>
+        <activity android:name=".appdrawer.ItemDetails" />
+        <activity android:name=".appdrawer.CreateAccountActivity"></activity>
     </application>
 
 </manifest>
