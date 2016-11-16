@@ -2,6 +2,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,20 +12,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    Menu menu;
 
+    private static final String TAG = "EmailPassword";
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     FloatingActionButton fab;
-
+    Button signOutBtn;
+    NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -35,6 +45,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        signOutBtn = (Button)findViewById(R.id.signOutBtn);
+
+        Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
+
+        if(loggedin){
+            
+
+        }
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -51,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
+
         //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
         fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
@@ -60,9 +79,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,CreateItem.class));
+                    startActivity(new Intent(MainActivity.this,CreateItem.class));
             }
         });
+
 
     }
 
@@ -84,9 +104,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
 
@@ -104,7 +131,6 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     //Handle hamburger menu clicks
@@ -142,7 +168,6 @@ public class MainActivity extends AppCompatActivity
             fn.beginTransaction().replace(R.id.content_frame, new AboutFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
