@@ -51,7 +51,8 @@
         android:layout_marginTop="20dp"
         android:background="#FFFFFF"
         android:layout_gravity="center"
-        android:text="Add photo"/>
+        android:text="Add photo"
+        android:padding="20dp"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -76,7 +77,15 @@
         android:inputType="textCapSentences"
         android:layout_marginTop="20dp"
         />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tagsArea"
+                android:orientation="horizontal"
+                >
 
+
+            </LinearLayout>
             <Button
                 android:layout_width="169dp"
                 android:layout_height="wrap_content"
@@ -86,8 +95,7 @@
                 android:id="@+id/btnAddItem"
                 android:layout_gravity="center_horizontal"
                 android:padding="20dp"
-                android:layout_marginTop="20dp"
-                />
+                android:layout_marginTop="20dp" />
         </LinearLayout>
     </ScrollView>
 
