@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     Button signOutBtn;
     NavigationView navigationView;
-    String userEmail;
-    TextView tvEmail;
+    String email;
+    TextView tvEmail,tvUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,8 +51,19 @@ public class MainActivity extends AppCompatActivity
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
-        userEmail = getIntent().getStringExtra("userEmail");
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Name, email address, and profile photo Url
+
+            String email = user.getEmail();
+
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            String uid = user.getUid();
+        }
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -72,13 +83,19 @@ public class MainActivity extends AppCompatActivity
 
         View headerview = navigationView.getHeaderView(0);
         tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
-        tvEmail.setText(getIntent().getStringExtra("userEmail"));
+        tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
+
+        tvEmail.setText(user.getEmail());
+        tvUsername.setText(user.getUid());
         signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tvEmail.setText("Not logged in");
+                tvUsername.setText("Not logged in");
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this,CreateAccountActivity.class));
+
             }
         });
 
