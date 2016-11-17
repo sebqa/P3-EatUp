@@ -28,7 +28,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     EditText editTextEmail;
     EditText editTextPassword;
     Button buttonSignup;
-
+    String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,13 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
+                    intent.putExtra("isLoggedIn",true);
+                    intent.putExtra("userEmail",userEmail);
+
+                    startActivity(intent);
+                    finish();
+
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -80,6 +87,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
+        userEmail= editTextEmail.getText().toString();
         if (!validateForm()) {
             return;
         }
