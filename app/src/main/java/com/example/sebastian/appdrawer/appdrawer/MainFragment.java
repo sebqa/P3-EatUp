@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -53,6 +55,10 @@ public class MainFragment extends Fragment{
 
 
     FloatingActionButton toTop;
+
+    //Firebase connection
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
 
     @Nullable
     @Override

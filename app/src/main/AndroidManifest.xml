@@ -12,18 +12,26 @@
         <activity
             android:name=".appdrawer.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Launcher">
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".appdrawer.CreateItem"
+            android:label="@string/title_activity_create_ad"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".appdrawer.ItemDetails" />
+        <activity
+            android:name=".appdrawer.CreateAccountActivity"
+            android:label="@string/activity_create_account"></activity>
+        <activity
+            android:name=".appdrawer.LoginSignUp"
+            android:label="EatUp"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".appdrawer.CreateItem"
-            android:label="@string/title_activity_create_ad"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".appdrawer.ItemDetails"></activity>
+        <activity android:name=".appdrawer.LogInActivity"></activity>
     </application>
 
 </manifest>

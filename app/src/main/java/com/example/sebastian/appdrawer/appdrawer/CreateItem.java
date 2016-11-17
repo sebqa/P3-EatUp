@@ -20,12 +20,17 @@ import android.view.KeyEvent;
 
 
 import com.example.sebastian.appdrawer.R;
+import com.google.android.flexbox.FlexboxLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateItem extends AppCompatActivity {
 
     EditText itemTag,etDescription;
     ScrollView scrollView;
     int tagCounter;
+    List<String> tags = new ArrayList<String>();
 
 
     @Override
@@ -46,7 +51,7 @@ public class CreateItem extends AppCompatActivity {
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
-        int maxLength = 10;
+        int maxLength = 13;
         itemTag.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -89,17 +94,35 @@ public class CreateItem extends AppCompatActivity {
     public void addTag(){
 
 
-        TextView tag = new TextView(CreateItem.this);
+        final TextView tag = new TextView(CreateItem.this);
+
         tag.setPadding(10,10, 10, 10);
 
+
         tag.setBackgroundColor(Color.parseColor("#BDBDBD"));
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(30, 20, 0, 0);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        tag.setMaxLines(1);
         params.gravity = Gravity.CENTER_HORIZONTAL;
-        tag.setText(itemTag.getText().toString());
-        LinearLayout linearLayout = (LinearLayout)findViewById(R.id.tagsArea);
+        tag.setText("X      "+itemTag.getText().toString());
+
+
+        //Flexbox yo! https://github.com/google/flexbox-layout/blob/master/README.md
+        final FlexboxLayout linearLayout = (FlexboxLayout) findViewById(R.id.tagsArea);
+        tag.setId(tagCounter);
         linearLayout.addView(tag);
+
+        focusOnView();
         itemTag.getText().clear();
+        tagCounter=tagCounter+1;
+        tags.add(tag.getText().toString());
+        tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                linearLayout.removeView(tag);
+
+            }
+        });
 
 
     }

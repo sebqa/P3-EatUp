@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login_sign_up"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/red"
+    tools:context="com.example.sebastian.appdrawer.appdrawer.LoginSignUp">
+
+
+    <Button
+        android:text="Sign In"
+        android:textSize="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/buttonSignIn"
+        android:background="@color/darkRed"
+        android:textColor="@color/white"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/buttonBrowse"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Not already a user? Create an account here"
+        android:textColor="#660E0E"
+        android:textSize="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/textSignUp"
+        android:textStyle=""/>
+
+    <Button
+        android:text="Browse"
+        android:textSize="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/darkRed"
+        android:textColor="@color/white"
+        android:id="@+id/buttonBrowse"
+        android:layout_below="@+id/imageViewEatUpSplash"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        app:srcCompat="@drawable/eatupsaltandpepper"
+        android:id="@+id/imageViewEatUpSplash"
+        android:layout_marginTop="59dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

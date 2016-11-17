@@ -1,7 +1,10 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,11 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -23,7 +31,11 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    Menu menu;
+    private static final String TAG = "EmailPassword";
     FloatingActionButton fab;
+    Button signOutBtn;
+    TextView tvEmail,tvUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +47,27 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        signOutBtn = (Button)findViewById(R.id.signOutBtn);
+
+        Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
+
+        //Gets user information if the user has created an account and logged in
+        //If the user is not logged in, then user will be null.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            // Name, email address, and profile photo Url
+
+            //tvEmail.setText(user.getEmail()); <-----
+            //tvUsername.setText(user.getUid()); <------
+            String email = user.getEmail();
+
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            String uid = user.getUid();
+        }
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -51,6 +84,23 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
+
+        View headerview = navigationView.getHeaderView(0);
+        tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
+        tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
+
+        signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
+        signOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tvEmail.setText("Not logged in");
+                tvUsername.setText("Not logged in");
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+            }
+        });
+
         //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
         fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
@@ -60,9 +110,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,CreateItem.class));
+                    startActivity(new Intent(MainActivity.this,CreateItem.class));
             }
         });
+
 
     }
 
@@ -75,18 +126,62 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Exit");
+            builder.setMessage("Are you sure you want to exit?").setCancelable(false)
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                    onYesClick();
+
+                                }
+
+
+                            }).setNegativeButton("No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                            onNoClick();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
+    private void onYesClick() {
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
+
+        MainActivity.this.finish();
+
+
+
+    }private void onNoClick() {
+
+
+    }
+
+
+
 
 
     //Initialize the menu layout
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
 
@@ -104,7 +199,6 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     //Handle hamburger menu clicks
