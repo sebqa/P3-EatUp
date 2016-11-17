@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "CreateAccountActivity";
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -56,9 +56,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
-                    //intent.putExtra("isLoggedIn",true);
-                    //intent.putExtra("userEmail",userEmail);
-
                     startActivity(intent);
                     finish();
 
@@ -66,7 +63,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // ...
             }
         };
     }

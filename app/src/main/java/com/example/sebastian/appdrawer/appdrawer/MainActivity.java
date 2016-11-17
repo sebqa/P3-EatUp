@@ -30,16 +30,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    Menu menu;
 
+    Menu menu;
     private static final String TAG = "EmailPassword";
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     FloatingActionButton fab;
     Button signOutBtn;
-    NavigationView navigationView;
-    String email;
     TextView tvEmail,tvUsername;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -54,7 +51,10 @@ public class MainActivity extends AppCompatActivity
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
 
+        //Gets user information if the user has created an account and logged in
+        //If the user is not logged in, then user will be null.
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user != null) {
             // Name, email address, and profile photo Url
 
