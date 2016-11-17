@@ -56,8 +56,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
-                    intent.putExtra("isLoggedIn",true);
-                    intent.putExtra("userEmail",userEmail);
+                    //intent.putExtra("isLoggedIn",true);
+                    //intent.putExtra("userEmail",userEmail);
 
                     startActivity(intent);
                     finish();

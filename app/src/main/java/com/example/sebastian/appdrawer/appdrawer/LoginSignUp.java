@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import com.example.sebastian.appdrawer.R;
 
-import org.w3c.dom.Text;
-
 public class LoginSignUp extends AppCompatActivity {
 
     Button buttonBrowse;
@@ -33,7 +31,11 @@ public class LoginSignUp extends AppCompatActivity {
         buttonBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginSignUp.this, MainActivity.class));
+                Intent intent = new Intent(LoginSignUp.this, MainActivity.class);
+                intent.putExtra("isLoggedIn", false);
+                intent.putExtra("userEmail", "Not logged in");
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -57,7 +59,7 @@ public class LoginSignUp extends AppCompatActivity {
         textSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginSignUp.this, MainActivity.class));
+                startActivity(new Intent(LoginSignUp.this, CreateAccountActivity.class));
             }
         });
 

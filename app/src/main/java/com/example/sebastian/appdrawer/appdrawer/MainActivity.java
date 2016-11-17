@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
             // Name, email address, and profile photo Url
 
+            //tvEmail.setText(user.getEmail()); <-----
+            //tvUsername.setText(user.getUid()); <------
             String email = user.getEmail();
 
 
@@ -87,8 +89,6 @@ public class MainActivity extends AppCompatActivity
         tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
         tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
 
-        tvEmail.setText(user.getEmail());
-        tvUsername.setText(user.getUid());
         signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                 tvEmail.setText("Not logged in");
                 tvUsername.setText("Not logged in");
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this,CreateAccountActivity.class));
+                startActivity(new Intent(MainActivity.this, LoginSignUp.class));
 
             }
         });
