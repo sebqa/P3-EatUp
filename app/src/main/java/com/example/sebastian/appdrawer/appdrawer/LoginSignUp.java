@@ -1,6 +1,7 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class LoginSignUp extends AppCompatActivity {
         buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
         //buttonSignUp = (Button)findViewById(R.id.buttonSignUp);
         textSignUp = (TextView)findViewById(R.id.textSignUp);
+        textSignUp.setPaintFlags(textSignUp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         //When the user taps the BROWSE button, he is taken to the main screen
         //Define that the user is NOT  logged in when he clicks the BROWSE button

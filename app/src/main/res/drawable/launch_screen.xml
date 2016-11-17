@@ -6,6 +6,7 @@
         <!-- Your product logo - 144dp color version of your app icon -->
     <item>
         <bitmap
+
             android:gravity="center"
             android:src="@drawable/eatupsplashscreen2"/>
     </item>
