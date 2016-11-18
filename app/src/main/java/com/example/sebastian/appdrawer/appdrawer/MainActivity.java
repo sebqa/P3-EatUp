@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
 
                 startActivity(new Intent(MainActivity.this, LogInActivity.class));
-                
+
 
             }
         });
@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity
     private void updateUI(FirebaseUser user) {
 
         if (user != null) {
+
             tvEmail.setText(""+user.getEmail());
             tvUsername.setText(""+user.getUid());
             signOutBtn.setVisibility(View.VISIBLE);
