@@ -46,11 +46,11 @@
         android:layout_alignParentStart="true" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
         app:srcCompat="@drawable/eatupsplashscreen2"
         android:id="@+id/imageViewEatUpSplash"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="59dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
