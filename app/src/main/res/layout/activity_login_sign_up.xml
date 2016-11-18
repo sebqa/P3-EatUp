@@ -16,7 +16,7 @@
         android:layout_height="60dp"
         android:id="@+id/buttonSignIn"
         android:background="@color/darkRed"
-        android:textColor="@color/white"
+        android:textColor="@color/background"
         android:layout_marginTop="5dp"
         android:layout_below="@+id/buttonBrowse"
         android:layout_alignParentStart="true" />
@@ -40,7 +40,7 @@
         android:layout_height="60dp"
         android:layout_marginTop="30dp"
         android:background="@color/darkRed"
-        android:textColor="@color/white"
+        android:textColor="@color/background"
         android:id="@+id/buttonBrowse"
         android:layout_below="@+id/imageViewEatUpSplash"
         android:layout_alignParentStart="true" />

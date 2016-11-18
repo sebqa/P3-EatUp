@@ -13,7 +13,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.example.sebastian.appdrawer.appdrawer.CreateItem"
-    android:background="#ffffff"
+    android:background="@color/background"
     >
 
 
