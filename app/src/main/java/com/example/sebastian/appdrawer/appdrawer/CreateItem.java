@@ -10,6 +10,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -26,10 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreateItem extends AppCompatActivity {
-
+    LinearLayout imageLayout;
+    HorizontalScrollView imageScroll;
     EditText itemTag,etDescription;
     ScrollView scrollView;
+    int iCounter = 1;
     int tagCounter;
+    TextView imageCounter;
     List<String> tags = new ArrayList<String>();
 
 
@@ -41,13 +47,27 @@ public class CreateItem extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_action_close);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        imageCounter = (TextView)findViewById(R.id.imageCounter);
+
+
 
 
         // Added tagsArea as LinearLayout view
 
+        final LinearLayout imageLayout = (LinearLayout)findViewById(R.id.imageLayout);
+        imageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageView image = new ImageView(CreateItem.this);
+                image.setImageResource(R.drawable.lasagne);
+                image.setScaleType(ImageView.ScaleType.CENTER);
+                imageLayout.addView(image);
+                iCounter = iCounter+1;
+                imageCounter.setText(""+iCounter+" image(s)");
+            }
+        });
 
 
-        //
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);

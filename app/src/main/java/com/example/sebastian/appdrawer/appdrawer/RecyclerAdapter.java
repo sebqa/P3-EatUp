@@ -83,9 +83,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             container = view.findViewById(R.id.item_container);
 
 
-            YoYo.with(Techniques.ZoomInRight)
-                    .duration(500)
-                    .playOn(container);
+            //YoYo.with(Techniques.ZoomInRight)
+              //      .duration(500)
+                //    .playOn(container);
 
 
             //Set an onClickListener to the entire view.
