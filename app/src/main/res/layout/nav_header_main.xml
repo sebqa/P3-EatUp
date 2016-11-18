@@ -52,7 +52,7 @@
     android:id="@+id/tvEmail"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Email@email.dk"
+    android:text="Not logged in"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

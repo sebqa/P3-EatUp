@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     Button signOutBtn;
     TextView tvEmail,tvUsername;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,21 +56,25 @@ public class MainActivity extends AppCompatActivity
 
         //Gets user information if the user has created an account and logged in
         //If the user is not logged in, then user will be null.
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
 
-        if (user != null) {
-            // Name, email address, and profile photo Url
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
-            //tvEmail.setText(user.getEmail()); <-----
-            //tvUsername.setText(user.getUid()); <------
-            String email = user.getEmail();
 
 
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getToken() instead.
-            String uid = user.getUid();
-        }
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                updateUI(user);
+            }
+        };
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -93,10 +100,10 @@ public class MainActivity extends AppCompatActivity
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tvEmail.setText("Not logged in");
-                tvUsername.setText("Not logged in");
+                mAuth = FirebaseAuth.getInstance();
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+                updateUI(null);
 
             }
         });
@@ -251,5 +258,31 @@ public class MainActivity extends AppCompatActivity
         fab.hide();
     }
 
+    private void updateUI(FirebaseUser user) {
 
+        if (user != null) {
+            tvEmail.setText(""+user.getEmail());
+            tvUsername.setText(""+user.getUid());
+
+
+        } else {
+            tvEmail.setText("Not logged in");
+            tvUsername.setVisibility(View.INVISIBLE);
+        }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+    // [END on_start_add_listener]
+
+    // [START on_stop_remove_listener]
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
 }
