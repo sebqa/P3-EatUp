@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "EmailPassword";
     FloatingActionButton fab;
     Button signOutBtn;
+    Button signInBtn;
     TextView tvEmail,tvUsername;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -95,7 +96,16 @@ public class MainActivity extends AppCompatActivity
         View headerview = navigationView.getHeaderView(0);
         tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
         tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
+        signInBtn = (Button)headerview.findViewById(R.id.signInBtn);
+        signInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                startActivity(new Intent(MainActivity.this, LogInActivity.class));
+                
+
+            }
+        });
         signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,11 +273,16 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
             tvEmail.setText(""+user.getEmail());
             tvUsername.setText(""+user.getUid());
+            signOutBtn.setVisibility(View.VISIBLE);
+            signInBtn.setVisibility(View.INVISIBLE);
+
 
 
         } else {
             tvEmail.setText("Not logged in");
             tvUsername.setVisibility(View.INVISIBLE);
+            signOutBtn.setVisibility(View.INVISIBLE);
+            signInBtn.setVisibility(View.VISIBLE);
         }
     }
     @Override
