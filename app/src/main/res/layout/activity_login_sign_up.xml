@@ -5,7 +5,7 @@
     android:id="@+id/activity_login_sign_up"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red"
+    android:background="@color/colorPrimary"
     tools:context="com.example.sebastian.appdrawer.appdrawer.LoginSignUp">
 
 
@@ -48,7 +48,7 @@
     <ImageView
         android:layout_width="150dp"
         android:layout_height="200dp"
-        app:srcCompat="@drawable/eatupsaltandpepper"
+        app:srcCompat="@drawable/eatupsplashscreen2"
         android:id="@+id/imageViewEatUpSplash"
         android:layout_marginTop="59dp"
         android:layout_alignParentTop="true"
