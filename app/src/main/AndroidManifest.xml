@@ -26,7 +26,7 @@
         <activity
             android:name=".appdrawer.LoginSignUp"
             android:label="EatUp"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
