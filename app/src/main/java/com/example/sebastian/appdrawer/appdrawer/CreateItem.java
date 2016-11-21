@@ -9,11 +9,14 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,10 +36,12 @@ public class CreateItem extends AppCompatActivity {
     HorizontalScrollView imageScroll;
     EditText itemTag,etDescription;
     ScrollView scrollView;
+    Button addItemBtn;
     int iCounter = 1;
     int tagCounter;
     TextView imageCounter;
     List<String> tags = new ArrayList<String>();
+    ListView tagsList;
 
 
     @Override
@@ -48,6 +53,7 @@ public class CreateItem extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_action_close);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         imageCounter = (TextView)findViewById(R.id.imageCounter);
+        tagsList = (ListView)findViewById(R.id.listView);
 
 
 
@@ -107,6 +113,17 @@ public class CreateItem extends AppCompatActivity {
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
                 arg0.requestFocus();
+            }
+        });
+
+
+        addItemBtn = (Button) findViewById(R.id.btnAddItem);
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
+                tagsList.setAdapter(adapter1);
+
             }
         });
     }

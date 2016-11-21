@@ -30,8 +30,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_create_item" />
 
+    <include layout="@layout/content_create_item" />
 
 
 </android.support.design.widget.CoordinatorLayout>

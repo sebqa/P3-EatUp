@@ -139,11 +139,14 @@ public class MainFragment extends Fragment{
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        arrayList.clear();
 
 
-                            Item item = new Item(itemtitle[1], itemcreator[1], itemprice[1], Img_res[1]);
+                        int i = 0;
+                        for (String title : itemtitle) {
+                            Item item = new Item(title, itemcreator[i]+" nr "+(i+21), itemprice[i], Img_res[i]);
                             arrayList.add(item);
+                            i++;
+                        }
                             recyclerView.scrollToPosition(0);
 
                         mSwipeRefreshLayout.setRefreshing(false);

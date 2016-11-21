@@ -19,9 +19,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/recyclerView"
             android:scrollbars="vertical"
-            android:scrollbarThumbVertical="@android:color/darker_gray"
+            android:scrollbarThumbVertical="@color/colorPrimaryDark"
             android:scrollbarSize="8dp"
-            android:fadeScrollbars="false"
             android:divider="@color/colorPrimary"
             android:dividerHeight="10dp"
             >
