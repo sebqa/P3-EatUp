@@ -122,7 +122,7 @@
             </com.google.android.flexbox.FlexboxLayout>
 
             <Button
-                android:layout_width="169dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:text="Add food"
@@ -133,6 +133,13 @@
                 android:layout_marginBottom="20dp"
 
                  />
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/listView">
+
+
+            </ListView>
         </LinearLayout>
     </ScrollView>
 
