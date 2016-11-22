@@ -3,6 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.view.Gravity;
@@ -45,9 +46,10 @@ public class CreateItem extends AppCompatActivity {
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
-    TextView tvServings;
-    EditText edNrOfServings;
+    TextView tvServings, tvLocation, tvPrice;
+    EditText edNrOfServings, etTitle;
     int maxLength = 13;
+    SwitchCompat swLocation, swPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,11 @@ public class CreateItem extends AppCompatActivity {
         imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
         tvServings = (TextView) findViewById(R.id.servings);
         edNrOfServings = (EditText) findViewById(R.id.nrOfServings);
+        etTitle = (EditText) findViewById(R.id.etTitle);
+        tvLocation = (TextView) findViewById(R.id.tvLocation);
+        swLocation = (SwitchCompat) findViewById(R.id.swLocation);
+        tvPrice = (TextView) findViewById(R.id.tvPrice);
+        swPrice = (SwitchCompat) findViewById(R.id.swPrice);
 
 
 
