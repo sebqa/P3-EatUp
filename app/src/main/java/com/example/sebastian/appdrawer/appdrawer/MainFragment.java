@@ -12,8 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -23,83 +27,49 @@ import java.util.ArrayList;
  * Created by Sebastian on 02-11-2016.
  */
 
-public class MainFragment extends Fragment{
+public class MainFragment extends Fragment {
 
 
     SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
-
+    public static final String FOOD = "food";
+    private DatabaseReference mFirebaseDatabaseReference;
     //Arrays to draw dummy data from.(Here we would use data from the database).
     //String arrays are found in values/strings
-    String[] itemtitle,itemcreator,itemprice;
-    int[] itemdistance;
-    int[] Img_res = {R.drawable.hjemmelavetburger,
-            R.drawable.hakkeboef,
-            R.drawable.flaeskesteg,
-            R.drawable.lasagne,R.drawable.hjemmelavetburger,
-            R.drawable.hakkeboef,
-            R.drawable.flaeskesteg,
-            R.drawable.lasagne,R.drawable.hjemmelavetburger,
-            R.drawable.hakkeboef,
-            R.drawable.flaeskesteg,
-            R.drawable.lasagne,R.drawable.hjemmelavetburger,
-            R.drawable.hakkeboef,
-            R.drawable.flaeskesteg,
-            R.drawable.lasagne,R.drawable.hjemmelavetburger,
-            R.drawable.hakkeboef,
-            R.drawable.flaeskesteg,
-            R.drawable.lasagne};
     ArrayList<Item> arrayList = new ArrayList<Item>();
 
-
+    static boolean calledAlready = false;
     FloatingActionButton toTop;
-
-    //Firebase connection
-    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate the layout specific to this fragment
-        final View rootView = inflater.inflate(R.layout.fragment_main,container,false);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         //Cast the recyclerView such that we can manipulate it
-        final RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
+        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         //Add a layout manager to control layout
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //Tie the new strings to the String arrays we prepared.
-        itemtitle = getResources().getStringArray(R.array.itemTitles);
-        itemcreator = getResources().getStringArray(R.array.itemCreators);
-        itemprice = getResources().getStringArray(R.array.itemPrices);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swiperefresh);
-
-        //This for loop creates items with one element from each of the four arrays.
-        // It adds the item to the arraylist, that will be shown in the recyclerView.
-        int i = 0;
-        for (String title : itemtitle) {
-            Item item = new Item(title, itemcreator[i], itemprice[i],R.drawable.hakkeboef);
-            arrayList.add(item);
-            i++;
+        //Database initialize
+        if (!calledAlready)
+        {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            calledAlready = true;
         }
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
-        //New instance of our adapter class, which shows the arrayList.
-        //That instance is tied to the recyclerView.
-        adapter = new RecyclerAdapter(arrayList,getActivity());
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
 
 
 
         //Casting the button that takes the user to the top.
-        toTop = (FloatingActionButton)rootView.findViewById(R.id.toTop);
+        toTop = (FloatingActionButton) rootView.findViewById(R.id.toTop);
         //The onClickListener that scrolls to position '0'.
-        toTop.setOnClickListener(new View.OnClickListener(){
+        toTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 recyclerView.smoothScrollToPosition(0);
@@ -108,24 +78,20 @@ public class MainFragment extends Fragment{
 
         //Adds an onScrollListener.
         //Hides the 'toTop' button and the floating action button, when scrolling.
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                if (dy > 0 ||dy<0 && toTop.isShown())
-                {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && toTop.isShown()) {
                     toTop.hide();
                     ((MainActivity) getActivity()).hideFloatingActionButton();
 
                 }
             }
+
             //Shows the 'toTop' button and the floating action button when not scrolling.
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState)
-            {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     toTop.show();
                     ((MainActivity) getActivity()).showFloatingActionButton();
                 }
@@ -134,30 +100,76 @@ public class MainFragment extends Fragment{
             }
         });
 
-        //Supposed to clear the arrayList and add one new item.
-        mSwipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+
+                //Load items, and constructs instances of the Item class with them
+                Item item = dataSnapshot.getValue(Item.class);
+                //Add those instances to the arrayList shown in the Recyclerview, and make sure it's
+                //at the top.
+                arrayList.add(0,item);
+                adapter.notifyDataSetChanged();
+
+                // ...
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                getUpdates(dataSnapshot);
 
 
-                        int i = 0;
-                        for (String title : itemtitle) {
-                            Item item = new Item(title, itemcreator[i]+" nr "+(i+21), itemprice[i], Img_res[i]);
-                            arrayList.add(item);
-                            i++;
-                        }
-                            recyclerView.scrollToPosition(0);
+            }
 
-                        mSwipeRefreshLayout.setRefreshing(false);
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                    }
-                }
-        );
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getActivity(), "Failed to load items.",
+                        Toast.LENGTH_SHORT).show();
+            }
 
+        };
+
+        mFirebaseDatabaseReference.addChildEventListener(childEventListener);
+
+        //New instance of our adapter class, which shows the arrayList.
+        //That instance is tied to the recyclerView.
+        adapter = new RecyclerAdapter(arrayList, getActivity());
+        //recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
         return rootView;
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+        adapter.notifyDataSetChanged();
+    }
+    public void getUpdates(DataSnapshot dataSnapshot){
+
+        arrayList.clear();
+
+        if (dataSnapshot.getChildrenCount() > 0) {
+
+            Item item = dataSnapshot.getValue(Item.class);
+            arrayList.add(item);
+            adapter.notifyDataSetChanged();
+
+        }
     }
 
 }

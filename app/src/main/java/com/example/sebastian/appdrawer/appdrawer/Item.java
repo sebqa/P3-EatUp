@@ -24,7 +24,7 @@ public class Item {
     public Item() {} // Empty constructor, required for Firebase
 
     //Constructor for list
-    public Item(String title, String creator, String price, int photoId) {
+    public Item(String title, String creator, String price) {
         this.title = title;
         this.creator = creator;
         this.price = price;
