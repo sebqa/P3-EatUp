@@ -2,12 +2,15 @@
 
     <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
         <!-- The background color, preferably the same as your normal theme -->
-        <item android:drawable="@color/colorPrimary"/>
-        <!-- Your product logo - 144dp color version of your app icon -->
-    <item>
-        <bitmap
+        <item>
+            <shape>
+                <size android:height="12dp" android:width="12dp"/>
+                <solid android:color="@color/colorPrimary"/>
+            </shape>
+        </item>
 
-            android:gravity="center"
-            android:src="@drawable/eatupsplashscreen2"/>
-    </item>
+        <!-- Your product logo - 144dp color version of your app icon -->
+    <item
+        android:gravity="fill_vertical"
+        android:drawable="@drawable/eatupsplashscreen"/>
     </layer-list>
