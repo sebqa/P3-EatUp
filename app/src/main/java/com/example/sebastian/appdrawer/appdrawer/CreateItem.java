@@ -1,14 +1,9 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -37,16 +32,15 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateItem extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class CreateItem extends AppCompatActivity {
 
     //Firebase connection and references
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -64,13 +58,12 @@ public class CreateItem extends AppCompatActivity implements GoogleApiClient.Con
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
-    TextView tvServings, tvLocation, tvPrice, mLatitudeText, mLongitudeText;
+    TextView tvServings, tvLocation, tvPrice;
     EditText edNrOfServings, etTitle;
     int maxLength = 13;
     SwitchCompat swLocation, swPrice;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
 
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +89,8 @@ public class CreateItem extends AppCompatActivity implements GoogleApiClient.Con
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
 
+        mAuth = FirebaseAuth.getInstance();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION });
-        }
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         // OnClickListener for servings textview
@@ -180,49 +170,36 @@ public class CreateItem extends AppCompatActivity implements GoogleApiClient.Con
             @Override
             public void onClick(View view) {
 
-                //Display the tags which are stored in an ArrayList, as a list
-                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
-                tagsList.setAdapter(adapter1);
+                //Check if user has logged in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null) {
+                    Toast.makeText(CreateItem.this, "Please login or sign up before adding an item",
+                            Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(CreateItem.this, LogInActivity.class));
+                }
+                else if(user != null) {
+                    //Display the tags which are stored in an ArrayList, as a list
+                    ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
+                    tagsList.setAdapter(adapter1);
 
-                //insert data into Firebase
-                DatabaseReference foodRef = rootRef.child("food"); //point to food branch
+                    //insert data into Firebase
+                    DatabaseReference foodRef = rootRef.child("food"); //point to food branch
 
-                String stringItemTitle = etTitle.getText().toString();
-                String stringItemDescription = etDescription.getText().toString();
-                String stringNrOfServings = edNrOfServings.getText().toString();
-                int intServings = Integer.parseInt(stringNrOfServings);
+                    String stringItemTitle = etTitle.getText().toString();
+                    String stringItemDescription = etDescription.getText().toString();
+                    String stringNrOfServings = edNrOfServings.getText().toString();
+                    int intServings = Integer.parseInt(stringNrOfServings);
+                    String stringUserID = user.getUid();
+                    //String stringUserName = user.getDisplayName();
 
-                Item newFoodItem = new Item("aleksanderfrese", stringItemTitle, stringItemDescription, "10", intServings);
-                foodRef.push().setValue(newFoodItem);
-                Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
-                        Toast.LENGTH_LONG).show();
-                finish();
-
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings);
+                    foodRef.push().setValue(newFoodItem);
+                    Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         });
-
-        etTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                buildGoogleApiClient();
-            }
-        });
-
-
-
-    }
-
-    public void buildGoogleApiClient() {
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
     }
 
     public void addTag(){
@@ -267,45 +244,5 @@ public class CreateItem extends AppCompatActivity implements GoogleApiClient.Con
                 scrollView.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
-    }
-
-
-        @Override
-        public void onConnected(Bundle connectionHint) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-
-            }
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-                mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            }
-        }
-
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_ACCESS_FINE_LOCATION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // All good!
-                } else {
-                    Toast.makeText(this, "Need your location!", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-        }
     }
 }
