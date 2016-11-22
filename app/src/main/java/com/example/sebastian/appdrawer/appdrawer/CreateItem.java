@@ -1,9 +1,14 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +37,7 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.gms.location.LocationListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +55,7 @@ public class CreateItem extends AppCompatActivity {
 
     LinearLayout imageLayout;
     HorizontalScrollView imageScroll;
-    EditText itemTag,etDescription;
+    EditText itemTag, etDescription;
     ScrollView scrollView;
     Button addItemBtn;
     int iCounter = 0;
@@ -75,8 +81,8 @@ public class CreateItem extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //ui elements
-        imageCounter = (TextView)findViewById(R.id.imageCounter);
-        tagsList = (ListView)findViewById(R.id.listView);
+        imageCounter = (TextView) findViewById(R.id.imageCounter);
+        tagsList = (ListView) findViewById(R.id.listView);
         imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
         tvServings = (TextView) findViewById(R.id.servings);
         edNrOfServings = (EditText) findViewById(R.id.nrOfServings);
@@ -90,6 +96,22 @@ public class CreateItem extends AppCompatActivity {
         itemTag = (EditText) findViewById(R.id.etTags);
 
         mAuth = FirebaseAuth.getInstance();
+
+        LocationManager myManager;
+        final myLocListener loc = new myLocListener();
+        myManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        myManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, loc);
+
 
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
