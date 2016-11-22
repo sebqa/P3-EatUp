@@ -84,6 +84,14 @@
         android:layout_marginTop="315dp"
         android:layout_marginLeft="75dp"/>
 
+    <TextView
+        android:text="Not already a user? Create an account here"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="230dp"
+        android:layout_gravity="center"
+        android:id="@+id/tvCreateAccount" />
+
 
 </android.support.design.widget.CoordinatorLayout>
 
