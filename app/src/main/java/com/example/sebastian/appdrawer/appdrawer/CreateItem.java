@@ -30,11 +30,19 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CreateItem extends AppCompatActivity {
+
+    //Firebase connection and references
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference rootRef = database.getReference();
+
+
     LinearLayout imageLayout;
     HorizontalScrollView imageScroll;
     EditText itemTag,etDescription;
@@ -57,8 +65,10 @@ public class CreateItem extends AppCompatActivity {
         setContentView(R.layout.activity_create_item);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_action_close);
+        toolbar.setNavigationIcon(R.drawable.ic_action_close); //Exit button
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        //ui elements
         imageCounter = (TextView)findViewById(R.id.imageCounter);
         tagsList = (ListView)findViewById(R.id.listView);
         imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
@@ -69,8 +79,9 @@ public class CreateItem extends AppCompatActivity {
         swLocation = (SwitchCompat) findViewById(R.id.swLocation);
         tvPrice = (TextView) findViewById(R.id.tvPrice);
         swPrice = (SwitchCompat) findViewById(R.id.swPrice);
-
-
+        etDescription = (EditText) findViewById(R.id.etDesc);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        itemTag = (EditText) findViewById(R.id.etTags);
 
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
@@ -106,12 +117,9 @@ public class CreateItem extends AppCompatActivity {
         });
 
 
-        etDescription = (EditText) findViewById(R.id.etDesc);
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
-        itemTag = (EditText) findViewById(R.id.etTags);
-
         itemTag.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
+        //Exit button
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,8 +161,24 @@ public class CreateItem extends AppCompatActivity {
         addItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //Display the tags which are stored in an ArrayList, as a list
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
                 tagsList.setAdapter(adapter1);
+
+                //insert data into Firebase
+                DatabaseReference foodRef = rootRef.child("food"); //point to food branch
+
+                String stringItemTitle = etTitle.getText().toString();
+                String stringItemDescription = etDescription.getText().toString();
+                String stringNrOfServings = edNrOfServings.getText().toString();
+                int intServings = Integer.parseInt(stringNrOfServings);
+
+                Item newFoodItem = new Item("aleksanderfrese", stringItemTitle, stringItemDescription, "10", intServings);
+                foodRef.push().setValue(newFoodItem);
+                Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
+                        Toast.LENGTH_LONG).show();
+                finish();
 
             }
         });

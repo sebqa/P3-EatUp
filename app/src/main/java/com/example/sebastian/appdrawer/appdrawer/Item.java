@@ -16,7 +16,7 @@ public class Item {
     public String description;
     public int photoId;
     public String creatorLoc; // The location that the item has been associated with
-    public int price; // Price per serving
+    public String price; // Price per serving
     public int distance; // Distance from the user to the item
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
@@ -24,7 +24,7 @@ public class Item {
     public Item() {} // Empty constructor, required for Firebase
 
     //Constructor for list
-    public Item(String title, String creator, int price, int photoId) {
+    public Item(String title, String creator, String price, int photoId) {
         this.title = title;
         this.creator = creator;
         this.price = price;
@@ -33,7 +33,7 @@ public class Item {
     }
 
     //Constructor for Firebase
-    public Item(String user, String title, String description, int cost, int amount) {
+    public Item(String user, String title, String description, String cost, int amount) {
         this.creator = user;
         this.title = title;
         this.description = description;
@@ -42,30 +42,35 @@ public class Item {
     }
 
 
+    public String getTitle() {
+        return title;
+    }
+    public String getCreator() {
+        return creator;
+    }
+    public int getPhotoId() { return photoId; }
+    public String getPrice() {
+        return price;
+    }
+
+    /*
     //Getters and setters for all values.
     public int getDistance() {return distance;}
 
     public void setDistance(int distance) {this.distance = distance;}
 
-    public String getTitle() {
-        return title;
-    }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getCreator() {
-        return creator;
-    }
+
 
     public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public int getPhotoId() {
-        return photoId;
-    }
+
 
     public void setPhotoId(int photoId) {
         this.photoId = photoId;
@@ -79,11 +84,9 @@ public class Item {
         this.creatorLoc = creatorLoc;
     }
 
-    public int getPrice() {
-        return price;
-    }
 
-    public void setPrice(int price) {
+
+    public void setPrice(String price) {
         this.price = price;
     }
 
@@ -102,7 +105,7 @@ public class Item {
     public void setPickUpTime(int pickUpTime) {
         this.pickUpTime = pickUpTime;
     }
-
+    */
 }
 
 
