@@ -12,29 +12,33 @@ import java.util.List;
 public class Item {
 
     public String title;
-    public String creator;
-    int photoId;
-    public String creatorLoc;
-    public String price;
-    public int distance;
+    public String creator; // Owner/Creator of an item
+    public String description;
+    public int photoId;
+    public String creatorLoc; // The location that the item has been associated with
+    public int price; // Price per serving
+    public int distance; // Distance from the user to the item
+    public int amount; // Amount of servings for sale
+    public int pickUpTime; // Time for when the item can be picked up
 
-
-
-    public int amount;
-    public int pickUpTime;
-
-
-    public Item() {
-        // Default constructor
-    }
+    public Item() {} // Empty constructor, required for Firebase
 
     //Constructor for list
-    public Item(String title, String creator, String price, int photoId) {
+    public Item(String title, String creator, int price, int photoId) {
         this.title = title;
         this.creator = creator;
         this.price = price;
         this.photoId = photoId;
         this.distance = distance;
+    }
+
+    //Constructor for Firebase
+    public Item(String user, String title, String description, int cost, int amount) {
+        this.creator = user;
+        this.title = title;
+        this.description = description;
+        this.price = cost;
+        this.amount = amount;
     }
 
 
@@ -75,11 +79,11 @@ public class Item {
         this.creatorLoc = creatorLoc;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
