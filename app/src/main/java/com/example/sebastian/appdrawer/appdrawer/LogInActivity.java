@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
@@ -25,6 +26,7 @@ public class LogInActivity extends AppCompatActivity {
     EditText editEmail;
     EditText editPassword;
     Button buttonSignIn;
+    TextView tvCreateAccount;
     private static final String TAG = "LogInActivity";
 
     private FirebaseAuth mAuth;
@@ -39,6 +41,7 @@ public class LogInActivity extends AppCompatActivity {
         editEmail = (EditText) findViewById(R.id.editEmail);
         editPassword = (EditText) findViewById(R.id.editPassword);
         buttonSignIn = (Button) findViewById(R.id.buttonSignIn);
+        tvCreateAccount = (TextView) findViewById(R.id.tvCreateAccount);
 
         // Getting the firebase reference url
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
@@ -51,8 +54,14 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
+        tvCreateAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LogInActivity.this, CreateAccountActivity.class));
+            }
+        });
 
+        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

@@ -1,7 +1,9 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +32,8 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -59,6 +63,8 @@ public class CreateItem extends AppCompatActivity {
     int maxLength = 13;
     SwitchCompat swLocation, swPrice;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +88,8 @@ public class CreateItem extends AppCompatActivity {
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
+
+        mAuth = FirebaseAuth.getInstance();
 
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
@@ -162,24 +170,34 @@ public class CreateItem extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //Display the tags which are stored in an ArrayList, as a list
-                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
-                tagsList.setAdapter(adapter1);
+                //Check if user has logged in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null) {
+                    Toast.makeText(CreateItem.this, "Please login or sign up before adding an item",
+                            Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(CreateItem.this, LogInActivity.class));
+                }
+                else if(user != null) {
+                    //Display the tags which are stored in an ArrayList, as a list
+                    ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
+                    tagsList.setAdapter(adapter1);
 
-                //insert data into Firebase
-                DatabaseReference foodRef = rootRef.child("food"); //point to food branch
+                    //insert data into Firebase
+                    DatabaseReference foodRef = rootRef.child("food"); //point to food branch
 
-                String stringItemTitle = etTitle.getText().toString();
-                String stringItemDescription = etDescription.getText().toString();
-                String stringNrOfServings = edNrOfServings.getText().toString();
-                int intServings = Integer.parseInt(stringNrOfServings);
+                    String stringItemTitle = etTitle.getText().toString();
+                    String stringItemDescription = etDescription.getText().toString();
+                    String stringNrOfServings = edNrOfServings.getText().toString();
+                    int intServings = Integer.parseInt(stringNrOfServings);
+                    String stringUserID = user.getUid();
+                    //String stringUserName = user.getDisplayName();
 
-                Item newFoodItem = new Item("aleksanderfrese", stringItemTitle, stringItemDescription, "10", intServings);
-                foodRef.push().setValue(newFoodItem);
-                Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
-                        Toast.LENGTH_LONG).show();
-                finish();
-
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings);
+                    foodRef.push().setValue(newFoodItem);
+                    Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         });
     }
