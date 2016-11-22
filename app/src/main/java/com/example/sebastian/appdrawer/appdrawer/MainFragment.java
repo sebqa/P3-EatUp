@@ -81,7 +81,7 @@ public class MainFragment extends Fragment{
         // It adds the item to the arraylist, that will be shown in the recyclerView.
         int i = 0;
         for (String title : itemtitle) {
-            Item item = new Item(title, itemcreator[i]+" nr "+(i+1), itemprice[i], Img_res[i]);
+            Item item = new Item(title, itemcreator[i], itemprice[i],R.drawable.hakkeboef);
             arrayList.add(item);
             i++;
         }

@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
+                    tvEmail.setText(""+user.getEmail());
+                    tvUsername.setText(""+user.getEmail());
 
 
                 } else {
@@ -290,6 +291,7 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+
     }
     // [END on_start_add_listener]
 
