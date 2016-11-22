@@ -37,11 +37,13 @@ public class CreateItem extends AppCompatActivity {
     EditText itemTag,etDescription;
     ScrollView scrollView;
     Button addItemBtn;
-    int iCounter = 1;
+    int iCounter = 0;
     int tagCounter;
     TextView imageCounter;
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
+    ImageView imagePlaceholder;
+
 
 
     @Override
@@ -54,6 +56,7 @@ public class CreateItem extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         imageCounter = (TextView)findViewById(R.id.imageCounter);
         tagsList = (ListView)findViewById(R.id.listView);
+        imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
 
 
 
@@ -64,13 +67,17 @@ public class CreateItem extends AppCompatActivity {
         imageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageView image = new ImageView(CreateItem.this);
+                final ImageView image = new ImageView(CreateItem.this);
                 image.setImageResource(R.drawable.lasagne);
                 image.setScaleType(ImageView.ScaleType.CENTER);
+                imageLayout.removeView(imagePlaceholder);
                 imageLayout.addView(image);
                 iCounter = iCounter+1;
+
+
                 imageCounter.setText(""+iCounter+" image(s)");
             }
+
         });
 
 
