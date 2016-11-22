@@ -1,7 +1,14 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -30,13 +37,16 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateItem extends AppCompatActivity {
+public class CreateItem extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     //Firebase connection and references
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -54,10 +64,13 @@ public class CreateItem extends AppCompatActivity {
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
-    TextView tvServings, tvLocation, tvPrice;
+    TextView tvServings, tvLocation, tvPrice, mLatitudeText, mLongitudeText;
     EditText edNrOfServings, etTitle;
     int maxLength = 13;
     SwitchCompat swLocation, swPrice;
+    GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +96,11 @@ public class CreateItem extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
 
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION });
+        }
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         // OnClickListener for servings textview
@@ -182,6 +200,29 @@ public class CreateItem extends AppCompatActivity {
 
             }
         });
+
+        etTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buildGoogleApiClient();
+            }
+        });
+
+
+
+    }
+
+    public void buildGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
     }
 
     public void addTag(){
@@ -226,5 +267,45 @@ public class CreateItem extends AppCompatActivity {
                 scrollView.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
+    }
+
+
+        @Override
+        public void onConnected(Bundle connectionHint) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+            }
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (mLastLocation != null) {
+                mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+                mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            }
+        }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All good!
+                } else {
+                    Toast.makeText(this, "Need your location!", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+        }
     }
 }

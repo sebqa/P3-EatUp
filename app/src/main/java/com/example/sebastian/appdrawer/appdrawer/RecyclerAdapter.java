@@ -9,8 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
+
 import com.example.sebastian.appdrawer.R;
 
 import java.util.ArrayList;
@@ -81,11 +80,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             creator = (TextView)view.findViewById(R.id.itemCreator);
             price = (TextView)view.findViewById(R.id.itemPrice);
             container = view.findViewById(R.id.item_container);
-
-
-            //YoYo.with(Techniques.ZoomInRight)
-              //      .duration(500)
-                //    .playOn(container);
 
 
             //Set an onClickListener to the entire view.
