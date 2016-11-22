@@ -69,11 +69,7 @@ public class LogInActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Intent intent = new Intent(LogInActivity.this,MainActivity.class);
-                    //intent.putExtra("isLoggedIn",true);
-                    //intent.putExtra("userEmail",userEmail);
 
-                    startActivity(intent);
                     finish();
 
                 } else {
@@ -101,8 +97,7 @@ public class LogInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                             Toast.makeText(LogInActivity.this, "Login successful",
                                     Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LogInActivity.this, MainActivity.class);
-                            startActivity(intent);
+
                             finish();
                         }
 
