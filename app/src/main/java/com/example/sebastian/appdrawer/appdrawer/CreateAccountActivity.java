@@ -18,27 +18,41 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/*****************************
+
+ AUTHOR: Zanduz
+ DATE: 14 NOV 2016
+ DESCRIPTION:
+
+ Enables the user to create an account.
+ Inserts the user account data into Firebase.
+
+ ****************************/
+
 public class CreateAccountActivity extends AppCompatActivity {
 
-    private static final String TAG = "CreateAccountActivity";
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private static final String TAG = "CreateAccountActivity"; //Identifier for log entries
+    private FirebaseAuth mAuth; //Variable to be used as reference to the authentication instance of Firebase
+    private FirebaseAuth.AuthStateListener mAuthListener; //Variable to be used as authentication state listener (tracks login/logout status)
 
-    //Get UI elements
+    //Define UI elements
     EditText editTextEmail;
     EditText editTextPassword;
     Button buttonSignup;
-    String userEmail;
+    //String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
+        //Initialize UI elements
         editTextEmail = (EditText)findViewById(R.id.editEmail);
         editTextPassword = (EditText)findViewById(R.id.editPassword);
         buttonSignup = (Button)findViewById(R.id.buttonSignup);
 
+        //Call the createAccount method when the user clicks the sign up button
+        //Pass the entered email and password to the method
         buttonSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,8 +60,9 @@ public class CreateAccountActivity extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance(); //Create reference to the authentication instance
 
+        //Initialize the authentication state listener
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -68,12 +83,15 @@ public class CreateAccountActivity extends AppCompatActivity {
         };
     }
 
+    //Specifies that the authentication state listener has to be tied to the instance of our Firebase connection
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
 
+    //If there has been created an authentication listener, then remove it
+    //A new one will be created in onStart() when the activity is created again
     @Override
     public void onStop() {
         super.onStop();
@@ -82,16 +100,17 @@ public class CreateAccountActivity extends AppCompatActivity {
         }
     }
 
+    //
     private void createAccount(String email, String password) {
-        Log.d(TAG, "createAccount:" + email);
-        userEmail= editTextEmail.getText().toString();
+        Log.d(TAG, "createAccount:" + email); //Create log entry
+        //userEmail = editTextEmail.getText().toString();
+        //If the email field or password field are empty, then the account will not be created
         if (!validateForm()) {
-            return;
+            return; //return terminates execution of the rest of the method
         }
 
         // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
@@ -112,12 +131,13 @@ public class CreateAccountActivity extends AppCompatActivity {
         // [END create_user_with_email]
     }
 
+    //Checks that the email and pw input fields are not empty
     private boolean validateForm() {
         boolean valid = true;
 
         String email = editTextEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            editTextEmail.setError("Required.");
+            editTextEmail.setError("Required");
             valid = false;
         } else {
             editTextEmail.setError(null);
@@ -125,7 +145,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         String password = editTextPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            editTextPassword.setError("Required.");
+            editTextPassword.setError("Required");
             valid = false;
         } else {
             editTextPassword.setError(null);
