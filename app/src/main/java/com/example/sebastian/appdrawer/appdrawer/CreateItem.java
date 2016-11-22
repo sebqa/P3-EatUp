@@ -8,7 +8,9 @@ import android.text.InputFilter;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,8 +45,9 @@ public class CreateItem extends AppCompatActivity {
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
-
-
+    TextView tvServings;
+    EditText edNrOfServings;
+    int maxLength = 13;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +60,24 @@ public class CreateItem extends AppCompatActivity {
         imageCounter = (TextView)findViewById(R.id.imageCounter);
         tagsList = (ListView)findViewById(R.id.listView);
         imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
+        tvServings = (TextView) findViewById(R.id.servings);
+        edNrOfServings = (EditText) findViewById(R.id.nrOfServings);
 
 
 
+
+        edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+        // OnClickListener for servings textview
+        // husk at sætte default værdien på EditText til 1
+        tvServings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                edNrOfServings.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(CreateItem.this.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                edNrOfServings.setHint("");
+            }
+        });
 
         // Added tagsArea as LinearLayout view
 
@@ -84,7 +102,7 @@ public class CreateItem extends AppCompatActivity {
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
-        int maxLength = 13;
+
         itemTag.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
