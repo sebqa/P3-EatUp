@@ -218,7 +218,9 @@ public class CreateItem extends AppCompatActivity {
                     foodRef.push().setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(CreateItem.this, MainActivity.class));
                     finish();
+
                 }
             }
         });

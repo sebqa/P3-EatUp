@@ -18,16 +18,20 @@ public class Item {
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
     public int distance; // Distance from the user to the item
+
+
+
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
 
     public Item() {} // Empty constructor, required for Firebase
 
     //Constructor for list
-    public Item(String title, String creator, String price, int photoId) {
+    public Item(String title, String creator, String price, int amount) {
         this.title = title;
         this.creator = creator;
         this.price = price;
+        this.amount = amount;
         this.photoId = photoId;
         this.distance = distance;
     }
@@ -51,6 +55,13 @@ public class Item {
     public int getPhotoId() { return photoId; }
     public String getPrice() {
         return price;
+    }
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     /*

@@ -52,6 +52,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.title.setText(item.getTitle());
         holder.creator.setText(item.getCreator());
         holder.price.setText(item.getPrice());
+        holder.amount.setText(""+item.getAmount());
+
 
         this.position = position;
     }
@@ -63,7 +65,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView imageView;
-        TextView title,creator,price;
+
+        TextView title,creator,price,amount;
         private View container;
         ArrayList<Item> items = new ArrayList<Item>();
         Context ctx;
@@ -79,7 +82,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             title = (TextView)view.findViewById(R.id.itemTitle);
             creator = (TextView)view.findViewById(R.id.itemCreator);
             price = (TextView)view.findViewById(R.id.itemPrice);
+            amount = (TextView)view.findViewById(R.id.itemAmount);
             container = view.findViewById(R.id.item_container);
+
 
 
             //Set an onClickListener to the entire view.
