@@ -135,6 +135,7 @@ public class MainFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(getActivity(), "Failed to load items.",
                         Toast.LENGTH_SHORT).show();
+
             }
 
         };

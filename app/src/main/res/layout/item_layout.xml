@@ -63,30 +63,16 @@
         android:layout_alignEnd="@+id/img" />
 
     <TextView
-        android:layout_width="65dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="m"
 
-        android:paddingLeft="10dp"
         android:id="@+id/distanceunit"
         android:textSize="12dp"
         android:textAlignment="viewEnd"
         android:singleLine="true"
         android:layout_alignTop="@+id/itemCreator"
         android:layout_toStartOf="@+id/img" />
-
-    <TextView
-        android:layout_width="65dp"
-        android:layout_height="wrap_content"
-        android:text="900"
-        android:paddingLeft="10dp"
-        android:id="@+id/itemDistance"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:layout_alignBaseline="@+id/distanceunit"
-        android:layout_alignBottom="@+id/distanceunit"
-        android:layout_alignStart="@+id/itemPrice" />
 
     <TextView
         android:layout_width="80dp"
@@ -102,10 +88,11 @@
         android:singleLine="true"
 
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/img" />
+        android:layout_toLeftOf="@+id/priceunit"
+        android:paddingRight="5dp" />
 
     <TextView
-        android:layout_width="65dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="serv."
 
@@ -132,7 +119,34 @@
 
         android:layout_alignBaseline="@+id/itemTitle"
         android:layout_alignBottom="@+id/itemTitle"
-        android:layout_alignStart="@+id/itemPrice" />
+        android:layout_toLeftOf="@+id/amountunit"
+        android:paddingRight="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="kr"
+
+        android:id="@+id/priceunit"
+        android:textSize="12dp"
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/img" />
+
+    <TextView
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:text="900"
+        android:paddingLeft="10dp"
+        android:id="@+id/itemDistance"
+        android:textSize="12dp"
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:layout_alignBaseline="@+id/distanceunit"
+        android:layout_alignBottom="@+id/distanceunit"
+        android:layout_toStartOf="@+id/distanceunit"
+        android:paddingRight="5dp" />
 
 
 </RelativeLayout>
