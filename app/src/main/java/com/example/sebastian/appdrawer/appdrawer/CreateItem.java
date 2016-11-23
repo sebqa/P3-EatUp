@@ -42,6 +42,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class CreateItem extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_action_close); //Exit button
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+
         //ui elements
         imageCounter = (TextView) findViewById(R.id.imageCounter);
         tagsList = (ListView) findViewById(R.id.listView);
@@ -94,6 +96,9 @@ public class CreateItem extends AppCompatActivity {
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
+
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -113,8 +118,9 @@ public class CreateItem extends AppCompatActivity {
         myManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, loc);
 
 
-
+        //Limit characters for nr of servings.
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+
         // OnClickListener for servings textview
         // husk at sætte default værdien på EditText til 1
         tvServings.setOnClickListener(new View.OnClickListener() {

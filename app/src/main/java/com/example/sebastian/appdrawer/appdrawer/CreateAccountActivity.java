@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 /*****************************
 
@@ -36,8 +37,8 @@ public class CreateAccountActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener; //Variable to be used as authentication state listener (tracks login/logout status)
 
     //Define UI elements
-    EditText editTextEmail;
-    EditText editTextPassword;
+
+    EditText editTextPassword,editTextEmail,edFirstName,edLastName;
     Button buttonSignup;
     //String userEmail;
 
@@ -50,6 +51,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         editTextEmail = (EditText)findViewById(R.id.editEmail);
         editTextPassword = (EditText)findViewById(R.id.editPassword);
         buttonSignup = (Button)findViewById(R.id.buttonSignup);
+        edFirstName = (EditText)findViewById(R.id.edFirstName);
+        edLastName = (EditText)findViewById(R.id.edLastName);
 
         //Call the createAccount method when the user clicks the sign up button
         //Pass the entered email and password to the method
@@ -70,6 +73,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
 
                     Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
                     startActivity(intent);
