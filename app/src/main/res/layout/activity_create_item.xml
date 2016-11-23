@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.sebastian.appdrawer.appdrawer.CreateAccountActivity"
+    tools:context="com.example.sebastian.appdrawer.appdrawer.CreateItem"
     android:background="@color/background">
 
     <android.support.design.widget.AppBarLayout
@@ -31,7 +31,7 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <include layout="@layout/content_create_account" />
+    <include layout="@layout/content_create_item" />
 
 
 </android.support.design.widget.CoordinatorLayout>
