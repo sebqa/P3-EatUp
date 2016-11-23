@@ -56,11 +56,11 @@ public class MainFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //Database initialize
-        if (!calledAlready)
+       /* if (!calledAlready)
         {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             calledAlready = true;
-        }
+        } */
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
 
