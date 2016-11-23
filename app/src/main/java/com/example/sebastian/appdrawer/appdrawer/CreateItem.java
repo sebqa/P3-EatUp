@@ -97,6 +97,8 @@ public class CreateItem extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        /*THIS NEEDS TO BE FIXED!
+
         LocationManager myManager;
         final myLocListener loc = new myLocListener();
         myManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -111,7 +113,7 @@ public class CreateItem extends AppCompatActivity {
             return;
         }
         myManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, loc);
-
+        */
 
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
