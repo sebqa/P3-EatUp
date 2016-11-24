@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CreateItem extends AppCompatActivity {
 
@@ -219,7 +220,10 @@ public class CreateItem extends AppCompatActivity {
                     int intServings = Integer.parseInt(stringNrOfServings);
                     String stringUserID = user.getUid();
                     //String stringUserName = user.getDisplayName();
-                    String currentTimeString = new SimpleDateFormat("HH:mm:ss").format(new Date());
+                    SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
+                    dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
+
+                    String currentTimeString = dateFormatGmt.format(new Date())+"";
 
                     Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString,stringItemKey);
                     foodRef.setValue(newFoodItem);

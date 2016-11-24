@@ -13,6 +13,9 @@ public class Item {
 
     public String title;
     public String creator; // Owner/Creator of an item
+
+
+
     public String description;
 
 
@@ -82,6 +85,13 @@ public class Item {
 
     public void setKey(String key) {
         this.key = key;
+    }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
     /*
     //Getters and setters for all values.
