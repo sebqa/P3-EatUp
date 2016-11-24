@@ -54,7 +54,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.creator.setText(item.getCreator());
         holder.price.setText(item.getPrice());
         holder.amount.setText(""+item.getAmount());
-        holder.distance.setText(item.getCurrentTime());
+        holder.timeStamp.setText(item.getCurrentTime());
 
 
         this.position = position;
@@ -68,7 +68,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         ImageView imageView;
 
-        TextView title,creator,price,amount,distance;
+        TextView title,creator,price,amount,distance,timeStamp;
         private View container;
         ArrayList<Item> items = new ArrayList<Item>();
         Context ctx;
@@ -86,6 +86,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             price = (TextView)view.findViewById(R.id.itemPrice);
             amount = (TextView)view.findViewById(R.id.itemAmount);
             distance = (TextView)view.findViewById(R.id.itemDistance);
+            timeStamp = (TextView)view.findViewById(R.id.timeStamp);
             container = view.findViewById(R.id.item_container);
 
 
