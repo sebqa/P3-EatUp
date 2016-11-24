@@ -12,7 +12,7 @@ import com.example.sebastian.appdrawer.R;
 
 public class ItemDetails extends AppCompatActivity {
     ImageView d_imageView;
-    TextView txTitle,txPrice,txCreator;
+    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,15 +29,23 @@ public class ItemDetails extends AppCompatActivity {
                 finish();
             }
         });
-        d_imageView = (ImageView)findViewById(R.id.d_imageView);
-        txTitle = (TextView) findViewById(R.id.txTitle);
+        d_imageView = (ImageView)findViewById(R.id.imagePlaceholderDetails);
+        txTitle = (TextView) findViewById(R.id.txTitleDetails);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
+        txDistance = (TextView) findViewById(R.id.txDistance);
+        txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
+        txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
 
         //Retrieve parsed information
         d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
         txTitle.setText(getIntent().getStringExtra("item_title"));
         txCreator.setText(getIntent().getStringExtra("item_creator"));
-        txPrice.setText(getIntent().getStringExtra("item_price"));
+        txPrice.setText(getIntent().getStringExtra("item_price") + " DKK");
+        txDistance.setText(getIntent().getStringExtra("item_distance"));
+        txServingsLeft.setText(getIntent().getStringExtra("item_servings"));
+        txDescription.setText(getIntent().getStringExtra("item_description"));
+
+
     }
 }
