@@ -9,40 +9,134 @@
     tools:showIn="@layout/activity_item_details"
     android:orientation="vertical"
     android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    >
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/txTitle"
+        android:id="@+id/scrollViewDetails"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@color/colorPrimary"
+        android:scrollbarSize="8dp"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp">
 
-        android:layout_marginBottom="19dp" />
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginTop="20dp"
+            >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageLayoutDetails">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/hjemmelavetburger"
+                        android:id="@+id/imagePlaceholderDetails"/>
+                </LinearLayout>
+
+
+            </FrameLayout>
+        </HorizontalScrollView>
+
+        <Button
+            android:text="Order"
+            android:textColor="#FFFFFF"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnOrder"
+            android:layout_gravity="end"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+        android:textStyle="bold"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txTitleDetails"
+        android:layout_marginTop="10dp"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
 
     <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
+        android:textSize="11sp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txCreator"
-
-        android:layout_below="@+id/txTitle"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/txTitleDetails"
+        android:layout_alignParentStart="true"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
 
     <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txPrice"
-
         android:layout_below="@+id/txCreator"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="18dp" />
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/d_imageView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:text="1.2 KM"
+            android:id="@+id/txDistance"
+            android:layout_below="@+id/txPrice"
+            android:layout_alignParentStart="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:padding="10dp"/>
 
+        <TextView
+            android:text="3 Servings left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txServingsLeft"
+            android:layout_below="@+id/txDistance"
+            android:layout_alignParentStart="true"
+
+            android:background="#FFFFFF"
+            android:padding="10dp"/>
+
+        <TextView
+            android:text="aksjhdfjkalshnflkjashflksjhfalkjsdkaljsdflkjashdfljhasdkfhasdlkhlkasdjhlkasdjlkajsdfhlkajsdlkajsdh   lakjshdfklajshf  akljsdfasdkfjhasdflk h aslkdjf  asdlkjfhaskdljh asdfkjhasdlkf asdf klajshf asdklfj
+            sdakjlaskldjlkasdjlkajsd asdkjfh lkasdjf
+            asdf
+            sadf"
+            android:singleLine="false"
+            android:id="@+id/txDescriptionDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:padding="10dp"/>
+
+        <TextView
+            android:text="Tags"
+            android:textColor="#616161"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvTagsDetails"
+            android:layout_marginTop="20dp"
+            android:background="#FFFFFF"
+            android:padding="10dp"/>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
