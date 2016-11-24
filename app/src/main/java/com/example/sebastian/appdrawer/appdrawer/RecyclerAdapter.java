@@ -105,7 +105,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 Intent intent = new Intent(ctx,ItemDetails.class);
 
             //Parse the information between the activities.
-            intent.putExtra("item_key",item.getPhotoId());
+            intent.putExtra("item_key",item.getKey());
 
 
             //Start the new activity.
