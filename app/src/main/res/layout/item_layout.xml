@@ -143,10 +143,24 @@
         android:textSize="12dp"
         android:textAlignment="viewEnd"
         android:singleLine="true"
+        android:paddingRight="5dp"
         android:layout_alignBaseline="@+id/distanceunit"
         android:layout_alignBottom="@+id/distanceunit"
-        android:layout_toStartOf="@+id/distanceunit"
-        android:paddingRight="5dp" />
+        android:layout_toStartOf="@+id/priceunit" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="klokkeslæt"
+        android:paddingLeft="10dp"
+        android:id="@+id/timeStamp"
+        android:textSize="12dp"
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:paddingRight="5dp"
+        android:layout_toLeftOf="@+id/itemDistance"
+        android:layout_alignBottom="@+id/distanceunit"
+        />
 
 
 </RelativeLayout>
