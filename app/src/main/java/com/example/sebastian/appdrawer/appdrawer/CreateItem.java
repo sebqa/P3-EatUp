@@ -43,7 +43,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CreateItem extends AppCompatActivity {
@@ -215,8 +218,9 @@ public class CreateItem extends AppCompatActivity {
                     int intServings = Integer.parseInt(stringNrOfServings);
                     String stringUserID = user.getUid();
                     //String stringUserName = user.getDisplayName();
+                    String currentTimeString = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings);
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString);
                     foodRef.push().setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
