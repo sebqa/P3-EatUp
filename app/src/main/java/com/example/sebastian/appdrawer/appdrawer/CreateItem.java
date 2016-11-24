@@ -210,18 +210,19 @@ public class CreateItem extends AppCompatActivity {
                     tagsList.setAdapter(adapter1);
 
                     //insert data into Firebase
-                    DatabaseReference foodRef = rootRef.child("food"); //point to food branch
+                    DatabaseReference foodRef = rootRef.child("food").push(); //point to food branch
 
                     String stringItemTitle = etTitle.getText().toString();
                     String stringItemDescription = etDescription.getText().toString();
                     String stringNrOfServings = edNrOfServings.getText().toString();
+                    String stringItemKey = foodRef.getKey();
                     int intServings = Integer.parseInt(stringNrOfServings);
                     String stringUserID = user.getUid();
                     //String stringUserName = user.getDisplayName();
                     String currentTimeString = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString);
-                    foodRef.push().setValue(newFoodItem);
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString,stringItemKey);
+                    foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(CreateItem.this, MainActivity.class));
