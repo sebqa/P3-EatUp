@@ -40,7 +40,7 @@ public class MainFragment extends Fragment {
     //String arrays are found in values/strings
     ArrayList<Item> arrayList = new ArrayList<Item>();
 
-    static boolean calledAlready = false;
+
     FloatingActionButton toTop;
 
 
@@ -61,6 +61,7 @@ public class MainFragment extends Fragment {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             calledAlready = true;
         } */
+        Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
 

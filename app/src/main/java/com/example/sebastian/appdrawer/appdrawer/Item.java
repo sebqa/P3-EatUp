@@ -14,6 +14,10 @@ public class Item {
     public String title;
     public String creator; // Owner/Creator of an item
     public String description;
+
+
+
+    public String currentTime;
     public int photoId;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
@@ -32,17 +36,19 @@ public class Item {
         this.creator = creator;
         this.price = price;
         this.amount = amount;
+
         this.photoId = photoId;
         this.distance = distance;
     }
 
     //Constructor for Firebase
-    public Item(String user, String title, String description, String cost, int amount) {
+    public Item(String user, String title, String description, String cost, int amount, String currentTime) {
         this.creator = user;
         this.title = title;
         this.description = description;
         this.price = cost;
         this.amount = amount;
+        this.currentTime = currentTime;
     }
 
 
@@ -63,7 +69,13 @@ public class Item {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+    public String getCurrentTime() {
+        return currentTime;
+    }
 
+    public void setCurrentTime(String currentTime) {
+        this.currentTime = currentTime;
+    }
     /*
     //Getters and setters for all values.
     public int getDistance() {return distance;}
