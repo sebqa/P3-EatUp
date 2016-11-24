@@ -163,12 +163,11 @@ public class MainFragment extends Fragment {
     }
     public void getUpdates(DataSnapshot dataSnapshot){
 
-        arrayList.clear();
 
         if (dataSnapshot.getChildrenCount() > 0) {
 
             Item item = dataSnapshot.getValue(Item.class);
-            arrayList.add(item);
+            arrayList.remove(item);
             adapter.notifyDataSetChanged();
 
         }

@@ -17,13 +17,12 @@ public class Item {
 
 
 
+    public String key;
     public String currentTime;
     public int photoId;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
     public int distance; // Distance from the user to the item
-
-
 
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
@@ -42,13 +41,14 @@ public class Item {
     }
 
     //Constructor for Firebase
-    public Item(String user, String title, String description, String cost, int amount, String currentTime) {
+    public Item(String user, String title, String description, String cost, int amount, String currentTime, String key) {
         this.creator = user;
         this.title = title;
         this.description = description;
         this.price = cost;
         this.amount = amount;
         this.currentTime = currentTime;
+        this.key = key;
     }
 
 
@@ -75,6 +75,13 @@ public class Item {
 
     public void setCurrentTime(String currentTime) {
         this.currentTime = currentTime;
+    }
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
     /*
     //Getters and setters for all values.
