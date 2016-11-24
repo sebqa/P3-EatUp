@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.sebastian.appdrawer.R;
@@ -101,15 +102,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             //Find out which item was clicked
             int position = getAdapterPosition();
                 Item item = this.items.get(position);
-            //Create new intent that gets us to the next activity.
-                Intent intent = new Intent(ctx,ItemDetails.class);
+            if(item != null) {
+                //Create new intent that gets us to the next activity.
+                Intent intent = new Intent(ctx, ItemDetails.class);
+                //Parse the information between the activities.
+                intent.putExtra("item_key", item.getKey());
 
-            //Parse the information between the activities.
-            intent.putExtra("item_key",item.getKey());
+                //Start the new activity.
+                this.ctx.startActivity(intent);
+            }else{
+                Toast.makeText(view.getContext(), "Item no longer exists",
+                        Toast.LENGTH_SHORT).show();
 
-
-            //Start the new activity.
-            this.ctx.startActivity(intent);
+            }
 
 
         }

@@ -101,7 +101,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        ChildEventListener childEventListener = new ChildEventListener() {
+        mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener()  {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
 
@@ -122,8 +122,8 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-
+                getUpdates(dataSnapshot);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -138,9 +138,8 @@ public class MainFragment extends Fragment {
 
             }
 
-        };
+        });
 
-        mFirebaseDatabaseReference.addChildEventListener(childEventListener);
 
         //New instance of our adapter class, which shows the arrayList.
         //That instance is tied to the recyclerView.
@@ -160,15 +159,22 @@ public class MainFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
+
     public void getUpdates(DataSnapshot dataSnapshot){
 
-        arrayList.clear();
+
 
         if (dataSnapshot.getChildrenCount() > 0) {
 
             Item item = dataSnapshot.getValue(Item.class);
-            arrayList.add(item);
-            adapter.notifyDataSetChanged();
+            arrayList.remove(item);
+
 
         }
     }

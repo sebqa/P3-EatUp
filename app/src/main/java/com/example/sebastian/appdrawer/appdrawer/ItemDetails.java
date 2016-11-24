@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.database.DataSnapshot;
@@ -53,7 +54,7 @@ public class ItemDetails extends AppCompatActivity {
         txPrice.setText(getIntent().getStringExtra("item_price") + " DKK");
         txDistance.setText(getIntent().getStringExtra("item_distance"));
         */
-        
+
         itemKey = getIntent().getStringExtra("item_key");
 
         Utils.getDatabase();
@@ -63,13 +64,19 @@ public class ItemDetails extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+
                 Item item = dataSnapshot.getValue(Item.class);
-                txDescription.setText(item.getDescription());
-                txTitle.setText(item.getTitle());
-                txPrice.setText(item.getPrice());
+                if(item != null) {
+                    txDescription.setText(item.getDescription());
+                    txTitle.setText(item.getTitle());
+                    txPrice.setText(item.getPrice());
 
 
-
+                } else{
+                    Toast.makeText(ItemDetails.this, "Item no longer exists",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
             }
 
             @Override
