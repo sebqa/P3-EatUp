@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 
 import com.example.sebastian.appdrawer.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -49,7 +50,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         //Attach the values we retrieve from the Item class to the values.
         Item item = arrayList.get(position);
-        holder.imageView.setImageResource(item.getPhotoId());
+        Picasso.with(holder.ctx)
+                .load(item.getDownloadUrl())
+                .centerInside()
+                .resize(50,50)
+                .rotate(90)
+                .into(holder.imageView);
         holder.title.setText(item.getTitle());
         holder.creator.setText(item.getCreator());
         holder.price.setText(item.getPrice());

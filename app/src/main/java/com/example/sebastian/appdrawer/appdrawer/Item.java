@@ -1,5 +1,7 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.net.Uri;
+
 import com.example.sebastian.appdrawer.R;
 
 import java.util.ArrayList;
@@ -22,11 +24,13 @@ public class Item {
 
     public String key;
     public String currentTime;
-    public int photoId;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
     public int distance; // Distance from the user to the item
 
+
+
+    public String downloadUrl;
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
 
@@ -39,12 +43,11 @@ public class Item {
         this.price = price;
         this.amount = amount;
 
-        this.photoId = photoId;
         this.distance = distance;
     }
 
     //Constructor for Firebase
-    public Item(String user, String title, String description, String cost, int amount, String currentTime, String key) {
+    public Item(String user, String title, String description, String cost, int amount, String currentTime, String key, String downloadUrl) {
         this.creator = user;
         this.title = title;
         this.description = description;
@@ -52,6 +55,7 @@ public class Item {
         this.amount = amount;
         this.currentTime = currentTime;
         this.key = key;
+        this.downloadUrl = downloadUrl;
     }
 
 
@@ -61,7 +65,6 @@ public class Item {
     public String getCreator() {
         return creator;
     }
-    public int getPhotoId() { return photoId; }
     public String getPrice() {
         return price;
     }
@@ -89,9 +92,15 @@ public class Item {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
+    }
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
     /*
     //Getters and setters for all values.
