@@ -17,7 +17,7 @@
             android:id="@+id/recyclerView"
             android:scrollbars="vertical"
             android:scrollbarThumbVertical="@color/colorPrimary"
-            android:scrollbarSize="8dp"
+            android:scrollbarSize="4dp"
             android:divider="@color/colorPrimary"
             android:dividerHeight="10dp"
             >

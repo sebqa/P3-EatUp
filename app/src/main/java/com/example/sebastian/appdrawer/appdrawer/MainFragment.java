@@ -107,9 +107,11 @@ public class MainFragment extends Fragment {
 
                 //Load items, and constructs instances of the Item class with them
                 Item item = dataSnapshot.getValue(Item.class);
-                //Add those instances to the arrayList shown in the Recyclerview, and make sure it's
+                //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
                 //at the top.
+
                 arrayList.add(0,item);
+
                 adapter.notifyDataSetChanged();
 
                 // ...

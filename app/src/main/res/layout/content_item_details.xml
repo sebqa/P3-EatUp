@@ -27,30 +27,12 @@
         android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:layout_marginTop="20dp"
-            >
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageLayoutDetails">
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/hjemmelavetburger"
                         android:id="@+id/imagePlaceholderDetails"/>
-                </LinearLayout>
 
-
-            </FrameLayout>
-        </HorizontalScrollView>
 
         <Button
             android:text="Order"

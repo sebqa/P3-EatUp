@@ -4,6 +4,7 @@ import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 
 public class ItemDetails extends AppCompatActivity {
@@ -23,6 +25,7 @@ public class ItemDetails extends AppCompatActivity {
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey;
+    String itemImageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,11 @@ public class ItemDetails extends AppCompatActivity {
 
         itemKey = getIntent().getStringExtra("item_key");
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int height = metrics.heightPixels;
+        final int width = metrics.widthPixels;
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
@@ -64,12 +72,18 @@ public class ItemDetails extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
                 Item item = dataSnapshot.getValue(Item.class);
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice());
+                    Picasso.with(ItemDetails.this)
+                            .load(item.getDownloadUrl())
+                            .centerCrop()
+                            .resize(width,width)
+                            .rotate(90)
+                            .placeholder(R.drawable.placeholder)
+                            .into(d_imageView);
 
 
                 } else{

@@ -1,12 +1,19 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -38,17 +45,33 @@ import android.view.KeyEvent;
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.kosalgeek.android.photoutil.CameraPhoto;
+import com.kosalgeek.android.photoutil.ImageBase64;
+import com.kosalgeek.android.photoutil.ImageLoader;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 
 public class CreateItem extends AppCompatActivity {
 
@@ -61,9 +84,10 @@ public class CreateItem extends AppCompatActivity {
     HorizontalScrollView imageScroll;
     EditText itemTag, etDescription;
     ScrollView scrollView;
-    Button addItemBtn;
+    Button addItemBtn,addPhotoBtn;
     int iCounter = 0;
     int tagCounter;
+    Bitmap bitmap;
     TextView imageCounter;
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
@@ -71,7 +95,13 @@ public class CreateItem extends AppCompatActivity {
     TextView tvServings, tvLocation, tvPrice;
     EditText edNrOfServings, etTitle;
     int maxLength = 13;
+    public String downloadUrl, stringUserID;
+    CameraPhoto cameraPhoto;
+
     SwitchCompat swLocation, swPrice;
+    public static final int CAMERA_REQUEST_CODE = 1;
+    private StorageReference mStorage;
+    private ProgressDialog mProgress;
 
     private FirebaseAuth mAuth;
 
@@ -85,7 +115,6 @@ public class CreateItem extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //ui elements
-        imageCounter = (TextView) findViewById(R.id.imageCounter);
         tagsList = (ListView) findViewById(R.id.listView);
         imagePlaceholder = (ImageView) findViewById(R.id.imagePlaceholder);
         tvServings = (TextView) findViewById(R.id.servings);
@@ -99,7 +128,12 @@ public class CreateItem extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
 
+        mProgress = new ProgressDialog(this);
+
+        final MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
+
         mAuth = FirebaseAuth.getInstance();
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         /*THIS NEEDS TO BE FIXED!
 
@@ -119,6 +153,32 @@ public class CreateItem extends AppCompatActivity {
         myManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, loc);
         */
 
+        addPhotoBtn = (Button)findViewById(R.id.btnAddPhoto);
+
+        addPhotoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!marshMallowPermission.checkPermissionForCamera()) {
+                    marshMallowPermission.requestPermissionForCamera();
+                } else {
+                    if (!marshMallowPermission.checkPermissionForExternalStorage()) {
+                        marshMallowPermission.requestPermissionForExternalStorage();
+                    } else {
+                        cameraPhoto = new CameraPhoto(getApplicationContext());
+
+                        //call it to open the camera
+                        try {
+                            startActivityForResult(cameraPhoto.takePhotoIntent(), CAMERA_REQUEST_CODE);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+
+
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         // OnClickListener for servings textview
@@ -135,7 +195,7 @@ public class CreateItem extends AppCompatActivity {
 
         // Added tagsArea as LinearLayout view
 
-        final LinearLayout imageLayout = (LinearLayout)findViewById(R.id.imageLayout);
+        /*final LinearLayout imageLayout = (LinearLayout)findViewById(R.id.imageLayout);
         imageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,6 +211,7 @@ public class CreateItem extends AppCompatActivity {
             }
 
         });
+        */
 
 
         itemTag.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
@@ -218,14 +279,14 @@ public class CreateItem extends AppCompatActivity {
                     String stringNrOfServings = edNrOfServings.getText().toString();
                     String stringItemKey = foodRef.getKey();
                     int intServings = Integer.parseInt(stringNrOfServings);
-                    String stringUserID = user.getUid();
+                    stringUserID = user.getUid();
                     //String stringUserName = user.getDisplayName();
                     SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
                     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
 
                     String currentTimeString = dateFormatGmt.format(new Date())+"";
 
-                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString,stringItemKey);
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString,stringItemKey,downloadUrl);
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
@@ -236,6 +297,59 @@ public class CreateItem extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+            String photoPath = cameraPhoto.getPhotoPath();
+            try {
+
+                bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
+                imagePlaceholder.setImageBitmap(bitmap);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] byteData = baos.toByteArray();
+
+                UploadTask uploadTask = filepath.putBytes(byteData);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    }
+                });
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+
+            mProgress.setMessage("Uploading Image....");
+
+
+
+
+
+           /* StorageReference filepath = mStorage.child(uri.getLastPathSegment());
+
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(CreateItem.this,"Uploaded...",Toast.LENGTH_LONG).show();
+                    downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    mProgress.dismiss();
+                }
+            });*/
+        }
+    }
+
 
     public void addTag(){
 
@@ -280,4 +394,5 @@ public class CreateItem extends AppCompatActivity {
             }
         });
     }
+
 }

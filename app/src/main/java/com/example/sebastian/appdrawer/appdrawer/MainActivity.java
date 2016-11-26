@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Utils.getDatabase();
 
         //Set theme to the one that shows splash screen before the super.onCreate
         setTheme(R.style.AppTheme_NoActionBar);
