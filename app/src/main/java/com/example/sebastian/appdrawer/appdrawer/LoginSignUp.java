@@ -32,6 +32,7 @@ public class LoginSignUp extends AppCompatActivity {
         setContentView(R.layout.activity_login_sign_up);
 
         setTheme(R.style.AppTheme);
+        Utils.getDatabase();
 
         //Initialize UI elements
         buttonBrowse = (Button)findViewById(R.id.buttonBrowse);
