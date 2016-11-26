@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 
 public class ItemDetails extends AppCompatActivity {
@@ -23,6 +24,7 @@ public class ItemDetails extends AppCompatActivity {
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey;
+    String itemImageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,12 @@ public class ItemDetails extends AppCompatActivity {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice());
+                    Picasso.with(ItemDetails.this)
+                            .load(item.getDownloadUrl())
+
+                            .rotate(90)
+                            .placeholder(R.drawable.placeholder)
+                            .into(d_imageView);
 
 
                 } else{

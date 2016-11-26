@@ -52,9 +52,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         Item item = arrayList.get(position);
         Picasso.with(holder.ctx)
                 .load(item.getDownloadUrl())
-                .centerInside()
-                .resize(50,50)
+                .resize(90,90)
+                .centerCrop()
                 .rotate(90)
+                .placeholder(R.drawable.placeholder)
                 .into(holder.imageView);
         holder.title.setText(item.getTitle());
         holder.creator.setText(item.getCreator());

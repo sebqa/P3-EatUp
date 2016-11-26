@@ -55,14 +55,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.kosalgeek.android.photoutil.CameraPhoto;
+import com.kosalgeek.android.photoutil.ImageBase64;
+import com.kosalgeek.android.photoutil.ImageLoader;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -82,6 +87,7 @@ public class CreateItem extends AppCompatActivity {
     Button addItemBtn,addPhotoBtn;
     int iCounter = 0;
     int tagCounter;
+    Bitmap bitmap;
     TextView imageCounter;
     List<String> tags = new ArrayList<String>();
     ListView tagsList;
@@ -89,7 +95,8 @@ public class CreateItem extends AppCompatActivity {
     TextView tvServings, tvLocation, tvPrice;
     EditText edNrOfServings, etTitle;
     int maxLength = 13;
-    public String downloadUrl;
+    public String downloadUrl, stringUserID;
+    CameraPhoto cameraPhoto;
 
     SwitchCompat swLocation, swPrice;
     public static final int CAMERA_REQUEST_CODE = 1;
@@ -157,8 +164,14 @@ public class CreateItem extends AppCompatActivity {
                     if (!marshMallowPermission.checkPermissionForExternalStorage()) {
                         marshMallowPermission.requestPermissionForExternalStorage();
                     } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                        cameraPhoto = new CameraPhoto(getApplicationContext());
+
+                        //call it to open the camera
+                        try {
+                            startActivityForResult(cameraPhoto.takePhotoIntent(), CAMERA_REQUEST_CODE);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -266,7 +279,7 @@ public class CreateItem extends AppCompatActivity {
                     String stringNrOfServings = edNrOfServings.getText().toString();
                     String stringItemKey = foodRef.getKey();
                     int intServings = Integer.parseInt(stringNrOfServings);
-                    String stringUserID = user.getUid();
+                    stringUserID = user.getUid();
                     //String stringUserName = user.getDisplayName();
                     SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
                     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
@@ -290,18 +303,41 @@ public class CreateItem extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
-            Uri uri = data.getData();
+            String photoPath = cameraPhoto.getPhotoPath();
+            try {
 
+                bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
+                imagePlaceholder.setImageBitmap(bitmap);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] byteData = baos.toByteArray();
 
-            Picasso.with(CreateItem.this)
-                    .load(uri)
-                    .resize(300,300)
-                    .centerInside()
-                    .into(imagePlaceholder);
+                UploadTask uploadTask = filepath.putBytes(byteData);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    }
+                });
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
 
             mProgress.setMessage("Uploading Image....");
 
-            StorageReference filepath = mStorage.child(uri.getLastPathSegment());
+
+
+
+
+           /* StorageReference filepath = mStorage.child(uri.getLastPathSegment());
 
             filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -310,7 +346,7 @@ public class CreateItem extends AppCompatActivity {
                     downloadUrl = taskSnapshot.getDownloadUrl().toString();
                     mProgress.dismiss();
                 }
-            });
+            });*/
         }
     }
 
