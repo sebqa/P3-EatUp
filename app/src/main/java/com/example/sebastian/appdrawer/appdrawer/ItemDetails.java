@@ -4,6 +4,7 @@ import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,13 +60,17 @@ public class ItemDetails extends AppCompatActivity {
 
         itemKey = getIntent().getStringExtra("item_key");
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int height = metrics.heightPixels;
+        final int width = metrics.widthPixels;
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
         mFirebaseDatabaseReference.child(itemKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
 
                 Item item = dataSnapshot.getValue(Item.class);
                 if(item != null) {
@@ -74,7 +79,8 @@ public class ItemDetails extends AppCompatActivity {
                     txPrice.setText(item.getPrice());
                     Picasso.with(ItemDetails.this)
                             .load(item.getDownloadUrl())
-
+                            .centerCrop()
+                            .resize(width,width)
                             .rotate(90)
                             .placeholder(R.drawable.placeholder)
                             .into(d_imageView);

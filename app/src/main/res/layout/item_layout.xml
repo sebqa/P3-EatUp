@@ -51,7 +51,7 @@
 
     />
 
-    <ImageView
+    <!--<ImageView
         android:layout_width="50dp"
         android:id="@+id/ribbon"
         android:padding="8dp"
@@ -61,7 +61,7 @@
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_alignEnd="@+id/img" />
-
+-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
