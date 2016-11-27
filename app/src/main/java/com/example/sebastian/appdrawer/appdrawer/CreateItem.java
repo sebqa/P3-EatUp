@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +18,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -44,7 +48,11 @@ import android.view.KeyEvent;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,12 +81,14 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
-public class CreateItem extends AppCompatActivity {
+public class CreateItem extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     //Firebase connection and references
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
 
+    private static final String TAG = "CreateItem";
 
     LinearLayout imageLayout;
     HorizontalScrollView imageScroll;
@@ -104,6 +114,15 @@ public class CreateItem extends AppCompatActivity {
     private ProgressDialog mProgress;
 
     private FirebaseAuth mAuth;
+
+    //Location
+    public GoogleApiClient mGoogleApiClient;
+    public LocationRequest mLocationRequest;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private final int MY_PERMISSIONS = 100;
+    public Location mLastLocation; //Location of the client
+    double mLatitude; //Client latitude coordinate
+    double mLongitude; //Client longitude coordinate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,24 +154,6 @@ public class CreateItem extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mStorage = FirebaseStorage.getInstance().getReference();
 
-        /*THIS NEEDS TO BE FIXED!
-
-        LocationManager myManager;
-        final myLocListener loc = new myLocListener();
-        myManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        myManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, loc);
-        */
-
         addPhotoBtn = (Button)findViewById(R.id.btnAddPhoto);
 
         addPhotoBtn.setOnClickListener(new View.OnClickListener() {
@@ -176,9 +177,6 @@ public class CreateItem extends AppCompatActivity {
                 }
             }
         });
-
-
-
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         // OnClickListener for servings textview
@@ -213,7 +211,6 @@ public class CreateItem extends AppCompatActivity {
         });
         */
 
-
         itemTag.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
         //Exit button
@@ -223,7 +220,6 @@ public class CreateItem extends AppCompatActivity {
                 finish();
             }
         });
-
 
         itemTag.setOnKeyListener(new View.OnKeyListener()
         {
@@ -244,6 +240,7 @@ public class CreateItem extends AppCompatActivity {
                 return false;
             }
         });
+
         itemTag.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -253,6 +250,51 @@ public class CreateItem extends AppCompatActivity {
             }
         });
 
+        // ---- Location of the item creator ---- //
+
+        //Check for location permission
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == 0) {
+            Log.i(TAG, "TEST MESSAGE: Location permission has been granted.");
+        } else if (permissionCheck == -1) {
+            Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted.");
+        }
+
+        // If permission has not been granted, ask for permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS);
+            //When the user responds to the request, onRequestPermissionsResult() is invoked.
+        }
+
+        //If permission has already been granted, create an instance of GoogleAPIClient
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            if (mGoogleApiClient == null) { //check if there already exists one
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+
+                Log.i(TAG, "TEST MESSAGE: Google API Client instance created.");
+
+                // Create the LocationRequest object
+                mLocationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                        .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+            }
+        }
+
+        // ---- On click listener for the 'add item' button ---- //
 
         addItemBtn = (Button) findViewById(R.id.btnAddItem);
         addItemBtn.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +328,9 @@ public class CreateItem extends AppCompatActivity {
 
                     String currentTimeString = dateFormatGmt.format(new Date())+"";
 
-                    Item newFoodItem = new Item(stringUserID, stringItemTitle, stringItemDescription, "10", intServings,currentTimeString,stringItemKey,downloadUrl);
+                    Item newFoodItem = new Item(stringUserID, stringItemTitle,
+                            stringItemDescription, "10", intServings,currentTimeString,
+                            stringItemKey,downloadUrl,mLatitude,mLongitude);
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
@@ -296,6 +340,45 @@ public class CreateItem extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
+        }
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+                mGoogleApiClient.disconnect();
+            }
+        }
     }
 
     @Override
@@ -394,5 +477,119 @@ public class CreateItem extends AppCompatActivity {
             }
         });
     }
+
+
+    // ---- LOCATION METHODS START ---- //
+
+    // Handle answer to the location permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        //--- Handle the user response to the permission request --//
+        if (requestCode == MY_PERMISSIONS) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // Check for location permission
+                int permissionCheck = ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionCheck == 0) {
+                    Log.i(TAG, "TEST MESSAGE: Location permission has been granted after request.");
+                } else if (permissionCheck == -1) {
+                    Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted after request.");
+                }
+
+                // permission was granted, yay! Do the
+                // contacts-related task you need to do.
+
+                // Create an instance of GoogleAPIClient.
+                if (mGoogleApiClient == null) { //check if there already exists one
+                    mGoogleApiClient = new GoogleApiClient.Builder(this)
+                            .addConnectionCallbacks(this)
+                            .addOnConnectionFailedListener(this)
+                            .addApi(LocationServices.API)
+                            .build();
+
+                    Log.i(TAG, "TEST MESSAGE: Google API Client instance created.");
+                }
+
+                // Create the LocationRequest object
+                mLocationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                        .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+
+            } else {
+
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return;
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    //Location
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        try {
+            // Check for location permission
+            int permissionCheck = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+
+            //Fetch client's location coordinates
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.i(TAG, "TEST MESSAGE: Location services connected.");
+
+            if (mLastLocation == null || permissionCheck == -1) {
+                mLatitude = 0.0;
+                mLongitude = 0.0;
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            } else {
+                mLatitude = mLastLocation.getLatitude();
+                mLongitude = mLastLocation.getLongitude();
+                Log.i(TAG, "Client latitude: " + mLatitude); //debugging
+                Log.i(TAG, "Client longitude: " + mLongitude); //debugging
+            }
+
+        } catch (SecurityException ex) {
+            //handler
+        }
+
+    }
+
+    //Location
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Location services suspended. Please reconnect.");
+    }
+
+    //Location
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+    }
+
+    //Location
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.i(TAG, "Location changed");
+    }
+
+    // ----- LOCATION METHODS END ----- //
 
 }
