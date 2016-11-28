@@ -61,8 +61,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.price.setText(item.getPrice());
         holder.amount.setText(""+item.getAmount());
         holder.timeStamp.setText(item.getCurrentTime());
-
+        //Calculate distance between the two points
         haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
+        //Reduce decimals for listview
         int temp = (int)(haverdistanceKM*100.0);
         double shortDouble = ((double)temp)/100.0;
         holder.distance.setText(Double.toString(shortDouble));
@@ -70,6 +71,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         this.position = position;
     }
+
     public void haversine(double lat1, double lon1, double lat2, double lon2) {
         double Rad = 6372.8; //Earth's Radius In kilometers
         // TODO Auto-generated method stub
