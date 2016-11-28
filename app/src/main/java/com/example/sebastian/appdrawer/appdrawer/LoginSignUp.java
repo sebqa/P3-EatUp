@@ -14,16 +14,18 @@ import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginSignUp extends AppCompatActivity {
+public class LoginSignUp extends AppCompatActivity{
 
     //UI elements
     Button buttonBrowse;
     Button buttonSignIn;
     TextView textSignUp;
 
+    //Firebase authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    //Log entries tag for debugging
     private static final String TAG = "LoginSignUp";
 
     @Override
@@ -46,8 +48,6 @@ public class LoginSignUp extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginSignUp.this, MainActivity.class);
-                intent.putExtra("isLoggedIn", false);
-                intent.putExtra("userEmail", "Not logged in");
                 startActivity(intent);
                 finish();
             }
@@ -91,7 +91,6 @@ public class LoginSignUp extends AppCompatActivity {
                 }
             }
         };
-
     }
 
     //These two methods checks whether the user is already signed in
@@ -99,6 +98,19 @@ public class LoginSignUp extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAuth.addAuthStateListener(mAuthListener);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -108,7 +120,5 @@ public class LoginSignUp extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
-
 
 }
