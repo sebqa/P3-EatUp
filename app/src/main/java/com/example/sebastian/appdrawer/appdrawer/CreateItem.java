@@ -153,7 +153,7 @@ public class CreateItem extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
         mStorage = FirebaseStorage.getInstance().getReference();
-
+        imagePlaceholder.setRotation(90);
         addPhotoBtn = (Button)findViewById(R.id.btnAddPhoto);
 
         addPhotoBtn.setOnClickListener(new View.OnClickListener() {
