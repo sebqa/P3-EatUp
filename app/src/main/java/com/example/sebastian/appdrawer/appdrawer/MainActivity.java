@@ -1,14 +1,20 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ViewDragHelper;
@@ -26,6 +32,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,16 +45,26 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     Menu menu;
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "MainActivity";
     FloatingActionButton fab;
     Button signOutBtn;
     Button signInBtn;
     TextView tvEmail,tvUsername;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    //Location
+    public GoogleApiClient mGoogleApiClient;
+    public LocationRequest mLocationRequest;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private final int MY_PERMISSIONS = 100;
+    public Location mLastLocation; //Location of the client
+    double mLatitude; //Client latitude coordinate
+    double mLongitude; //Client longitude coordinate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +146,48 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // Check for location permission
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == 0) {
+            Log.i(TAG, "TEST MESSAGE: Location permission has been granted.");
+        } else if (permissionCheck == -1) {
+            Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted.");
+        }
+
+        // If permission has not been granted, ask for permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS);
+            //When the user responds to the request, onRequestPermissionsResult() is invoked.
+        }
+
+        //If permission has already been granted, create an instance of GoogleAPIClient
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            if (mGoogleApiClient == null) { //check if there already exists one
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+
+                Log.i(TAG, "TEST MESSAGE: Google API Client instance created.");
+
+                // Create the LocationRequest object
+                mLocationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                        .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+            }
+        }
+
         //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
         fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
@@ -137,8 +200,6 @@ public class MainActivity extends AppCompatActivity
                     startActivity(new Intent(MainActivity.this,CreateItem.class));
             }
         });
-
-
     }
 
 
@@ -185,12 +246,7 @@ public class MainActivity extends AppCompatActivity
 
     }private void onNoClick() {
 
-
     }
-
-
-
-
 
     //Initialize the menu layout
     @Override
@@ -293,13 +349,36 @@ public class MainActivity extends AppCompatActivity
             signInBtn.setVisibility(View.VISIBLE);
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        mAuth.addAuthStateListener(mAuthListener);
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
 
     }
     // [END on_start_add_listener]
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
+        }
+    }
 
     // [START on_stop_remove_listener]
     @Override
@@ -308,7 +387,14 @@ public class MainActivity extends AppCompatActivity
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+                mGoogleApiClient.disconnect();
+            }
+        }
     }
+
     public static void setDrawerLeftEdgeSize(Activity activity, DrawerLayout drawerLayout, float displayWidthPercentage) {
         if (activity == null || drawerLayout == null)
             return;
@@ -333,5 +419,114 @@ public class MainActivity extends AppCompatActivity
         } catch (IllegalAccessException e) {
             // ignore
         }
+    }
+
+    // Handle answer to the location permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        //--- Handle the user response to the permission request --//
+        if (requestCode == MY_PERMISSIONS) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // Check for location permission
+                int permissionCheck = ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionCheck == 0) {
+                    Log.i(TAG, "TEST MESSAGE: Location permission has been granted after request.");
+                } else if (permissionCheck == -1) {
+                    Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted after request.");
+                }
+
+                // permission was granted, yay! Do the
+                // contacts-related task you need to do.
+
+                // Create an instance of GoogleAPIClient.
+                if (mGoogleApiClient == null) { //check if there already exists one
+                    mGoogleApiClient = new GoogleApiClient.Builder(this)
+                            .addConnectionCallbacks(this)
+                            .addOnConnectionFailedListener(this)
+                            .addApi(LocationServices.API)
+                            .build();
+
+                    Log.i(TAG, "TEST MESSAGE: Google API Client instance created.");
+                }
+
+                // Create the LocationRequest object
+                mLocationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                        .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+
+            } else {
+
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return;
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    //Location
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        try {
+            // Check for location permission
+            int permissionCheck = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+
+            //Fetch client's location coordinates
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.i(TAG, "TEST MESSAGE: Location services connected.");
+
+            if (mLastLocation == null || permissionCheck == -1) {
+                mLatitude = 0.0;
+                mLongitude = 0.0;
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            } else {
+                mLatitude = mLastLocation.getLatitude();
+                mLongitude = mLastLocation.getLongitude();
+                Log.i(TAG, "Client latitude: " + mLatitude); //debugging
+                Log.i(TAG, "Client longitude: " + mLongitude); //debugging
+            }
+
+        } catch (SecurityException ex) {
+            //handler
+        }
+
+    }
+
+    //Location
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Location services suspended. Please reconnect.");
+    }
+
+    //Location
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+    }
+
+    //Location
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.i(TAG, "Location changed");
     }
 }

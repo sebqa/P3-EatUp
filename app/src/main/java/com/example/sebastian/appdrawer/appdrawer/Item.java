@@ -15,24 +15,17 @@ public class Item {
 
     public String title;
     public String creator; // Owner/Creator of an item
-
-
-
     public String description;
-
-
-
     public String key;
     public String currentTime;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
     public int distance; // Distance from the user to the item
-
-
-
     public String downloadUrl;
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
+    public double latitude; // Latitude position of the item when it was created
+    public double longitude; // Longitude position of the item when it was created
 
     public Item() {} // Empty constructor, required for Firebase
 
@@ -47,7 +40,9 @@ public class Item {
     }
 
     //Constructor for Firebase
-    public Item(String user, String title, String description, String cost, int amount, String currentTime, String key, String downloadUrl) {
+    public Item(String user, String title, String description, String cost, int amount,
+                String currentTime, String key, String downloadUrl,
+                double latitude, double longitude) {
         this.creator = user;
         this.title = title;
         this.description = description;
@@ -56,6 +51,8 @@ public class Item {
         this.currentTime = currentTime;
         this.key = key;
         this.downloadUrl = downloadUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 
