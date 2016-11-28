@@ -36,6 +36,7 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        Utils.getDatabase();
 
         //Initialize UI elements
         editEmail = (EditText) findViewById(R.id.editEmail);

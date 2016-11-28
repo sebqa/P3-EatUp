@@ -315,7 +315,7 @@ public class CreateItem extends AppCompatActivity implements
 
                     //insert data into Firebase
                     DatabaseReference foodRef = rootRef.child("food").push(); //point to food branch
-
+                    edNrOfServings.setText("1");
                     String stringItemTitle = etTitle.getText().toString();
                     String stringItemDescription = etDescription.getText().toString();
                     String stringNrOfServings = edNrOfServings.getText().toString();
