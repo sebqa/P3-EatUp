@@ -20,11 +20,14 @@ public class Item {
     public String currentTime;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
-    public int distance; // Distance from the user to the item
+    public double distance; // Distance from the user to the item
     public String downloadUrl;
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
     public double latitude; // Latitude position of the item when it was created
+
+
+
     public double longitude; // Longitude position of the item when it was created
 
     public Item() {} // Empty constructor, required for Firebase
@@ -99,12 +102,29 @@ public class Item {
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
     }
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getDistance() {return distance;}
+
+    public void setDistance(double distance) {this.distance = distance;}
+
+
     /*
     //Getters and setters for all values.
-    public int getDistance() {return distance;}
-
-    public void setDistance(int distance) {this.distance = distance;}
-
 
     public void setTitle(String title) {
         this.title = title;

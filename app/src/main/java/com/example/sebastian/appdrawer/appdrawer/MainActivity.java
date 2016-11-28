@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private final int MY_PERMISSIONS = 100;
     public Location mLastLocation; //Location of the client
-    double mLatitude; //Client latitude coordinate
-    double mLongitude; //Client longitude coordinate
+    public static double mLatitude; //Client latitude coordinate
+    public static double mLongitude; //Client longitude coordinate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

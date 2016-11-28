@@ -2,6 +2,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -39,7 +40,6 @@ public class MainFragment extends Fragment {
     //Arrays to draw dummy data from.(Here we would use data from the database).
     //String arrays are found in values/strings
     ArrayList<Item> arrayList = new ArrayList<Item>();
-
 
     FloatingActionButton toTop;
 
@@ -111,7 +111,6 @@ public class MainFragment extends Fragment {
                 //at the top.
 
                 arrayList.add(0,item);
-
                 adapter.notifyDataSetChanged();
 
                 // ...
@@ -178,7 +177,9 @@ public class MainFragment extends Fragment {
             arrayList.remove(item);
 
 
+
         }
+
     }
 
 }

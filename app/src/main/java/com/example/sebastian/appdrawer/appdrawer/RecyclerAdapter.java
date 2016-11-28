@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
     int position;
-
+    double haverdistanceKM;
     private ArrayList<Item> arrayList = new ArrayList<Item>();
 
     Context ctx;
@@ -62,8 +62,25 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.amount.setText(""+item.getAmount());
         holder.timeStamp.setText(item.getCurrentTime());
 
+        haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
+        int temp = (int)(haverdistanceKM*100.0);
+        double shortDouble = ((double)temp)/100.0;
+        holder.distance.setText(Double.toString(shortDouble));
+
 
         this.position = position;
+    }
+    public void haversine(double lat1, double lon1, double lat2, double lon2) {
+        double Rad = 6372.8; //Earth's Radius In kilometers
+        // TODO Auto-generated method stub
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        haverdistanceKM = Rad * c;
+
     }
     @Override
     public int getItemCount() {
