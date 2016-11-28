@@ -393,7 +393,7 @@ public class CreateItem extends AppCompatActivity implements
                 StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
                 imagePlaceholder.setImageBitmap(bitmap);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 80, baos);
                 byte[] byteData = baos.toByteArray();
 
                 UploadTask uploadTask = filepath.putBytes(byteData);

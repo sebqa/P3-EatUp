@@ -54,7 +54,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 .load(item.getDownloadUrl())
                 .resize(90,90)
                 .centerCrop()
-                .rotate(90)
                 .placeholder(R.drawable.placeholder)
                 .into(holder.imageView);
         holder.title.setText(item.getTitle());
