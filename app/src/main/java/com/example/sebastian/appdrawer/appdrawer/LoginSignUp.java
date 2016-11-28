@@ -32,6 +32,7 @@ public class LoginSignUp extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_sign_up);
+        Utils.getDatabase();
 
         setTheme(R.style.AppTheme);
 
