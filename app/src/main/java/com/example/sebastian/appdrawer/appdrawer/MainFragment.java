@@ -109,6 +109,9 @@ public class MainFragment extends Fragment {
                 Item item = dataSnapshot.getValue(Item.class);
                 //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
                 //at the top.
+                if(item.getDownloadUrl() == null){
+                    item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                }
 
                 arrayList.add(0,item);
                 adapter.notifyDataSetChanged();

@@ -77,13 +77,17 @@ public class ItemDetails extends AppCompatActivity {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice());
+                    if(item.getDownloadUrl() == null){
+                        item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                    }
                     Picasso.with(ItemDetails.this)
                             .load(item.getDownloadUrl())
                             .centerCrop()
                             .resize(width,width)
-                            .rotate(90)
-                            .placeholder(R.drawable.placeholder)
+                            .error(R.drawable.placeholder)
+                            .placeholder(R.drawable.progress_animation )
                             .into(d_imageView);
+
 
 
                 } else{
