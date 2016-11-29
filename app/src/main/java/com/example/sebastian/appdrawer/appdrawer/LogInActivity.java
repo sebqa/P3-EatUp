@@ -98,8 +98,6 @@ public class LogInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                             Toast.makeText(LogInActivity.this, "Login successful",
                                     Toast.LENGTH_SHORT).show();
-
-                            finish();
                         }
 
                         // If sign in fails, display a message to the user. If sign in succeeds
