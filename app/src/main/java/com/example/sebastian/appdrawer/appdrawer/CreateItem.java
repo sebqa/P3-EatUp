@@ -105,7 +105,7 @@ public class CreateItem extends AppCompatActivity implements
     TextView tvServings, tvLocation, tvPrice;
     EditText edNrOfServings, etTitle;
     int maxLength = 13;
-    public String downloadUrl, stringUserID;
+    public String downloadUrl, stringUser;
     CameraPhoto cameraPhoto;
 
     SwitchCompat swLocation, swPrice;
@@ -321,16 +321,19 @@ public class CreateItem extends AppCompatActivity implements
                     String stringNrOfServings = edNrOfServings.getText().toString();
                     String stringItemKey = foodRef.getKey();
                     int intServings = Integer.parseInt(stringNrOfServings);
-                    stringUserID = user.getUid();
+
+                    stringUser = getIntent().getStringExtra("username");
+                    String userID = user.getUid();
+
                     //String stringUserName = user.getDisplayName();
                     SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
                     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
 
                     String currentTimeString = dateFormatGmt.format(new Date())+"";
 
-                    Item newFoodItem = new Item(stringUserID, stringItemTitle,
+                    Item newFoodItem = new Item(stringUser, stringItemTitle,
                             stringItemDescription, "10", intServings,currentTimeString,
-                            stringItemKey,downloadUrl,mLatitude,mLongitude);
+                            stringItemKey,downloadUrl,mLatitude,mLongitude,userID);
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();

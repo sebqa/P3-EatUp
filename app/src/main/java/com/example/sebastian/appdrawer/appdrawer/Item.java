@@ -17,6 +17,8 @@ public class Item {
     public String creator; // Owner/Creator of an item
     public String description;
     public String key;
+    public String username;
+    public String userID;
     public String currentTime;
     public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
@@ -45,7 +47,7 @@ public class Item {
     //Constructor for Firebase
     public Item(String user, String title, String description, String cost, int amount,
                 String currentTime, String key, String downloadUrl,
-                double latitude, double longitude) {
+                double latitude, double longitude, String userID) {
         this.creator = user;
         this.title = title;
         this.description = description;
@@ -56,6 +58,7 @@ public class Item {
         this.downloadUrl = downloadUrl;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.userID = userID;
     }
 
 
@@ -122,19 +125,25 @@ public class Item {
 
     public void setDistance(double distance) {this.distance = distance;}
 
-
-    /*
-    //Getters and setters for all values.
-
     public void setTitle(String title) {
         this.title = title;
     }
+    public String getUsername() {
+        return username;
+    }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
 
     public void setCreator(String creator) {
         this.creator = creator;
     }
+    /*
+    //Getters and setters for all values.
+
+
 
 
 

@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /*****************************
 
@@ -34,10 +36,10 @@ public class CreateAccountActivity extends AppCompatActivity {
     private static final String TAG = "CreateAccountActivity"; //Identifier for log entries
     private FirebaseAuth mAuth; //Variable to be used as reference to the authentication instance of Firebase
     private FirebaseAuth.AuthStateListener mAuthListener; //Variable to be used as authentication state listener (tracks login/logout status)
-
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference rootRef = database.getReference();
     //Define UI elements
-    EditText editTextEmail;
-    EditText editTextPassword;
+    EditText editTextEmail,editTextPassword,etFirstName,etLastName;
     Button buttonSignup;
     //String userEmail;
 
@@ -49,6 +51,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         //Initialize UI elements
         editTextEmail = (EditText)findViewById(R.id.editEmail);
         editTextPassword = (EditText)findViewById(R.id.editPassword);
+        etFirstName = (EditText)findViewById(R.id.etFirstName);
+        etLastName = (EditText)findViewById(R.id.etLastName);
         buttonSignup = (Button)findViewById(R.id.buttonSignup);
 
         //Call the createAccount method when the user clicks the sign up button
@@ -70,7 +74,10 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
+                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid());
+                    String firstName = etFirstName.getText().toString();
+                    String lastName = etLastName.getText().toString();
+                    userRef.setValue(firstName+" "+lastName);
                     Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
                     startActivity(intent);
                     finish();
@@ -117,7 +124,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             Toast.makeText(CreateAccountActivity.this, "Account creation successful",
                                     Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(CreateAccountActivity.this,MainActivity.class));
+                            finish();
+
                         }
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
