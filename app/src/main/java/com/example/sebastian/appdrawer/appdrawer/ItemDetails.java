@@ -1,16 +1,20 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.content.Intent;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +30,9 @@ public class ItemDetails extends AppCompatActivity {
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey;
     String itemImageUrl;
-
+    Button btnOrder;
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference rootRef = database.getReference();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +55,7 @@ public class ItemDetails extends AppCompatActivity {
         txDistance = (TextView) findViewById(R.id.txDistance);
         txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
+        btnOrder = (Button) findViewById(R.id.btnOrder);
 
         /*Retrieve parsed information
         d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
@@ -67,6 +74,27 @@ public class ItemDetails extends AppCompatActivity {
         final int width = metrics.widthPixels;
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
+
+
+        btnOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null) {
+                    Toast.makeText(ItemDetails.this, "Please login or sign up before ordering an item",
+                            Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(ItemDetails.this, LogInActivity.class));
+                }
+                else if(user != null) {
+                    DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
+                    itemRequestedRef.setValue(user.getUid());
+                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid());
+                    userRef.setValue("Hannøh");
+                }
+            }
+        });
+
+
 
         mFirebaseDatabaseReference.child(itemKey).addValueEventListener(new ValueEventListener() {
             @Override

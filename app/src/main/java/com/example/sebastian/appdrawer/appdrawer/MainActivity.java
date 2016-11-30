@@ -39,6 +39,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     TextView tvEmail,tvUsername;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    String username;
     //Location
     public GoogleApiClient mGoogleApiClient;
     public LocationRequest mLocationRequest;
@@ -114,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        setDrawerLeftEdgeSize(this, drawer, 0.3f);
+        setDrawerLeftEdgeSize(this, drawer, 0.5f);
         //Set onClickListener to the menu, such that elements can be pressed independently.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -197,7 +202,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                    startActivity(new Intent(MainActivity.this,CreateItem.class));
+                    Intent intent = new Intent(MainActivity.this,CreateItem.class);
+                    intent.putExtra("username",username);
+                    startActivity(intent);
             }
         });
     }
@@ -336,7 +343,21 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
 
             tvEmail.setText(""+user.getEmail());
-            tvUsername.setText(""+user.getUid());
+            DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    username = ""+dataSnapshot.getValue().toString();
+                    tvUsername.setText(username);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            //tvUsername.setText(""+user.getUid());
             signOutBtn.setVisibility(View.VISIBLE);
             signInBtn.setVisibility(View.INVISIBLE);
 

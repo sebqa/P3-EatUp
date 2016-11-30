@@ -21,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -40,7 +42,7 @@ public class MainFragment extends Fragment {
     //Arrays to draw dummy data from.(Here we would use data from the database).
     //String arrays are found in values/strings
     ArrayList<Item> arrayList = new ArrayList<Item>();
-
+    String userName = "Not found";
     FloatingActionButton toTop;
 
 
@@ -101,6 +103,7 @@ public class MainFragment extends Fragment {
             }
         });
 
+
         mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener()  {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -112,6 +115,10 @@ public class MainFragment extends Fragment {
                 if(item.getDownloadUrl() == null){
                     item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                 }
+
+
+
+
 
                 arrayList.add(0,item);
                 adapter.notifyDataSetChanged();
