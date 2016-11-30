@@ -1,15 +1,18 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,11 +43,13 @@ public class MyFoodFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_my_food,container,false);
+        final View rootView = inflater.inflate(R.layout.fragment_my_food,container,false);
         setHasOptionsMenu(true);
 
-        ListView ownItems = (ListView)rootView.findViewById(R.id.ownItems);
+        final ListView ownItems = (ListView)rootView.findViewById(R.id.ownItems);
         final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> keys = new ArrayList<String>();
+
 
 
         final DatabaseReference itemRequestsRef = rootRef.child("food");
@@ -55,21 +60,25 @@ public class MyFoodFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                Log.d("Data change","FIRST CHANGED");
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
-                {
+                {Log.d("FOR","CHANGED");
                     key = postSnapshot.getKey();
-                    itemRequestsRef.child(key).addValueEventListener(new ValueEventListener() {
+                    keys.add(key);
+                    itemRequestsRef.child(""+key).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d("Add title","SECOND CHANGED");
 
                             Item item = dataSnapshot.getValue(Item.class);
-                            if(item != null) {
-                                list.add(item.title);
+
+                            list.add(item.title);
+
+                            ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
+
+                            ownItems.setAdapter(adapter);
 
 
-                            } else{
-
-                            }
                         }
 
                         @Override
@@ -90,12 +99,33 @@ public class MyFoodFragment extends Fragment {
 
             }
         };
-
         query.addValueEventListener(valueEventListener);
-        list.add(key);
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
 
-        ownItems.setAdapter(adapter);
+
+        ownItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                    long arg3) {
+                // TODO Auto-generated method stub
+                Log.d("############","Items " +  keys.get(arg2) );
+                if(keys.get(arg2) != null) {
+                    //Create new intent that gets us to the next activity.
+                    Intent intent = new Intent(getActivity(), ItemDetails.class);
+                    //Parse the information between the activities.
+                    intent.putExtra("item_key", keys.get(arg2));
+
+                    //Start the new activity.
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getActivity(), "Item no longer exists",
+                            Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+
+        });
         return rootView;
 
 

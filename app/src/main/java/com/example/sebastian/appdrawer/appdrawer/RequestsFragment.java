@@ -5,13 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,8 +50,10 @@ public class RequestsFragment extends Fragment {
         txFragment = (TextView) rootView.findViewById(R.id.textView7);
 
 
-        ListView ownItems = (ListView)rootView.findViewById(R.id.ownItems);
+        final ListView ownItems = (ListView)rootView.findViewById(R.id.ownItems);
         final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<String> keys = new ArrayList<String>();
+
 
 
         final DatabaseReference itemRequestsRef = rootRef.child("food");
@@ -59,11 +64,29 @@ public class RequestsFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                Log.d("Data change","FIRST CHANGED");
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
-                {
-
+                {Log.d("FOR","CHANGED");
                     key = postSnapshot.getKey();
-                    list.add(""+key);
+                    keys.add(key);
+
+                    itemRequestsRef.child(""+key).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d("Add title","SECOND CHANGED");
+                            Item item = dataSnapshot.getValue(Item.class);
+                            list.add(item.title);
+                            ListAdapter adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
+
+                            ownItems.setAdapter(adapter);
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                     //txFragment.setText(key);
 
 
@@ -77,17 +100,47 @@ public class RequestsFragment extends Fragment {
 
             }
         };
-
         query.addValueEventListener(valueEventListener);
-        list.add(key);
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
-
-        ownItems.setAdapter(adapter);
 
 
 
 
+        ownItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                                    long arg3) {
+                // TODO Auto-generated method stub
+                Log.d("############","Items " +  keys.get(arg2) );
+                if(keys.get(arg2) != null) {
+                    key = keys.get(arg2);
+                    DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("food").child(key);
+                    mFirebaseDatabaseReference.child("itemRequests").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.getValue() != null) {
+                                Toast.makeText(getActivity(), dataSnapshot.getValue().toString(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                }else{
+                    Toast.makeText(getActivity(), "Item no longer exists",
+                            Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+
+        });
 
 
         return rootView;

@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity
             mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    username = ""+dataSnapshot.getValue().toString();
+                    username = dataSnapshot.getValue().toString();
                     tvUsername.setText(username);
 
                 }
