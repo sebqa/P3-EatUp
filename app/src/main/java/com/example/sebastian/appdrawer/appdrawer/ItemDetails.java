@@ -88,8 +88,7 @@ public class ItemDetails extends AppCompatActivity {
                 else if(user != null) {
                     DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
                     itemRequestedRef.setValue(user.getUid());
-                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid());
-                    userRef.setValue("Hannøh");
+
                 }
             }
         });
