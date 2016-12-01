@@ -49,6 +49,7 @@ public class RequestsFragment extends Fragment {
     TextView txFragment;
     String key;
     String username;
+    ValueEventListener valueEventListener;
 
 
     @Nullable
@@ -70,7 +71,7 @@ public class RequestsFragment extends Fragment {
         final DatabaseReference itemRequestsRef = rootRef.child("food");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Query query = itemRequestsRef.orderByChild("userID").equalTo(user.getUid());
-        ValueEventListener valueEventListener = new ValueEventListener()
+        valueEventListener = new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -78,31 +79,32 @@ public class RequestsFragment extends Fragment {
                 Log.d("Data change","FIRST CHANGED");
                 for (final DataSnapshot postSnapshot : dataSnapshot.getChildren())
                 {Log.d("FOR","CHANGED");
-                    key = postSnapshot.getKey();
-                    keys.add(key);
+                    if(postSnapshot.getValue() != null) {
+                        key = postSnapshot.getKey();
+                        keys.add(key);
 
-                    itemRequestsRef.child(""+key).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.d("Add title","SECOND CHANGED");
-                            Item item = dataSnapshot.getValue(Item.class);
-                            long itemCount = postSnapshot.child("itemRequests").getChildrenCount();
+                        itemRequestsRef.child("" + key).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.d("Add title", "SECOND CHANGED");
+                                Item item = dataSnapshot.getValue(Item.class);
+                                //long itemCount = postSnapshot.child("itemRequests").getChildrenCount();
 
-                            itemList.add(item.title+" "+itemCount);
-                            ListAdapter adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,itemList);
+                                itemList.add(item.title/* + " " + itemCount*/);
+                                ListAdapter adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
 
-                            ownItems.setAdapter(adapter);
+                                ownItems.setAdapter(adapter);
 
-                        }
+                            }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
-                    //txFragment.setText(key);
+                            }
+                        });
+                        //txFragment.setText(key);
 
-
+                    }
                 }
 
             }
@@ -156,7 +158,7 @@ public class RequestsFragment extends Fragment {
                                     });
 
                                 }
-                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                                 LayoutInflater inflater = LayoutInflater.from(getActivity());
                                 View convertView = (View) inflater.inflate(R.layout.custom, null);
                                 alertDialog.setView(convertView);
@@ -165,7 +167,8 @@ public class RequestsFragment extends Fragment {
                                 final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
                                 final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
                                 lv.setAdapter(dialogAdapter);
-                                alertDialog.show();
+                                final AlertDialog ad = alertDialog.show();
+
 
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
@@ -174,6 +177,8 @@ public class RequestsFragment extends Fragment {
                                         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
                                         if( v != null) v.setGravity(Gravity.CENTER);
                                         toast.show();
+                                        ad.dismiss();
+
 
 
                                     }
@@ -210,6 +215,12 @@ public class RequestsFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        //Detach listeners
+    }
+
+    @Override
     public void onCreateOptionsMenu(
             Menu menu, MenuInflater inflater) {
 
@@ -218,5 +229,7 @@ public class RequestsFragment extends Fragment {
         MenuItem item2 = menu.findItem(R.id.action_settings);
         item2.setVisible(false);
     }
+
+
 }
 
