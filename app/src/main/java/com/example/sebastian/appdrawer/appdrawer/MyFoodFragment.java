@@ -101,7 +101,7 @@ public class MyFoodFragment extends Fragment {
         };
         query.addValueEventListener(valueEventListener);
 
-
+        ownItems.setLongClickable(true);
         ownItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -125,6 +125,18 @@ public class MyFoodFragment extends Fragment {
 
             }
 
+        });
+        ownItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int arg2, long arg3) {
+                // TODO Auto-generated method stub
+                Toast.makeText(getActivity(), "long press",
+                        Toast.LENGTH_SHORT).show();
+
+
+                return true;
+            }
         });
         return rootView;
 
