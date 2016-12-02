@@ -345,7 +345,7 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
 
             tvEmail.setText(""+user.getEmail());
-            DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("name");
             mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

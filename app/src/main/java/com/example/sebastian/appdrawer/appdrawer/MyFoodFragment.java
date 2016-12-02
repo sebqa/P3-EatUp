@@ -65,7 +65,7 @@ public class MyFoodFragment extends Fragment {
                 {Log.d("FOR","CHANGED");
                     key = postSnapshot.getKey();
                     keys.add(key);
-                    itemRequestsRef.child(""+key).addValueEventListener(new ValueEventListener() {
+                    itemRequestsRef.child(""+key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Log.d("Add title","SECOND CHANGED");
@@ -99,7 +99,7 @@ public class MyFoodFragment extends Fragment {
 
             }
         };
-        query.addValueEventListener(valueEventListener);
+        query.addListenerForSingleValueEvent(valueEventListener);
 
         ownItems.setLongClickable(true);
         ownItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {

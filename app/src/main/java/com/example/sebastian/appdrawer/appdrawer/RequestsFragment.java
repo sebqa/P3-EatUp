@@ -146,7 +146,7 @@ public class RequestsFragment extends Fragment {
                                     mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            username = dataSnapshot.getValue().toString();
+                                            username = dataSnapshot.child("name").getValue().toString();
                                             userRequests.add(username+":   1 serving(s)");
                                             Log.d("Username",username);
                                             mFirebaseDatabaseReference.removeEventListener(this);
