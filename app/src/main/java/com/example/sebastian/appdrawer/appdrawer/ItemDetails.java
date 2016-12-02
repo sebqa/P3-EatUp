@@ -1,13 +1,17 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,8 +32,8 @@ public class ItemDetails extends AppCompatActivity {
     TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
-    String itemKey;
-    String itemImageUrl;
+    String itemKey, amount = "23  serving(s)";
+
     Button btnOrder;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
@@ -79,22 +83,40 @@ public class ItemDetails extends AppCompatActivity {
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user == null) {
                     Toast.makeText(ItemDetails.this, "Please login or sign up before ordering an item",
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ItemDetails.this, LogInActivity.class));
                 }
                 else if(user != null) {
-                    DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
-                    itemRequestedRef.setValue(user.getUid());
 
-                    final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests").push();
-                    myRequests.child("requestedItem").setValue(itemKey);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ItemDetails.this);
+                    builder.setTitle("How many servings would you like?");
 
-                    DatabaseReference newRequestRef = myRequests.getRef();
-                    newRequestRef.child("requestedAmount").setValue("1 serving");
-                    newRequestRef.child("requestConfirmed").setValue("false");
+                    // Set up the input
+                    final EditText input = new EditText(ItemDetails.this);
+                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                    input.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_CLASS_NUMBER);
+                    builder.setView(input);
+
+                    // Set up the buttons
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            amount = input.getText().toString();
+                            placeOrder(user);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+
 
                 }
 
@@ -103,7 +125,7 @@ public class ItemDetails extends AppCompatActivity {
 
 
 
-        mFirebaseDatabaseReference.child(itemKey).addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabaseReference.child(itemKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -139,6 +161,23 @@ public class ItemDetails extends AppCompatActivity {
         });
 
 
+
+    }
+    public void placeOrder(FirebaseUser user){
+        DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
+        itemRequestedRef.setValue(user.getUid());
+
+        final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests").push();
+        myRequests.child("requestedItem").setValue(itemKey);
+
+        DatabaseReference newRequestRef = myRequests.getRef();
+        newRequestRef.child("requestedAmount").setValue(""+amount);
+        newRequestRef.child("requestConfirmed").setValue("false");
+        Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    public void getAmount(FirebaseUser user){
 
     }
 }

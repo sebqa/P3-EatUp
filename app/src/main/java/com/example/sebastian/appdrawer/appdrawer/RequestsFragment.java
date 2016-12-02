@@ -3,6 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -170,6 +171,12 @@ public class RequestsFragment extends Fragment {
                                 alertDialog.setView(convertView);
                                 alertDialog.setTitle("Order requests for "+itemList.get(arg2));
                                 alertDialog.setMessage("Click on a user to confirm their order");
+                                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
                                 final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
                                 final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
                                 lv.setAdapter(dialogAdapter);
@@ -225,7 +232,9 @@ public class RequestsFragment extends Fragment {
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         if(postSnapshot.getValue() != null) {
                             String requestedItemKey = postSnapshot.child("requestedItem").getValue().toString();
+                            final String requestedAmount = postSnapshot.child("requestedAmount").getValue().toString();
                             Log.d("sentRequests postsnap",""+postSnapshot.child("requestedItem").getValue().toString());
+
                             itemRequestsRef.child(requestedItemKey).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -233,7 +242,7 @@ public class RequestsFragment extends Fragment {
                                     Item item = dataSnapshot.getValue(Item.class);
                                     if(item.title != null) {
 
-                                        sentRequests.add(item.title);
+                                        sentRequests.add(item.title+" - "+requestedAmount+" serving(s)");
                                         ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
                                         requestedItems.setAdapter(sentRequestsadapter);
                                     }
