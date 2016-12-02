@@ -21,7 +21,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sent requests"
+        android:text="Pending requests"
         android:id="@+id/sentText"
         android:layout_below="@+id/ownItems"/>
     <ListView

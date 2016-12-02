@@ -217,18 +217,36 @@ public class RequestsFragment extends Fragment {
         });
 
         final DatabaseReference sentRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("sentRequests");
-        sentRequestsRef.addValueEventListener(new ValueEventListener() {
+        sentRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
 
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         if(postSnapshot.getValue() != null) {
-                            String requestedItemName = postSnapshot.child("requestedItem").getValue().toString();
+                            String requestedItemKey = postSnapshot.child("requestedItem").getValue().toString();
                             Log.d("sentRequests postsnap",""+postSnapshot.child("requestedItem").getValue().toString());
-                            sentRequests.add(requestedItemName);
-                            ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
-                            requestedItems.setAdapter(sentRequestsadapter);
+                            itemRequestsRef.child(requestedItemKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Log.d("Add title", "SECOND CHANGED");
+                                    Item item = dataSnapshot.getValue(Item.class);
+                                    if(item.title != null) {
+
+                                        sentRequests.add(item.title);
+                                        ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
+                                        requestedItems.setAdapter(sentRequestsadapter);
+                                    }
+                                    itemRequestsRef.removeEventListener(this);
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
 
 
                         }
