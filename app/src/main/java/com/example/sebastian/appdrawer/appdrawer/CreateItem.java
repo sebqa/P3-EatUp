@@ -340,8 +340,8 @@ public class CreateItem extends AppCompatActivity implements
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
+
                     startActivity(new Intent(CreateItem.this, MainActivity.class));
-                    finish();
 
                 }
             }

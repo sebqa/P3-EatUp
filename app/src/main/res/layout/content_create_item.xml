@@ -38,7 +38,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:textSize="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 />
 
     <EditText
@@ -63,7 +63,7 @@
                 android:id="@+id/btnAddPhoto"
                 android:layout_gravity="center_horizontal"
                 android:padding="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
 
 
 
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/imagePlaceholder"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     />
 
 
@@ -85,7 +85,7 @@
         android:layout_height="100dp"
         android:hint="Describe your food"
         android:textAlignment="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:paddingLeft="20dp"
         android:background="#FFFFFF"
         android:id="@+id/etDesc"
@@ -93,41 +93,15 @@
         android:maxLines="4"
 
         />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Add tags"
-        android:textAlignment="center"
-        android:padding="20dp"
-        android:background="#FFFFFF"
-        android:id="@+id/etTags"
-        android:inputType="textCapSentences"
-        android:layout_marginTop="20dp"
-        />
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tagsArea"
-                android:orientation="horizontal"
-                app:flexWrap="wrap"
-                app:alignItems="stretch"
-                app:alignContent="stretch"
-                app:justifyContent="center"
-                android:padding="10dp"
-                app:showDivider="beginning|middle"
-                app:dividerDrawable="@drawable/divider"
-                >
-
-
-            </com.google.android.flexbox.FlexboxLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:weightSum="1">
+                android:weightSum="1"
+                android:layout_marginTop="10dp">
 
                 <EditText
                     android:layout_width="wrap_content"
@@ -155,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:gravity="end"
             android:weightSum="1">
             <TextView
@@ -179,7 +153,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFF"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 android:gravity="end"
                 android:weightSum="1">
                 <TextView
@@ -197,8 +171,35 @@
                     android:layout_gravity="end"
                     android:checked="true"
                     android:paddingRight="30dp"/>
-            </LinearLayout>
 
+            </LinearLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Add tags"
+                android:textAlignment="center"
+                android:padding="20dp"
+                android:background="#FFFFFF"
+                android:id="@+id/etTags"
+                android:inputType="textCapSentences"
+                />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tagsArea"
+                android:orientation="horizontal"
+                app:flexWrap="wrap"
+                app:alignItems="stretch"
+                app:alignContent="stretch"
+                app:justifyContent="center"
+                android:padding="10dp"
+                app:showDivider="beginning|middle"
+                app:dividerDrawable="@drawable/divider"
+                >
+
+
+            </com.google.android.flexbox.FlexboxLayout>
 
             <Button
                 android:layout_width="match_parent"
@@ -209,7 +210,7 @@
                 android:id="@+id/btnAddItem"
                 android:layout_gravity="center_horizontal"
                 android:padding="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
 
                  />
             <ListView
