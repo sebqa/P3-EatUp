@@ -300,7 +300,9 @@ public class MainActivity extends AppCompatActivity
         //Check which element was pressed
         if (id == R.id.nav_main) {
             //Replace current fragment with MainFragment
+            fn.beginTransaction().addToBackStack(null);
             fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
+
 
             //Show floating action button
             fab.setVisibility(View.VISIBLE);
