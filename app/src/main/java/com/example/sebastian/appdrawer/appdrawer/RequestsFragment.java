@@ -62,6 +62,8 @@ public class RequestsFragment extends Fragment {
         final ArrayList<String> itemList = new ArrayList<String>();
         final ArrayList<String> keys = new ArrayList<String>();
         final ArrayList<String> userRequests = new ArrayList<String>();
+        final ArrayList<String> sentRequests = new ArrayList<String>();
+        final ListView requestedItems = (ListView)rootView.findViewById(R.id.requestedItems);
 
 
 
@@ -91,9 +93,9 @@ public class RequestsFragment extends Fragment {
                                 if(item.title != null) {
 
                                     itemList.add(item.title + ": " + itemCount);
-                                    ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
+                                    ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
 
-                                    ownItems.setAdapter(adapter);
+                                    ownItems.setAdapter(ownItemsadapter);
                                 }
                                 itemRequestsRef.removeEventListener(this);
 
@@ -135,21 +137,21 @@ public class RequestsFragment extends Fragment {
 
 
 
-                    DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("food").child(key);
-                    mFirebaseDatabaseReference.child("itemRequests").addListenerForSingleValueEvent(new ValueEventListener() {
+                    DatabaseReference ItemRequestsRef = FirebaseDatabase.getInstance().getReference("food").child(key);
+                    ItemRequestsRef.child("itemRequests").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue() != null) {
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                                    final DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(postSnapshot.getValue().toString());
-                                    mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    final DatabaseReference usersNameRef = FirebaseDatabase.getInstance().getReference("users").child(postSnapshot.getValue().toString());
+                                    usersNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             username = dataSnapshot.child("name").getValue().toString();
                                             userRequests.add(username+":   1 serving(s)");
                                             Log.d("Username",username);
-                                            mFirebaseDatabaseReference.removeEventListener(this);
+                                            usersNameRef.removeEventListener(this);
 
 
                                         }
@@ -172,6 +174,7 @@ public class RequestsFragment extends Fragment {
                                 final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
                                 lv.setAdapter(dialogAdapter);
                                 final AlertDialog ad = alertDialog.show();
+                                lv.deferNotifyDataSetChanged();
 
 
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -211,6 +214,32 @@ public class RequestsFragment extends Fragment {
             }
 
 
+        });
+
+        final DatabaseReference sentRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("sentRequests");
+        sentRequestsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        if(postSnapshot.getValue() != null) {
+                            String requestedItemName = postSnapshot.child("requestedItem").getValue().toString();
+                            Log.d("sentRequests postsnap",""+postSnapshot.child("requestedItem").getValue().toString());
+                            sentRequests.add(requestedItemName);
+                            ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
+                            requestedItems.setAdapter(sentRequestsadapter);
+
+
+                        }
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
 
 

@@ -24,7 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by Sebastian on 02-11-2016.
@@ -44,6 +50,7 @@ public class MainFragment extends Fragment {
     ArrayList<Item> arrayList = new ArrayList<Item>();
     String userName = "Not found";
     FloatingActionButton toTop;
+    int itemTime,currentTime;
 
 
     @Nullable
@@ -116,13 +123,42 @@ public class MainFragment extends Fragment {
                     item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                 }
 
+                //Check if item is more than 5 hours old
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                Date itemDate = null;
+                try{
+                    itemDate = formatter.parse(item.getCurrentTime());
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
 
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
+                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
 
+                String currentTimeString = dateFormatGmt.format(new Date())+"";
+                Date currentDate = null;
+                try {
+                    currentDate = formatter.parse(currentTimeString);
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                Calendar thatDay = Calendar.getInstance();
+                thatDay.setTime(itemDate);
+                Calendar today = Calendar.getInstance();
+                today.setTime(currentDate);
+                long diff = today.getTimeInMillis() - thatDay.getTimeInMillis(); //result in millis
 
+                Log.d("Time difference",""+diff/(1000*60*60));
 
-                arrayList.add(0,item);
-                adapter.notifyDataSetChanged();
-
+                //If time difference is more than 5 hours
+                if(diff/(1000*60*60)<5) {
+                    //Add item to list
+                    arrayList.add(0, item);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    //Delete item from database
+                    dataSnapshot.getRef().setValue(null);
+                }
                 // ...
             }
 

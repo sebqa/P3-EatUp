@@ -89,7 +89,15 @@ public class ItemDetails extends AppCompatActivity {
                     DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
                     itemRequestedRef.setValue(user.getUid());
 
+                    final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests").push();
+                    myRequests.child("requestedItem").setValue(itemKey);
+
+                    DatabaseReference newRequestRef = myRequests.getRef();
+                    newRequestRef.child("requestedAmount").setValue("1 serving");
+                    newRequestRef.child("requestConfirmed").setValue("false");
+
                 }
+
             }
         });
 
