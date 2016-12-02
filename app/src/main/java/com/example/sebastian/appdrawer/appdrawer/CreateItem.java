@@ -314,7 +314,7 @@ public class CreateItem extends AppCompatActivity implements
                     tagsList.setAdapter(adapter1);
 
                     //insert data into Firebase
-                    DatabaseReference foodRef = rootRef.child("food"); //point to food branch
+                    DatabaseReference foodRef = rootRef.child("food").push(); //point to food branch
                     edNrOfServings.setText("1");
                     String stringItemTitle = etTitle.getText().toString();
                     String stringItemDescription = etDescription.getText().toString();
@@ -337,7 +337,7 @@ public class CreateItem extends AppCompatActivity implements
                     Item newFoodItem = new Item(stringUser, stringItemTitle,
                             stringItemDescription, "10", intServings,currentTimeString,
                             stringItemKey,downloadUrl,mLatitude,mLongitude,userID);
-                    foodRef.push().setValue(newFoodItem);
+                    foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(CreateItem.this, MainActivity.class));

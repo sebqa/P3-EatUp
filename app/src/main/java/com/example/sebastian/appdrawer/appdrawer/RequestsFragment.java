@@ -70,7 +70,7 @@ public class RequestsFragment extends Fragment {
         final DatabaseReference itemRequestsRef = rootRef.child("food");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Query query = itemRequestsRef.orderByChild("userID").equalTo(user.getUid());
-        query.addValueEventListener(new ValueEventListener()
+        query.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
