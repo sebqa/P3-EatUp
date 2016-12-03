@@ -64,6 +64,7 @@ public class RequestsFragment extends Fragment {
         final ArrayList<String> keys = new ArrayList<String>();
         final ArrayList<String> userRequests = new ArrayList<String>();
         final ArrayList<String> sentRequests = new ArrayList<String>();
+        final ArrayList<String> userRequestsKeys = new ArrayList<String>();
         final ListView requestedItems = (ListView)rootView.findViewById(R.id.requestedItems);
 
 
@@ -141,7 +142,7 @@ public class RequestsFragment extends Fragment {
                     DatabaseReference ItemRequestsRef = FirebaseDatabase.getInstance().getReference("food").child(key);
                     ItemRequestsRef.child("itemRequests").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                        public void onDataChange(final DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue() != null) {
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
@@ -149,9 +150,12 @@ public class RequestsFragment extends Fragment {
                                     usersNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
+
                                             username = dataSnapshot.child("name").getValue().toString();
-                                            userRequests.add(username+":   1 serving(s)");
-                                            Log.d("Username",username);
+                                            userRequestsKeys.add(dataSnapshot.getKey());
+                                            userRequests.add(username);
+                                            Log.d("Username",dataSnapshot.getKey());
+
                                             usersNameRef.removeEventListener(this);
 
 
@@ -192,6 +196,15 @@ public class RequestsFragment extends Fragment {
                                         if( v != null) v.setGravity(Gravity.CENTER);
                                         toast.show();
                                         ad.dismiss();
+                                        //final DatabaseReference requestConfirmationRef = FirebaseDatabase.getInstance().getReference("users").child(key).child("sentRequests").push();
+                                        DatabaseReference confirmReqKey = FirebaseDatabase.getInstance().getReference("food").child(key).child("confirmedReq");
+                                        confirmReqKey.push().setValue(userRequestsKeys.get(i));
+                                        DatabaseReference setUser = FirebaseDatabase.getInstance().getReference("users").child(userRequestsKeys.get(i)).child("name");
+                                        //setUser.setValue("NEW NOTIFICATION");
+
+
+                                        Log.d("itemKey",key);
+
 
 
 
@@ -229,7 +242,7 @@ public class RequestsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
 
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         if(postSnapshot.getValue() != null) {
                             String requestedItemKey = postSnapshot.child("requestedItem").getValue().toString();
                             final String requestedAmount = postSnapshot.child("requestedAmount").getValue().toString();
@@ -240,11 +253,13 @@ public class RequestsFragment extends Fragment {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Log.d("Add title", "SECOND CHANGED");
                                     Item item = dataSnapshot.getValue(Item.class);
-                                    if(item.title != null) {
+                                    if(item != null) {
 
                                         sentRequests.add(item.title+" - "+requestedAmount+" serving(s)");
                                         ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
                                         requestedItems.setAdapter(sentRequestsadapter);
+                                    } else {
+                                        postSnapshot.getRef().setValue(null);
                                     }
                                     itemRequestsRef.removeEventListener(this);
 

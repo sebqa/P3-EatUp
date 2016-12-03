@@ -103,7 +103,7 @@ public class CreateItem extends AppCompatActivity implements
     ListView tagsList;
     ImageView imagePlaceholder;
     TextView tvServings, tvLocation, tvPrice;
-    EditText edNrOfServings, etTitle;
+    EditText edNrOfServings, etTitle,etAdress;
     int maxLength = 13;
     public String downloadUrl, stringUser;
     CameraPhoto cameraPhoto;
@@ -146,6 +146,7 @@ public class CreateItem extends AppCompatActivity implements
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
+        etAdress = (EditText)findViewById(R.id.etAdress);
 
         mProgress = new ProgressDialog(this);
 
@@ -320,6 +321,7 @@ public class CreateItem extends AppCompatActivity implements
                     String stringItemDescription = etDescription.getText().toString();
                     String stringNrOfServings = edNrOfServings.getText().toString();
                     String stringItemKey = foodRef.getKey();
+                    String stringAdress = etAdress.getText().toString();
                     int intServings = Integer.parseInt(stringNrOfServings);
 
                     stringUser = getIntent().getStringExtra("username");
@@ -336,7 +338,7 @@ public class CreateItem extends AppCompatActivity implements
 
                     Item newFoodItem = new Item(stringUser, stringItemTitle,
                             stringItemDescription, "10", intServings,currentTimeString,
-                            stringItemKey,downloadUrl,mLatitude,mLongitude,userID);
+                            stringItemKey,downloadUrl,mLatitude,mLongitude,userID,stringAdress);
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();

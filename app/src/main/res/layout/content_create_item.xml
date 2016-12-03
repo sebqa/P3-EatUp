@@ -176,6 +176,19 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="Exact address"
+                android:textAlignment="center"
+                android:padding="20dp"
+                android:background="#FFFFFF"
+                android:id="@+id/etAdress"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:layout_marginBottom="10dp"
+
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:hint="Add tags"
                 android:textAlignment="center"
                 android:padding="20dp"

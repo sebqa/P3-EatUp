@@ -134,6 +134,8 @@ public class ItemDetails extends AppCompatActivity {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice());
+                    txServingsLeft.setText(""+item.getAmount());
+
                     if(item.getDownloadUrl() == null){
                         item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                     }
@@ -172,7 +174,7 @@ public class ItemDetails extends AppCompatActivity {
 
         DatabaseReference newRequestRef = myRequests.getRef();
         newRequestRef.child("requestedAmount").setValue(""+amount);
-        newRequestRef.child("requestConfirmed").setValue("false");
+        //newRequestRef.child("requestConfirmed").setValue("false");
         Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller", Toast.LENGTH_LONG).show();
         finish();
     }
