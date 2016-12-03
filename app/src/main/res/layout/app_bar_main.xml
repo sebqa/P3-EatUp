@@ -26,7 +26,8 @@
             android:contentDescription="logo"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/eatuptitle"/>
+            android:src="@drawable/eatuptitle"
+            android:paddingLeft="25dp" />
 
         </android.support.v7.widget.Toolbar>
 

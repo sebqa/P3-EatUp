@@ -29,12 +29,12 @@ import com.squareup.picasso.Picasso;
 
 public class ItemDetails extends AppCompatActivity {
     ImageView d_imageView;
-    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription;
+    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription, btnOrder;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey, amount = "23  serving(s)";
 
-    Button btnOrder;
+
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
     @Override
@@ -56,10 +56,10 @@ public class ItemDetails extends AppCompatActivity {
         txTitle = (TextView) findViewById(R.id.txTitleDetails);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
-        txDistance = (TextView) findViewById(R.id.txDistance);
-        txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
+        //txDistance = (TextView) findViewById(R.id.txDistance);
+        //txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
-        btnOrder = (Button) findViewById(R.id.btnOrder);
+        btnOrder = (TextView) findViewById(R.id.btnOrder);
 
         /*Retrieve parsed information
         d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
@@ -133,8 +133,9 @@ public class ItemDetails extends AppCompatActivity {
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
-                    txPrice.setText(item.getPrice());
-                    txServingsLeft.setText(""+item.getAmount());
+                    txPrice.setText(item.getPrice()+" kr");
+                    txCreator.setText(item.getCreator());
+                    //txServingsLeft.setText(""+item.getAmount());
 
                     if(item.getDownloadUrl() == null){
                         item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
