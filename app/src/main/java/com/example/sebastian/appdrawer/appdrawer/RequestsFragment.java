@@ -181,7 +181,7 @@ public class RequestsFragment extends Fragment {
                                 final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
                                 lv.setAdapter(dialogAdapter);
                                 final AlertDialog ad = alertDialog.show();
-                                lv.deferNotifyDataSetChanged();
+                                dialogAdapter.notifyDataSetChanged();
 
 
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
