@@ -3,6 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -39,6 +40,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -209,6 +211,102 @@ public class MainActivity extends AppCompatActivity
                     startActivity(intent);
             }
         });
+
+        final DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("food");
+        mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
+                    final Item item = dataSnapshot.getValue(Item.class);
+
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String snap = postSnapshot.getValue().toString();
+                    String userIDcheck = user.getUid().toString();
+                    Log.d("snapshot", snap);
+                    Log.d("userID", userIDcheck);
+                    if (snap.equals(userIDcheck)) {
+                        AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                        ad.setTitle("Order confirmation");
+                        ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
+                        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                Log.d("deleteref", deleteRef.getRef().toString());
+                                deleteRef.getRef().setValue(null);
+                            }
+                        });
+
+
+                        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                Log.d("deleteref", deleteRef.getRef().toString());
+                                deleteRef.getRef().setValue(null);
+                                dialog.cancel();
+                            }
+                        });
+                        ad.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
+                    final Item item = dataSnapshot.getValue(Item.class);
+
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String snap = postSnapshot.getValue().toString();
+                    String userIDcheck = user.getUid().toString();
+                    Log.d("snapshot", snap);
+                    Log.d("userID", userIDcheck);
+                    if (snap.equals(userIDcheck)) {
+                        AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                        ad.setTitle("Order confirmation");
+                        ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
+                        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                Log.d("deleteref", deleteRef.getRef().toString());
+                                deleteRef.getRef().setValue(null);
+                            }
+                        });
+
+
+                        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                Log.d("deleteref", deleteRef.getRef().toString());
+                                deleteRef.getRef().setValue(null);
+                                dialog.cancel();
+                            }
+                        });
+                        ad.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 
@@ -332,6 +430,15 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+
+
+
+
+
+
 
     //Methods to hide/show the floating action button from fragments
     public void showFloatingActionButton() {
@@ -554,4 +661,6 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Log.i(TAG, "Location changed");
     }
+
+
 }

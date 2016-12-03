@@ -1,5 +1,6 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -136,7 +137,10 @@ public class RequestsFragment extends Fragment {
                 Log.d("############","Items " +  keys.get(arg2) );
                 if(keys.get(arg2) != null) {
                     key = keys.get(arg2);
-
+                    LayoutInflater inflater = LayoutInflater.from(getActivity());
+                    final View convertView = (View) inflater.inflate(R.layout.custom, null);
+                    final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
+                    final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
 
 
                     DatabaseReference ItemRequestsRef = FirebaseDatabase.getInstance().getReference("food").child(key);
@@ -170,22 +174,22 @@ public class RequestsFragment extends Fragment {
 
                                 }
                                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                                LayoutInflater inflater = LayoutInflater.from(getActivity());
-                                View convertView = (View) inflater.inflate(R.layout.custom, null);
+
                                 alertDialog.setView(convertView);
                                 alertDialog.setTitle("Order requests for "+itemList.get(arg2));
                                 alertDialog.setMessage("Click on a user to confirm their order");
+                                lv.setAdapter(dialogAdapter);
+                                lv.invalidateViews();
+                                dialogAdapter.notifyDataSetChanged();
                                 alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.cancel();
                                     }
                                 });
-                                final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
-                                final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
-                                lv.setAdapter(dialogAdapter);
+
                                 final AlertDialog ad = alertDialog.show();
-                                dialogAdapter.notifyDataSetChanged();
+
 
 
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -303,6 +307,12 @@ public class RequestsFragment extends Fragment {
         item.setVisible(false);
         MenuItem item2 = menu.findItem(R.id.action_settings);
         item2.setVisible(false);
+    }
+    Activity activity;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity=activity;
     }
 
 
