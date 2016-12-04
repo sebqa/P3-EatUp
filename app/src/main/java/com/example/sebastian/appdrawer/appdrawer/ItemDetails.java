@@ -57,7 +57,7 @@ public class ItemDetails extends AppCompatActivity {
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
         //txDistance = (TextView) findViewById(R.id.txDistance);
-        //txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
+        txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
         btnOrder = (TextView) findViewById(R.id.btnOrder);
 
@@ -135,7 +135,7 @@ public class ItemDetails extends AppCompatActivity {
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice()+" kr");
                     txCreator.setText(item.getCreator());
-                    //txServingsLeft.setText(""+item.getAmount());
+                    txServingsLeft.setText(""+item.getAmount()+" serving(s) remaining");
 
                     if(item.getDownloadUrl() == null){
                         item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
