@@ -74,12 +74,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid());
+                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid()).child("name");
                     String firstName = etFirstName.getText().toString();
                     String lastName = etLastName.getText().toString();
                     userRef.setValue(firstName+" "+lastName);
-                    Intent intent = new Intent(CreateAccountActivity.this,MainActivity.class);
-                    startActivity(intent);
+
                     finish();
 
                 } else {
@@ -160,6 +159,12 @@ public class CreateAccountActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        finish();
     }
 
 }

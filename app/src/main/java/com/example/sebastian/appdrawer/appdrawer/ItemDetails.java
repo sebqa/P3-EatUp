@@ -1,13 +1,17 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,12 +29,12 @@ import com.squareup.picasso.Picasso;
 
 public class ItemDetails extends AppCompatActivity {
     ImageView d_imageView;
-    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription;
+    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription, btnOrder;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
-    String itemKey;
-    String itemImageUrl;
-    Button btnOrder;
+    String itemKey, amount = "23  serving(s)";
+
+
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
     @Override
@@ -52,10 +56,10 @@ public class ItemDetails extends AppCompatActivity {
         txTitle = (TextView) findViewById(R.id.txTitleDetails);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
-        txDistance = (TextView) findViewById(R.id.txDistance);
+        //txDistance = (TextView) findViewById(R.id.txDistance);
         txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
-        btnOrder = (Button) findViewById(R.id.btnOrder);
+        btnOrder = (TextView) findViewById(R.id.btnOrder);
 
         /*Retrieve parsed information
         d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
@@ -79,24 +83,49 @@ public class ItemDetails extends AppCompatActivity {
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user == null) {
                     Toast.makeText(ItemDetails.this, "Please login or sign up before ordering an item",
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ItemDetails.this, LogInActivity.class));
                 }
                 else if(user != null) {
-                    DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
-                    itemRequestedRef.setValue(user.getUid());
-                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid());
-                    userRef.setValue("Hannøh");
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ItemDetails.this);
+                    builder.setTitle("How many servings would you like?");
+
+                    // Set up the input
+                    final EditText input = new EditText(ItemDetails.this);
+                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                    input.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_CLASS_NUMBER);
+                    builder.setView(input);
+
+                    // Set up the buttons
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            amount = input.getText().toString();
+                            placeOrder(user);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+
+
                 }
+
             }
         });
 
 
 
-        mFirebaseDatabaseReference.child(itemKey).addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabaseReference.child(itemKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -104,7 +133,10 @@ public class ItemDetails extends AppCompatActivity {
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
-                    txPrice.setText(item.getPrice());
+                    txPrice.setText(item.getPrice()+" kr");
+                    txCreator.setText(item.getCreator());
+                    txServingsLeft.setText(""+item.getAmount()+" serving(s) remaining");
+
                     if(item.getDownloadUrl() == null){
                         item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                     }
@@ -132,6 +164,23 @@ public class ItemDetails extends AppCompatActivity {
         });
 
 
+
+    }
+    public void placeOrder(FirebaseUser user){
+        DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
+        itemRequestedRef.setValue(user.getUid());
+
+        final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests").push();
+        myRequests.child("requestedItem").setValue(itemKey);
+
+        DatabaseReference newRequestRef = myRequests.getRef();
+        newRequestRef.child("requestedAmount").setValue(""+amount);
+        //newRequestRef.child("requestConfirmed").setValue("false");
+        Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    public void getAmount(FirebaseUser user){
 
     }
 }

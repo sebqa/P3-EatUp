@@ -1,14 +1,9 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,24 +21,20 @@ import android.widget.Toast;
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Sebastian on 02-11-2016.
  */
 
-public class RequestsFragment extends Fragment {
+public class ReceivedRequestsFragment extends Fragment {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
     TextView txFragment;
@@ -64,9 +53,6 @@ public class RequestsFragment extends Fragment {
         final ArrayList<String> itemList = new ArrayList<String>();
         final ArrayList<String> keys = new ArrayList<String>();
         final ArrayList<String> userRequests = new ArrayList<String>();
-        final ArrayList<String> sentRequests = new ArrayList<String>();
-        final ArrayList<String> userRequestsKeys = new ArrayList<String>();
-        final ListView requestedItems = (ListView)rootView.findViewById(R.id.requestedItems);
 
 
 
@@ -75,7 +61,7 @@ public class RequestsFragment extends Fragment {
         final DatabaseReference itemRequestsRef = rootRef.child("food");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Query query = itemRequestsRef.orderByChild("userID").equalTo(user.getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener()
+        query.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -96,9 +82,9 @@ public class RequestsFragment extends Fragment {
                                 if(item.title != null) {
 
                                     itemList.add(item.title + ": " + itemCount);
-                                    ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
+                                    ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
 
-                                    ownItems.setAdapter(ownItemsadapter);
+                                    ownItems.setAdapter(adapter);
                                 }
                                 itemRequestsRef.removeEventListener(this);
 
@@ -137,30 +123,24 @@ public class RequestsFragment extends Fragment {
                 Log.d("############","Items " +  keys.get(arg2) );
                 if(keys.get(arg2) != null) {
                     key = keys.get(arg2);
-                    LayoutInflater inflater = LayoutInflater.from(getActivity());
-                    final View convertView = (View) inflater.inflate(R.layout.custom, null);
-                    final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
-                    final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
 
 
-                    DatabaseReference ItemRequestsRef = FirebaseDatabase.getInstance().getReference("food").child(key);
-                    ItemRequestsRef.child("itemRequests").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("food").child(key);
+                    mFirebaseDatabaseReference.child("itemRequests").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                        public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue() != null) {
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                                    final DatabaseReference usersNameRef = FirebaseDatabase.getInstance().getReference("users").child(postSnapshot.getValue().toString());
-                                    usersNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    final DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(postSnapshot.getValue().toString());
+                                    mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                            username = dataSnapshot.child("name").getValue().toString();
-                                            userRequestsKeys.add(dataSnapshot.getKey());
-                                            userRequests.add(username);
-                                            Log.d("Username",dataSnapshot.getKey());
-
-                                            usersNameRef.removeEventListener(this);
+                                            username = dataSnapshot.getValue().toString();
+                                            userRequests.add(username+":   1 serving(s)");
+                                            Log.d("Username",username);
+                                            mFirebaseDatabaseReference.removeEventListener(this);
 
 
                                         }
@@ -174,22 +154,15 @@ public class RequestsFragment extends Fragment {
 
                                 }
                                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-
+                                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                                View convertView = (View) inflater.inflate(R.layout.custom, null);
                                 alertDialog.setView(convertView);
                                 alertDialog.setTitle("Order requests for "+itemList.get(arg2));
                                 alertDialog.setMessage("Click on a user to confirm their order");
+                                final ListView lv = (ListView) convertView.findViewById(R.id.listView1);
+                                final ArrayAdapter<String> dialogAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,userRequests);
                                 lv.setAdapter(dialogAdapter);
-                                lv.invalidateViews();
-                                dialogAdapter.notifyDataSetChanged();
-                                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-
                                 final AlertDialog ad = alertDialog.show();
-
 
 
                                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -200,15 +173,6 @@ public class RequestsFragment extends Fragment {
                                         if( v != null) v.setGravity(Gravity.CENTER);
                                         toast.show();
                                         ad.dismiss();
-                                        //final DatabaseReference requestConfirmationRef = FirebaseDatabase.getInstance().getReference("users").child(key).child("sentRequests").push();
-                                        DatabaseReference confirmReqKey = FirebaseDatabase.getInstance().getReference("food").child(key).child("confirmedReq");
-                                        confirmReqKey.push().setValue(userRequestsKeys.get(i));
-                                        DatabaseReference setUser = FirebaseDatabase.getInstance().getReference("users").child(userRequestsKeys.get(i)).child("name");
-                                        //setUser.setValue("NEW NOTIFICATION");
-
-
-                                        Log.d("itemKey",key);
-
 
 
 
@@ -240,54 +204,6 @@ public class RequestsFragment extends Fragment {
 
         });
 
-        final DatabaseReference sentRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("sentRequests");
-        sentRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-
-                    for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        if(postSnapshot.getValue() != null) {
-                            String requestedItemKey = postSnapshot.child("requestedItem").getValue().toString();
-                            final String requestedAmount = postSnapshot.child("requestedAmount").getValue().toString();
-                            Log.d("sentRequests postsnap",""+postSnapshot.child("requestedItem").getValue().toString());
-
-                            itemRequestsRef.child(requestedItemKey).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Log.d("Add title", "SECOND CHANGED");
-                                    Item item = dataSnapshot.getValue(Item.class);
-                                    if(item != null) {
-
-                                        sentRequests.add(item.title+" - "+requestedAmount+" serving(s)");
-                                        ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
-                                        requestedItems.setAdapter(sentRequestsadapter);
-                                    } else {
-                                        postSnapshot.getRef().setValue(null);
-                                    }
-                                    itemRequestsRef.removeEventListener(this);
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-
-
-                        }
-                    }
-                }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
 
         return rootView;
 
@@ -307,12 +223,6 @@ public class RequestsFragment extends Fragment {
         item.setVisible(false);
         MenuItem item2 = menu.findItem(R.id.action_settings);
         item2.setVisible(false);
-    }
-    Activity activity;
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity=activity;
     }
 
 
