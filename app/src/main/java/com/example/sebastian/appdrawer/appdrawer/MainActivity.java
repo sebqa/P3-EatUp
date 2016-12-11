@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity
 
         //Initialize the main fragment's layout
         android.app.FragmentManager fn = getFragmentManager();
-        fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
+        fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
 
         //Set onClickListener to the floating action button, and make it start new activity.
         fab = (FloatingActionButton)findViewById(R.id.fab);
@@ -392,18 +392,13 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         android.app.FragmentManager fn = getFragmentManager();
-
 
         int id = item.getItemId();
         //Check which element was pressed
         if (id == R.id.nav_main) {
             //Replace current fragment with MainFragment
-            fn.beginTransaction().addToBackStack(null);
-            fn.beginTransaction().replace(R.id.content_frame, new MainFragment()).commit();
-
-
+            fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
             //Show floating action button
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_map) {
@@ -460,13 +455,9 @@ public class MainActivity extends AppCompatActivity
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     username = dataSnapshot.getValue().toString();
                     tvUsername.setText(username);
-
                 }
-
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
+                public void onCancelled(DatabaseError databaseError) {}
             });
             //tvUsername.setText(""+user.getUid());
             signOutBtn.setVisibility(View.VISIBLE);

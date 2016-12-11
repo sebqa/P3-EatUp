@@ -90,12 +90,10 @@ public class CreateItem extends AppCompatActivity implements
 
     private static final String TAG = "CreateItem";
 
-    LinearLayout imageLayout;
-    HorizontalScrollView imageScroll;
+
     EditText itemTag, etDescription;
     ScrollView scrollView;
     Button addItemBtn,addPhotoBtn;
-    int iCounter = 0;
     int tagCounter;
     Bitmap bitmap;
     TextView imageCounter;
@@ -246,7 +244,6 @@ public class CreateItem extends AppCompatActivity implements
 
             @Override
             public void onClick(View arg0) {
-                // TODO Auto-generated method stub
                 arg0.requestFocus();
             }
         });

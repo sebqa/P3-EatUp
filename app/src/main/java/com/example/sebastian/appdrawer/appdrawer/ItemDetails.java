@@ -133,7 +133,7 @@ public class ItemDetails extends AppCompatActivity {
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
-                    txPrice.setText(item.getPrice()+" kr");
+                    txPrice.setText(item.getPrice());
                     txCreator.setText(item.getCreator());
                     txServingsLeft.setText(""+item.getAmount()+" serving(s) remaining");
 

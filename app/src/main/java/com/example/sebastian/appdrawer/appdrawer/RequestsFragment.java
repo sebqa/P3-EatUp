@@ -133,7 +133,6 @@ public class RequestsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, final int arg2,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 Log.d("############","Items " +  keys.get(arg2) );
                 if(keys.get(arg2) != null) {
                     key = keys.get(arg2);
@@ -150,7 +149,8 @@ public class RequestsFragment extends Fragment {
                             if(dataSnapshot.getValue() != null) {
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                                    final DatabaseReference usersNameRef = FirebaseDatabase.getInstance().getReference("users").child(postSnapshot.getValue().toString());
+                                    final DatabaseReference usersNameRef = FirebaseDatabase.getInstance().getReference("users")
+                                            .child(postSnapshot.getValue().toString());
                                     usersNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {

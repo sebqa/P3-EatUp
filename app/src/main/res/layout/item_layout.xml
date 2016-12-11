@@ -70,21 +70,10 @@
         android:textSize="12dp"
         android:textAlignment="viewEnd"
         android:singleLine="true"
+        android:textColor="@color/colorPrimary"
+
         android:layout_alignTop="@+id/itemCreator"
         android:layout_toStartOf="@+id/img" />
-
-    <TextView
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:text="Free"
-        android:paddingLeft="10dp"
-        android:id="@+id/itemPrice"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/priceunit"
-        android:paddingRight="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -115,35 +104,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="kr"
-
-        android:id="@+id/priceunit"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/img" />
-
-    <TextView
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="900"
-        android:paddingLeft="10dp"
-        android:id="@+id/itemDistance"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:paddingRight="5dp"
-        android:layout_alignBaseline="@+id/distanceunit"
-        android:layout_alignBottom="@+id/distanceunit"
-        android:layout_toStartOf="@+id/priceunit"
-        android:layout_toLeftOf="@+id/priceunit" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="klokkeslæt"
         android:paddingLeft="10dp"
+        android:textColor="@color/colorPrimary"
+
         android:id="@+id/timeStamp"
         android:textSize="12dp"
         android:textAlignment="viewEnd"
@@ -152,6 +116,37 @@
         android:layout_toLeftOf="@+id/itemDistance"
         android:layout_alignBottom="@+id/distanceunit"
         />
+
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Free"
+        android:paddingLeft="10dp"
+        android:id="@+id/itemPrice"
+        android:textSize="12dp"
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:paddingRight="5dp"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/itemAmount"
+        android:layout_alignStart="@+id/itemAmount" />
+
+    <TextView
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="900"
+        android:paddingLeft="10dp"
+        android:id="@+id/itemDistance"
+        android:textSize="12dp"
+        android:textColor="@color/colorPrimary"
+
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:paddingRight="4dp"
+        android:layout_alignBaseline="@+id/distanceunit"
+        android:layout_alignBottom="@+id/distanceunit"
+        android:layout_toLeftOf="@+id/distanceunit"
+        android:layout_toStartOf="@+id/distanceunit" />
 
 
 </RelativeLayout>
