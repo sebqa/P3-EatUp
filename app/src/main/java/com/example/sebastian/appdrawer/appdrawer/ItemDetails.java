@@ -29,7 +29,7 @@ import com.squareup.picasso.Picasso;
 
 public class ItemDetails extends AppCompatActivity {
     ImageView d_imageView;
-    TextView txTitle,txPrice,txCreator, txDistance, txServingsLeft, txDescription, btnOrder;
+    TextView txTitle,txPrice,txCreator, txServingsLeft, txDescription, btnOrder;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey, amount = "23  serving(s)";
@@ -56,25 +56,16 @@ public class ItemDetails extends AppCompatActivity {
         txTitle = (TextView) findViewById(R.id.txTitleDetails);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
-        //txDistance = (TextView) findViewById(R.id.txDistance);
         txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
         btnOrder = (TextView) findViewById(R.id.btnOrder);
 
-        /*Retrieve parsed information
-        d_imageView.setImageResource(getIntent().getIntExtra("item_img",00));
-        txTitle.setText(getIntent().getStringExtra("item_title"));
-        txCreator.setText(getIntent().getStringExtra("item_creator"));
-        txPrice.setText(getIntent().getStringExtra("item_price") + " DKK");
-        txDistance.setText(getIntent().getStringExtra("item_distance"));
-        */
 
         itemKey = getIntent().getStringExtra("item_key");
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int height = metrics.heightPixels;
         final int width = metrics.widthPixels;
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
@@ -170,17 +161,15 @@ public class ItemDetails extends AppCompatActivity {
         DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
         itemRequestedRef.setValue(user.getUid());
 
-        final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests").push();
+        final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users")
+                .child(user.getUid()).child("sentRequests").push();
         myRequests.child("requestedItem").setValue(itemKey);
 
         DatabaseReference newRequestRef = myRequests.getRef();
         newRequestRef.child("requestedAmount").setValue(""+amount);
-        //newRequestRef.child("requestConfirmed").setValue("false");
-        Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller", Toast.LENGTH_LONG).show();
+
+        Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller",
+                Toast.LENGTH_LONG).show();
         finish();
-    }
-
-    public void getAmount(FirebaseUser user){
-
     }
 }
