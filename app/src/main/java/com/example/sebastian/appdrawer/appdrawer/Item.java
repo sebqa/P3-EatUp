@@ -1,11 +1,5 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
-import android.net.Uri;
-
-import com.example.sebastian.appdrawer.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Sebastian on 02-11-2016.
@@ -21,16 +15,12 @@ public class Item {
     public String userID;
     public String currentTime;
     public String address;
-    public String creatorLoc; // The location that the item has been associated with
     public String price; // Price per serving
     public double distance; // Distance from the user to the item
     public String downloadUrl;
     public int amount; // Amount of servings for sale
     public int pickUpTime; // Time for when the item can be picked up
     public double latitude; // Latitude position of the item when it was created
-
-
-
     public double longitude; // Longitude position of the item when it was created
 
     public Item() {} // Empty constructor, required for Firebase
@@ -41,8 +31,6 @@ public class Item {
         this.creator = creator;
         this.price = price;
         this.amount = amount;
-
-        this.distance = distance;
     }
 
     //Constructor for Firebase
@@ -145,47 +133,7 @@ public class Item {
     public String getAddress() {return address;}
 
     public void setAddress(String address) {this.address = address;}
-    /*
-    //Getters and setters for all values.
 
-
-
-
-
-    public void setPhotoId(int photoId) {
-        this.photoId = photoId;
-    }
-
-    public String getCreatorLoc() {
-        return creatorLoc;
-    }
-
-    public void setCreatorLoc(String creatorLoc) {
-        this.creatorLoc = creatorLoc;
-    }
-
-
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public int getPickUpTime() {
-        return pickUpTime;
-    }
-
-    public void setPickUpTime(int pickUpTime) {
-        this.pickUpTime = pickUpTime;
-    }
-    */
 }
 
 
