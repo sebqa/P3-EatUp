@@ -149,11 +149,11 @@ public class BrowseFragment extends Fragment {
                 Log.d("Time difference", "" + diff / (1000 * 60 * 60));
 
                 //If time difference is more than 5 hours
-                if (diff/(1000 * 60 * 60) < 5) {
+                /*if (diff/(1000 * 60 * 60) < 5) {*/
                     //Add item to list
                     arrayList.add(0, item);
                     adapter.notifyDataSetChanged();
-                } else {
+               /* } else {
                     //Delete item from database
                     dataSnapshot.getRef().setValue(null);
                     //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -182,7 +182,7 @@ public class BrowseFragment extends Fragment {
                             }
                         });
                     }
-                }
+                }*/
                 // ...
             }
 
