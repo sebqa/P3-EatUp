@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -396,7 +398,13 @@ public class CreateItem extends AppCompatActivity implements
 
                 bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
                 StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
-                imagePlaceholder.setImageBitmap(bitmap);
+                DisplayMetrics metrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                final int width = metrics.widthPixels;
+                Bitmap displayImage = ThumbnailUtils.extractThumbnail(bitmap,width,width);
+                imagePlaceholder.setRotation(90);
+                imagePlaceholder.setImageBitmap(displayImage);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
                 byte[] byteData = baos.toByteArray();
