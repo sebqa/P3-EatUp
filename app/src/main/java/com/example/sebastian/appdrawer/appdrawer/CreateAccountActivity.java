@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.onesignal.OneSignal;
 
 /*****************************
 
@@ -41,13 +42,22 @@ public class CreateAccountActivity extends AppCompatActivity {
     //Define UI elements
     EditText editTextEmail,editTextPassword,etFirstName,etLastName;
     Button buttonSignup;
-    //String userEmail;
+    String oneSignalID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-
+        OneSignal.startInit(this).init();
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                oneSignalID = userId;
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
         //Initialize UI elements
         editTextEmail = (EditText)findViewById(R.id.editEmail);
         editTextPassword = (EditText)findViewById(R.id.editPassword);
@@ -74,11 +84,15 @@ public class CreateAccountActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid()).child("name");
+                    final DatabaseReference nameRef = rootRef.child("users").child(user.getUid()).child("name");
+
                     String firstName = etFirstName.getText().toString();
                     String lastName = etLastName.getText().toString();
-                    userRef.setValue(firstName+" "+lastName);
-
+                    nameRef.setValue(firstName+" "+lastName);
+                    final DatabaseReference oneSignalIDRef = rootRef.child("users").child(user.getUid()).child("oneSignalID");
+                    if(oneSignalID != null) {
+                        oneSignalIDRef.setValue(oneSignalID);
+                    }
                     finish();
 
                 } else {

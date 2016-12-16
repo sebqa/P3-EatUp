@@ -33,6 +33,21 @@
         android:dividerHeight="0.5dp"
         android:background="#FFFFFF"
         android:layout_below="@+id/sentText"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirmed requests"
+        android:id="@+id/confirmedListText"
+        android:layout_below="@+id/requestedItems"/>
+    <ListView
+        android:id="@+id/confirmedItems"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@color/background"
+        android:dividerHeight="0.5dp"
+        android:background="#FFFFFF"
+        android:layout_below="@+id/confirmedListText"/>
 
 </RelativeLayout>
 </FrameLayout>

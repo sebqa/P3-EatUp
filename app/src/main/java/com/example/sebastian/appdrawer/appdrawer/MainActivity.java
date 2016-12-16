@@ -3,7 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
+import com.onesignal.OneSignal;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -82,10 +82,21 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
+        OneSignal.startInit(this).init();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
+
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
+
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
 
@@ -216,40 +227,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
-                    final Item item = dataSnapshot.getValue(Item.class);
 
-                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    String snap = postSnapshot.getValue().toString();
-                    String userIDcheck = user.getUid().toString();
-                    Log.d("snapshot", snap);
-                    Log.d("userID", userIDcheck);
-                    if (snap.equals(userIDcheck)) {
-                        AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                        ad.setTitle("Order confirmation");
-                        ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
-                        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialogInterface) {
-                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
-                                Log.d("deleteref", deleteRef.getRef().toString());
-                                deleteRef.getRef().setValue(null);
-                            }
-                        });
-
-
-                        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
-                                Log.d("deleteref", deleteRef.getRef().toString());
-                                deleteRef.getRef().setValue(null);
-                                dialog.cancel();
-                            }
-                        });
-                        ad.show();
-                    }
-                }
             }
 
             @Override
@@ -258,34 +236,40 @@ public class MainActivity extends AppCompatActivity
                     final Item item = dataSnapshot.getValue(Item.class);
 
                     final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    String snap = postSnapshot.getValue().toString();
-                    String userIDcheck = user.getUid().toString();
-                    Log.d("snapshot", snap);
-                    Log.d("userID", userIDcheck);
-                    if (snap.equals(userIDcheck)) {
-                        AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                        ad.setTitle("Order confirmation");
-                        ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
-                        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialogInterface) {
-                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
-                                Log.d("deleteref", deleteRef.getRef().toString());
-                                deleteRef.getRef().setValue(null);
-                            }
-                        });
+                    if(user != null) {
+                        String snap = postSnapshot.getValue().toString();
+                        String userIDcheck = user.getUid().toString();
+                        Log.d("snapshot", snap);
+                        Log.d("userID", userIDcheck);
+                        if (snap.equals(userIDcheck)) {
+                            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                            ad.setTitle("Order confirmation");
+                            ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
+                            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialogInterface) {
+                                    DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                    Log.d("deleteref", deleteRef.getRef().toString());
+                                    deleteRef.getRef().setValue(null);
+
+                                }
+                            });
 
 
-                        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
-                                Log.d("deleteref", deleteRef.getRef().toString());
-                                deleteRef.getRef().setValue(null);
-                                dialog.cancel();
-                            }
-                        });
-                        ad.show();
+                            ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                    Log.d("deleteref", deleteRef.getRef().toString());
+                                    deleteRef.getRef().setValue(null);
+
+                                    DatabaseReference confirmedHistory = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("confirmedRequests").push();
+                                    confirmedHistory.setValue(item);
+                                    dialog.cancel();
+                                }
+                            });
+                            ad.show();
+                        }
                     }
                 }
             }

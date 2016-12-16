@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.onesignal.OneSignal;
 
 public class LoginSignUp extends AppCompatActivity{
 
@@ -20,7 +23,7 @@ public class LoginSignUp extends AppCompatActivity{
     Button buttonBrowse;
     Button buttonSignIn;
     TextView textSignUp;
-
+    String oneSignalID;
     //Firebase authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -33,7 +36,7 @@ public class LoginSignUp extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_sign_up);
         Utils.getDatabase();
-
+        OneSignal.startInit(this);
         setTheme(R.style.AppTheme);
 
         //Initialize UI elements
@@ -74,6 +77,15 @@ public class LoginSignUp extends AppCompatActivity{
 
         //Checks whether the user is already signed in
         mAuth = FirebaseAuth.getInstance();
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                oneSignalID = userId;
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -82,6 +94,10 @@ public class LoginSignUp extends AppCompatActivity{
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+                    if(oneSignalID != null) {
+                        oneSignalIDRef.setValue(oneSignalID);
+                    }
                     Intent intent = new Intent(LoginSignUp.this,MainActivity.class);
                     startActivity(intent);
                     finish();

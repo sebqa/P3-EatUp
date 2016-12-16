@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.onesignal.OneSignal;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -28,7 +29,7 @@ public class LogInActivity extends AppCompatActivity {
     Button buttonSignIn;
     TextView tvCreateAccount;
     private static final String TAG = "LogInActivity";
-
+    String oneSignalID;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener; //Tracks user sign in/out
 
@@ -37,7 +38,7 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
         Utils.getDatabase();
-
+        OneSignal.startInit(this);
         //Initialize UI elements
         editEmail = (EditText) findViewById(R.id.editEmail);
         editPassword = (EditText) findViewById(R.id.editPassword);
@@ -61,6 +62,15 @@ public class LogInActivity extends AppCompatActivity {
                 startActivity(new Intent(LogInActivity.this, CreateAccountActivity.class));
             }
         });
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                oneSignalID = userId;
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -70,8 +80,10 @@ public class LogInActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
-                    finish();
+                    final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+                    if(oneSignalID != null) {
+                        oneSignalIDRef.setValue(oneSignalID);
+                    }                    finish();
 
                 } else {
                     // User is signed out

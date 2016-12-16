@@ -35,7 +35,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +55,7 @@ public class RequestsFragment extends Fragment {
     TextView txFragment;
     String key;
     String username;
-
+    String receiverSignalID;
 
     @Nullable
     @Override
@@ -59,14 +63,17 @@ public class RequestsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_requests,container,false);
         setHasOptionsMenu(true);
 
-
+        OneSignal.startInit(getActivity());
         final ListView ownItems = (ListView)rootView.findViewById(R.id.ownItems);
         final ArrayList<String> itemList = new ArrayList<String>();
         final ArrayList<String> keys = new ArrayList<String>();
         final ArrayList<String> userRequests = new ArrayList<String>();
         final ArrayList<String> sentRequests = new ArrayList<String>();
         final ArrayList<String> userRequestsKeys = new ArrayList<String>();
+        final ArrayList<String> confirmedRequests = new ArrayList<String>();
+
         final ListView requestedItems = (ListView)rootView.findViewById(R.id.requestedItems);
+        final ListView confirmedRequestsList = (ListView)rootView.findViewById(R.id.confirmedItems);
 
 
 
@@ -94,6 +101,7 @@ public class RequestsFragment extends Fragment {
                                 Item item = dataSnapshot.getValue(Item.class);
                                 long itemCount = postSnapshot.child("itemRequests").getChildrenCount();
                                 if(item.title != null) {
+                                    itemList.clear();
 
                                     itemList.add(item.title + ": " + itemCount);
                                     ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
@@ -203,7 +211,31 @@ public class RequestsFragment extends Fragment {
                                         //final DatabaseReference requestConfirmationRef = FirebaseDatabase.getInstance().getReference("users").child(key).child("sentRequests").push();
                                         DatabaseReference confirmReqKey = FirebaseDatabase.getInstance().getReference("food").child(key).child("confirmedReq");
                                         confirmReqKey.push().setValue(userRequestsKeys.get(i));
-                                        DatabaseReference setUser = FirebaseDatabase.getInstance().getReference("users").child(userRequestsKeys.get(i)).child("name");
+
+                                        DatabaseReference oneSignalRef = FirebaseDatabase.getInstance().getReference("users").child(userRequestsKeys.get(i)).child("oneSignalID");
+                                        oneSignalRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                if (dataSnapshot != null) {
+                                                    Log.d("OneSignalIDsnap",dataSnapshot.getValue().toString());
+                                                    receiverSignalID = dataSnapshot.getValue().toString().trim();
+                                                    try {
+                                                        OneSignal.postNotification(new JSONObject("{'contents': {'en':'An order has been confirmed'}, 'include_player_ids': ['" + receiverSignalID + "']}"), null);
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
                                         //setUser.setValue("NEW NOTIFICATION");
 
 
@@ -287,6 +319,40 @@ public class RequestsFragment extends Fragment {
 
             }
         });
+        DatabaseReference confirmedRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("confirmedRequests");
+
+        confirmedRequestsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Item item = dataSnapshot.getValue(Item.class);
+                    Log.d("ItemValue",item.getTitle());
+                    confirmedRequests.add(item.getTitle()+": "+item.getAddress());
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        ArrayAdapter confirmedRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, confirmedRequests);
+        confirmedRequestsList.setAdapter(confirmedRequestsadapter);
+
 
 
         return rootView;

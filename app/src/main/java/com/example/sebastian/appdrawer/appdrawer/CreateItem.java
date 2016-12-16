@@ -397,7 +397,6 @@ public class CreateItem extends AppCompatActivity implements
             try {
 
                 bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
                 DisplayMetrics metrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
@@ -408,6 +407,8 @@ public class CreateItem extends AppCompatActivity implements
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
                 byte[] byteData = baos.toByteArray();
+
+                StorageReference filepath = mStorage.child("food").child("food "+UUID.randomUUID());
 
                 UploadTask uploadTask = filepath.putBytes(byteData);
                 uploadTask.addOnFailureListener(new OnFailureListener() {
