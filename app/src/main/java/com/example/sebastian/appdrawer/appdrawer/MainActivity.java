@@ -227,11 +227,6 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
                     final Item item = dataSnapshot.getValue(Item.class);
 
@@ -272,6 +267,11 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -475,6 +475,7 @@ public class MainActivity extends AppCompatActivity
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+
     }
 
     @Override

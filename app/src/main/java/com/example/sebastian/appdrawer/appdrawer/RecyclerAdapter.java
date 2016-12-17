@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
     int position;
-    double haverdistanceKM;
+    public double haverdistanceKM;
     private ArrayList<Item> arrayList = new ArrayList<Item>();
 
     Context ctx;
@@ -65,9 +65,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         //Calculate distance between the two points
         haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
         //Reduce decimals for listview
-        int temp = (int)(haverdistanceKM*100.0);
-        double shortDouble = ((double)temp)/100.0;
-        holder.distance.setText(Double.toString(shortDouble));
+        int temp = (int)(haverdistanceKM*1000);
+        int shortDouble = (temp);
+        holder.distance.setText((shortDouble)+" m");
 
 
         this.position = position;
@@ -132,7 +132,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 //Create new intent that gets us to the next activity.
                 Intent intent = new Intent(ctx, ItemDetails.class);
                 //Parse the information between the activities.
+
                 intent.putExtra("item_key", item.getKey());
+
 
                 //Start the new activity.
                 this.ctx.startActivity(intent);

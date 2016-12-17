@@ -22,7 +22,6 @@ public class Item {
     public int pickUpTime; // Time for when the item can be picked up
     public double latitude; // Latitude position of the item when it was created
     public double longitude; // Longitude position of the item when it was created
-
     public Item() {} // Empty constructor, required for Firebase
 
     //Constructor for list
@@ -78,7 +77,11 @@ public class Item {
     public String getKey() {
         return key;
     }
+    public String getUserID() {
+        return userID;
+    }
 
+    public void setUserID(String userID) {this.userID = userID;}
     public void setKey(String key) {
         this.key = key;
     }

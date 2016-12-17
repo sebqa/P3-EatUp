@@ -31,7 +31,7 @@
             <item
                 android:id="@+id/nav_requests"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Requests" />
+                android:title="Orders" />
     </group>
 
     <group android:checkableBehavior="single"

@@ -3,12 +3,14 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.text.DecimalFormat;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,16 +26,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class ItemDetails extends AppCompatActivity {
     ImageView d_imageView;
-    TextView txTitle,txPrice,txCreator, txServingsLeft, txDescription, btnOrder;
+    TextView txTitle,txPrice,txCreator, txServingsLeft, txDescription, btnOrder,txDistance;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;
     String itemKey, amount = "23  serving(s)";
-
+    Item item;
+    String receiverSignalID;
+    public double haverdistanceKM;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
@@ -59,6 +67,7 @@ public class ItemDetails extends AppCompatActivity {
         txServingsLeft = (TextView) findViewById(R.id.txServingsLeft);
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
         btnOrder = (TextView) findViewById(R.id.btnOrder);
+        txDistance = (TextView) findViewById(R.id.txDistance);
 
 
         itemKey = getIntent().getStringExtra("item_key");
@@ -120,13 +129,19 @@ public class ItemDetails extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Item item = dataSnapshot.getValue(Item.class);
+                item = dataSnapshot.getValue(Item.class);
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
                     txPrice.setText(item.getPrice());
                     txCreator.setText(item.getCreator());
                     txServingsLeft.setText(""+item.getAmount()+" serving(s) remaining");
+                    haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
+                    //Reduce decimals for listview
+                    int temp = (int)(haverdistanceKM*1000.0);
+                    int shortDouble = (temp);
+                    txDistance.setText((shortDouble)+" m");
+
 
                     if(item.getDownloadUrl() == null){
                         item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
@@ -168,8 +183,43 @@ public class ItemDetails extends AppCompatActivity {
         DatabaseReference newRequestRef = myRequests.getRef();
         newRequestRef.child("requestedAmount").setValue(""+amount);
 
+        DatabaseReference oneSignalRef = rootRef.child("users").child(item.getUserID()).child("oneSignalID");
+        oneSignalRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    Log.d("OneSignalIDsnap",dataSnapshot.getValue().toString());
+                    receiverSignalID = dataSnapshot.getValue().toString().trim();
+                    try {
+                        OneSignal.postNotification(new JSONObject("{'contents': {'en':'You have received a new order'}, 'include_player_ids': ['" + receiverSignalID + "']}"), null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
         Toast.makeText(this, "Your order has been placed. Please wait for confirmation from the seller",
                 Toast.LENGTH_LONG).show();
         finish();
+    }
+    public void haversine(double lat1, double lon1, double lat2, double lon2) {
+        double Rad = 6372.8; //Earth's Radius In kilometers
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        haverdistanceKM = Rad * c;
+
     }
 }

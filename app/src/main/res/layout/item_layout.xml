@@ -62,18 +62,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignEnd="@+id/img" />
 -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="m"
-        android:id="@+id/distanceunit"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:textColor="@color/colorPrimary"
-
-        android:layout_alignTop="@+id/itemCreator"
-        android:layout_toStartOf="@+id/img" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -102,22 +90,6 @@
         android:paddingRight="5dp" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="klokkeslæt"
-        android:paddingLeft="10dp"
-        android:textColor="@color/colorPrimary"
-
-        android:id="@+id/timeStamp"
-        android:textSize="12dp"
-        android:textAlignment="viewEnd"
-        android:singleLine="true"
-        android:paddingRight="5dp"
-        android:layout_toLeftOf="@+id/itemDistance"
-        android:layout_alignBottom="@+id/distanceunit"
-        />
-
-    <TextView
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="Free"
@@ -132,7 +104,24 @@
         android:layout_alignStart="@+id/itemAmount" />
 
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="klokkeslæt"
+        android:paddingLeft="10dp"
+        android:textColor="@color/colorPrimary"
+
+        android:id="@+id/timeStamp"
+        android:textSize="12dp"
+        android:textAlignment="viewEnd"
+        android:singleLine="true"
+        android:paddingRight="10dp"
+        android:layout_alignBaseline="@+id/itemDistance"
+        android:layout_alignBottom="@+id/itemDistance"
+        android:layout_toLeftOf="@+id/itemPrice"
+        android:layout_toStartOf="@+id/itemPrice" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="900"
         android:paddingLeft="10dp"
@@ -143,10 +132,9 @@
         android:textAlignment="viewEnd"
         android:singleLine="true"
         android:paddingRight="4dp"
-        android:layout_alignBaseline="@+id/distanceunit"
-        android:layout_alignBottom="@+id/distanceunit"
-        android:layout_toLeftOf="@+id/distanceunit"
-        android:layout_toStartOf="@+id/distanceunit" />
+        android:layout_alignTop="@+id/itemCreator"
+        android:layout_toLeftOf="@+id/img"
+        android:layout_toStartOf="@+id/img" />
 
 
 </RelativeLayout>
