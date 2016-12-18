@@ -254,12 +254,9 @@ public class MainActivity extends AppCompatActivity
                             ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
-                                    Log.d("deleteref", deleteRef.getRef().toString());
-                                    deleteRef.getRef().setValue(null);
 
-                                    DatabaseReference confirmedHistory = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("confirmedRequests").push();
-                                    confirmedHistory.setValue(item);
+
+
                                     dialog.cancel();
                                 }
                             });
@@ -271,7 +268,88 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
+                    final Item item = dataSnapshot.getValue(Item.class);
 
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if(user != null) {
+                        String snap = postSnapshot.getValue().toString();
+                        String userIDcheck = user.getUid().toString();
+                        Log.d("snapshot", snap);
+                        Log.d("userID", userIDcheck);
+                        if (snap.equals(userIDcheck)) {
+                            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                            ad.setTitle("Order confirmation");
+                            ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
+                            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialogInterface) {
+                                    DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                    Log.d("deleteref", deleteRef.getRef().toString());
+                                    deleteRef.getRef().setValue(null);
+
+                                }
+                            });
+
+
+                            ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DatabaseReference deleteRef = mFirebaseDatabaseReference.child(item.getKey()).child("confirmedReq");
+                                    Log.d("deleteref", deleteRef.getRef().toString());
+                                    deleteRef.getRef().setValue(null);
+
+                                    DatabaseReference confirmedHistory = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("confirmedRequests").push();
+                                    confirmedHistory.setValue(item);
+
+                                    DatabaseReference deleteSentRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("sentRequests");
+                                    Query sentReqquery = deleteSentRef.orderByChild("requestedItem").equalTo(item.getKey());
+                                    sentReqquery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                                                
+                                                    postSnapshot.getRef().setValue(null);
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                    Query query = mFirebaseDatabaseReference.child(item.getKey()).child("itemRequests");
+                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                                                String snap = postSnapshot.getValue().toString();
+                                                String userIDcheck = user.getUid().toString();
+                                                if (snap.equals(userIDcheck)) {
+                                                    dataSnapshot.getRef().setValue(null);
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+
+
+                                    dialog.cancel();
+                                }
+                            });
+                            ad.show();
+                        }
+                    }
+                }
             }
 
             @Override
