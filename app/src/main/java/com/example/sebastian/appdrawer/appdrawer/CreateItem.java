@@ -107,7 +107,7 @@ public class CreateItem extends AppCompatActivity implements
     int maxLength = 13;
     public String downloadUrl, stringUser;
     CameraPhoto cameraPhoto;
-
+    String stringNrOfServings;
     SwitchCompat swLocation, swPrice;
     public static final int CAMERA_REQUEST_CODE = 1;
     private StorageReference mStorage;
@@ -147,7 +147,6 @@ public class CreateItem extends AppCompatActivity implements
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
         etAdress = (EditText)findViewById(R.id.etAdress);
-
         mProgress = new ProgressDialog(this);
 
         final MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
@@ -180,6 +179,7 @@ public class CreateItem extends AppCompatActivity implements
         });
 
         edNrOfServings.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+        edNrOfServings.setText("1");
         // OnClickListener for servings textview
         // husk at sætte default værdien på EditText til 1
         tvServings.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +189,7 @@ public class CreateItem extends AppCompatActivity implements
                 InputMethodManager imm = (InputMethodManager) getSystemService(CreateItem.this.INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 edNrOfServings.setHint("");
+                edNrOfServings.setText("");
             }
         });
 
@@ -315,10 +316,12 @@ public class CreateItem extends AppCompatActivity implements
 
                     //insert data into Firebase
                     DatabaseReference foodRef = rootRef.child("food").push(); //point to food branch
-                    edNrOfServings.setText("1");
+
                     String stringItemTitle = etTitle.getText().toString();
                     String stringItemDescription = etDescription.getText().toString();
-                    String stringNrOfServings = edNrOfServings.getText().toString();
+
+                    stringNrOfServings =edNrOfServings.getText().toString();
+
                     String stringItemKey = foodRef.getKey();
                     String stringAdress = etAdress.getText().toString();
                     int intServings = Integer.parseInt(stringNrOfServings);

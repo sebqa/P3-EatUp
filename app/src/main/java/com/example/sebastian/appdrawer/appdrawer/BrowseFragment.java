@@ -195,6 +195,7 @@ public class BrowseFragment extends Fragment {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 getUpdates(dataSnapshot);
                 adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
             @Override

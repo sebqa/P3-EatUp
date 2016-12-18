@@ -82,6 +82,59 @@ public class RequestsFragment extends Fragment {
         final DatabaseReference itemRequestsRef = rootRef.child("food");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Query query = itemRequestsRef.orderByChild("userID").equalTo(user.getUid());
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue() != null) {
+                    key = dataSnapshot.getKey();
+                    keys.add(key);
+
+                    itemRequestsRef.child("" + key).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d("Add title", "SECOND CHANGED");
+                            Item item = dataSnapshot.getValue(Item.class);
+                            long itemCount = dataSnapshot.child("itemRequests").getChildrenCount();
+                            if (item.title != null) {
+
+                                itemList.add(item.title + ": " + itemCount);
+                                ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
+
+                                ownItems.setAdapter(ownItemsadapter);
+                            }
+                            itemRequestsRef.removeEventListener(this);
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        /*
         query.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -130,7 +183,7 @@ public class RequestsFragment extends Fragment {
             {
 
             }
-            });
+            });*/
 
 
 

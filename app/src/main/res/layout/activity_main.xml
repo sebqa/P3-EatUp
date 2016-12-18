@@ -15,7 +15,22 @@
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textSize="6dp"
+        android:padding="16dp"
+        android:layout_marginLeft="18dp"
+        android:background="@drawable/circle_bg"
+        android:id="@+id/newNoti"
+        android:visibility="invisible"
+        />
 
+</FrameLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -27,6 +42,5 @@
         app:menu="@menu/activity_main_drawer"
         app:itemTextColor="#FFFFFF"
         android:background="@color/colorPrimaryDark"/>
-
 
 </android.support.v4.widget.DrawerLayout>

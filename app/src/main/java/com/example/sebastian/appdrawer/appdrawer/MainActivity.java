@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity
     public Location mLastLocation; //Location of the client
     public static double mLatitude; //Client latitude coordinate
     public static double mLongitude; //Client longitude coordinate
+    TextView newNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +137,9 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        newNoti = (TextView)drawer.findViewById(R.id.newNoti);
+
+
         setDrawerLeftEdgeSize(this, drawer, 0.5f);
         //Set onClickListener to the menu, such that elements can be pressed independently.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -144,6 +150,9 @@ public class MainActivity extends AppCompatActivity
         View headerview = navigationView.getHeaderView(0);
         tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
         tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
+        ImageView userIcon = (ImageView)headerview.findViewById(R.id.userIcon);
+
+       userIcon.setBackgroundResource(R.drawable.usericon);
         signInBtn = (Button)headerview.findViewById(R.id.signInBtn);
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -273,6 +282,7 @@ public class MainActivity extends AppCompatActivity
 
                     final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user != null) {
+                        newNoti.setVisibility(View.VISIBLE);
                         String snap = postSnapshot.getValue().toString();
                         String userIDcheck = user.getUid().toString();
                         Log.d("snapshot", snap);
@@ -473,8 +483,12 @@ public class MainActivity extends AppCompatActivity
             fn.beginTransaction().replace(R.id.content_frame, new MyFoodFragment()).commit();
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_requests) {
+
+
             fn.beginTransaction().replace(R.id.content_frame, new RequestsFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
+            newNoti.setVisibility(View.INVISIBLE);
+
         } else if (id == R.id.nav_settings) {
             fn.beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
@@ -511,8 +525,8 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
 
             tvEmail.setText(""+user.getEmail());
-            DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("name");
-            mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     username = dataSnapshot.getValue().toString();
@@ -521,6 +535,8 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onCancelled(DatabaseError databaseError) {}
             });
+
+
             //tvUsername.setText(""+user.getUid());
             signOutBtn.setVisibility(View.VISIBLE);
             signInBtn.setVisibility(View.INVISIBLE);
