@@ -65,9 +65,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         //Calculate distance between the two points
         haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
         //Reduce decimals for listview
-        int temp = (int)(haverdistanceKM);
-        double shortDouble = ((double)temp*100);
-        holder.distance.setText(Double.toString(shortDouble));
+        int temp = (int)(haverdistanceKM*1000);
+        int shortDouble = (temp);
+        holder.distance.setText((shortDouble)+" m");
 
 
         this.position = position;
