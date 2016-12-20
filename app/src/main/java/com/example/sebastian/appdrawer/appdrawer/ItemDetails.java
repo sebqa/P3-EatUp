@@ -150,6 +150,7 @@ public class ItemDetails extends AppCompatActivity {
                             .load(item.getDownloadUrl())
                             .centerCrop()
                             .resize(width,width)
+                            .rotate(90)
                             .error(R.drawable.placeholder)
                             .placeholder(R.drawable.progress_animation )
                             .into(d_imageView);

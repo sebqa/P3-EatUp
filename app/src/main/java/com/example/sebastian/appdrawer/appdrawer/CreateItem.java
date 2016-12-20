@@ -49,6 +49,8 @@ import android.view.KeyEvent;
 
 
 import com.example.sebastian.appdrawer.R;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -344,6 +346,9 @@ public class CreateItem extends AppCompatActivity implements
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.setLocation(foodRef.getKey(),new GeoLocation(mLatitude,mLongitude));
 
                     startActivity(new Intent(CreateItem.this, MainActivity.class));
 

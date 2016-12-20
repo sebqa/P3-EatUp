@@ -20,6 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -103,8 +107,127 @@ public class BrowseFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
+        /*DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+        GeoFire geoFire = new GeoFire(ref);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(MainActivity.mLatitude, MainActivity.mLongitude),500000);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                Log.d("geoKeyItem",key.toString());
+                //Load items, and constructs instances of the Item class with them
 
-    if(isAdded()) {
+                mFirebaseDatabaseReference.child(key.toString().trim()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d(dataSnapshot.child("title").toString(),"itemgeoKey");
+                        //Load items, and constructs instances of the Item class with them
+                        final Item item = dataSnapshot.getValue(Item.class);
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+
+                        //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
+                        //at the top.
+                        if (item.getDownloadUrl() == null) {
+                            item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                        }
+
+                        //Check if item is more than 5 hours old
+                        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                        Date itemDate = null;
+                        try {
+                            itemDate = formatter.parse(item.getCurrentTime());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
+                        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
+
+                        String currentTimeString = dateFormatGmt.format(new Date()) + "";
+                        Date currentDate = null;
+                        try {
+                            currentDate = formatter.parse(currentTimeString);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        Calendar thatDay = Calendar.getInstance();
+                        thatDay.setTime(itemDate);
+                        Calendar today = Calendar.getInstance();
+                        today.setTime(currentDate);
+                        long diff = today.getTimeInMillis() - thatDay.getTimeInMillis(); //result in millis
+
+                        Log.d("Time difference", "" + diff / (1000 * 60 * 60));
+
+                        //If time difference is more than 5 hours
+                        if (diff/(1000 * 60 * 60) < 4) {
+                            //Add item to list
+                            arrayList.add(0,item);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            //Delete item from database
+                            dataSnapshot.getRef().setValue(null);
+                            //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user != null) {
+                                DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests");
+                                final Query query = mFirebaseDatabaseReference.orderByChild("requestedItem").equalTo(item.getKey());
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Log.d("Data change", "FIRST CHANGED");
+                                        for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                            Log.d("FOR", "CHANGED");
+                                            if (postSnapshot.getValue() != null) {
+                                                Log.d("sentRequests", postSnapshot.getValue().toString());
+                                                postSnapshot.getRef().setValue(null);
+
+                                            }
+
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                    }
+
+
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });*/
+
+
+        if(isAdded()) {
         mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -149,11 +272,11 @@ public class BrowseFragment extends Fragment {
                 Log.d("Time difference", "" + diff / (1000 * 60 * 60));
 
                 //If time difference is more than 5 hours
-                /*if (diff/(1000 * 60 * 60) < 5) {*/
+                if (diff/(1000 * 60 * 60) < 4) {
                     //Add item to list
                     arrayList.add(0, item);
                     adapter.notifyDataSetChanged();
-               /* } else {
+                } else {
                     //Delete item from database
                     dataSnapshot.getRef().setValue(null);
                     //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -182,7 +305,7 @@ public class BrowseFragment extends Fragment {
                             }
                         });
                     }
-                }*/
+                }
                 // ...
             }
 
