@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -311,7 +312,7 @@ public class CreateItem extends AppCompatActivity implements
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(CreateItem.this, LogInActivity.class));
                 }
-                else if(user != null) {
+                else if(user != null && validateForm()) {
                     //Display the tags which are stored in an ArrayList, as a list
                     ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
                     tagsList.setAdapter(adapter1);
@@ -355,6 +356,20 @@ public class CreateItem extends AppCompatActivity implements
                 }
             }
         });
+    }
+    private boolean validateForm() {
+        boolean valid = true;
+
+        String stringItemTitle = etTitle.getText().toString().trim();
+        if (TextUtils.isEmpty(stringItemTitle)) {
+            etTitle.setError("Required");
+            scrollView.scrollTo(0,0);
+            valid = false;
+        } else {
+            etTitle.setError(null);
+        }
+
+        return valid;
     }
 
     @Override

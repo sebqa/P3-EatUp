@@ -27,14 +27,6 @@ public class SettingsFragment extends Fragment {
 
 
     }
-    @Override
-    public void onCreateOptionsMenu(
-            Menu menu, MenuInflater inflater) {
 
-        MenuItem item= menu.findItem(R.id.action_sort);
-        item.setVisible(false);
-        MenuItem item2 = menu.findItem(R.id.action_settings);
-        item2.setVisible(false);
-    }
 }
 

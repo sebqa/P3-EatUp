@@ -19,16 +19,19 @@
             <group>
                 <item
                     android:title="Newest"
+                    android:id="@+id/sortNewest"
                     />
             </group>
             <group>
                 <item
                     android:title="Distance"
+                    android:id="@+id/sortDistance"
                     />
             </group>
             <group>
                 <item
                     android:title="Price"
+                    android:id="@+id/sortPrice"
                     />
             </group>
         </menu>

@@ -19,7 +19,7 @@ public class Item {
     public double distance; // Distance from the user to the item
     public String downloadUrl;
     public int amount; // Amount of servings for sale
-    public int pickUpTime; // Time for when the item can be picked up
+    //public int pickUpTime; // Time for when the item can be picked up
     public double latitude; // Latitude position of the item when it was created
     public double longitude; // Longitude position of the item when it was created
     public Item() {} // Empty constructor, required for Firebase

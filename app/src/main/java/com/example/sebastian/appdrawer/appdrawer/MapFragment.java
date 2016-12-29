@@ -28,12 +28,5 @@ public class MapFragment extends Fragment {
 
 
         }
-    @Override
-    public void onCreateOptionsMenu(
-            Menu menu, MenuInflater inflater) {
 
-        MenuItem item= menu.findItem(R.id.action_sort);
-        item.setVisible(false);
-
-    }
 }

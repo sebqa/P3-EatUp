@@ -31,14 +31,5 @@ public class AboutFragment extends Fragment {
 
 
     }
-    @Override
-    public void onCreateOptionsMenu(
-            Menu menu, MenuInflater inflater) {
 
-        //Find and hide items from the toolbar for this fragment.
-        MenuItem item= menu.findItem(R.id.action_sort);
-        item.setVisible(false);
-        MenuItem item2 = menu.findItem(R.id.action_settings);
-        item2.setVisible(false);
-    }
 }

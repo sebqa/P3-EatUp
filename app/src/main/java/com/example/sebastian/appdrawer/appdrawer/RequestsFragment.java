@@ -88,6 +88,7 @@ public class RequestsFragment extends Fragment {
                 if (dataSnapshot.getValue() != null) {
                     key = dataSnapshot.getKey();
                     keys.add(key);
+                    final ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
 
                     itemRequestsRef.child("" + key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -98,9 +99,8 @@ public class RequestsFragment extends Fragment {
                             if (item.title != null) {
 
                                 itemList.add(item.title + ": " + itemCount);
-                                ArrayAdapter ownItemsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemList);
+                                ownItemsadapter.notifyDataSetChanged();
 
-                                ownItems.setAdapter(ownItemsadapter);
                             }
                             itemRequestsRef.removeEventListener(this);
 
@@ -111,6 +111,8 @@ public class RequestsFragment extends Fragment {
 
                         }
                     });
+                    ownItems.setAdapter(ownItemsadapter);
+
                 }
             }
 
@@ -373,6 +375,7 @@ public class RequestsFragment extends Fragment {
             }
         });
         DatabaseReference confirmedRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("confirmedRequests");
+        final ArrayAdapter confirmedRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, confirmedRequests);
 
         confirmedRequestsRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -380,6 +383,7 @@ public class RequestsFragment extends Fragment {
                     Item item = dataSnapshot.getValue(Item.class);
                     Log.d("ItemValue",item.getTitle());
                     confirmedRequests.add(item.getTitle()+": "+item.getAddress());
+                confirmedRequestsadapter.notifyDataSetChanged();
 
             }
 
@@ -403,7 +407,6 @@ public class RequestsFragment extends Fragment {
 
             }
         });
-        ArrayAdapter confirmedRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, confirmedRequests);
         confirmedRequestsList.setAdapter(confirmedRequestsadapter);
 
 
@@ -418,15 +421,7 @@ public class RequestsFragment extends Fragment {
         //Detach listeners
     }
 
-    @Override
-    public void onCreateOptionsMenu(
-            Menu menu, MenuInflater inflater) {
 
-        MenuItem item= menu.findItem(R.id.action_sort);
-        item.setVisible(false);
-        MenuItem item2 = menu.findItem(R.id.action_settings);
-        item2.setVisible(false);
-    }
     Activity activity;
     @Override
     public void onAttach(Activity activity) {

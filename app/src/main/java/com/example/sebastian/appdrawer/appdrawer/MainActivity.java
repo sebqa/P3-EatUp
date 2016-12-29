@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         OneSignal.startInit(this).init();
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         newNoti = (TextView)drawer.findViewById(R.id.newNoti);
+
 
 
         setDrawerLeftEdgeSize(this, drawer, 0.5f);
@@ -218,8 +220,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         //Initialize the main fragment's layout
-        android.app.FragmentManager fn = getFragmentManager();
-        fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
+
 
         //Set onClickListener to the floating action button, and make it start new activity.
         fab = (FloatingActionButton)findViewById(R.id.fab);
@@ -282,12 +283,13 @@ public class MainActivity extends AppCompatActivity
 
                     final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user != null) {
-                        newNoti.setVisibility(View.VISIBLE);
+
                         String snap = postSnapshot.getValue().toString();
                         String userIDcheck = user.getUid().toString();
                         Log.d("snapshot", snap);
                         Log.d("userID", userIDcheck);
                         if (snap.equals(userIDcheck)) {
+                            newNoti.setVisibility(View.VISIBLE);
                             AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
                             ad.setTitle("Order confirmation");
                             ad.setMessage("Confirmation for: " + item.title + "\n" + "Exacts address is: " + item.getAddress());
@@ -381,7 +383,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void sortDistance(){
 
+    }
 
     //Override onBackPressed such that it doesn't close the app, but only the hamburger menu if it's open.
     @Override
@@ -428,36 +432,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Initialize the menu layout
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        return true;
-    }
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
 
 
-        return super.onPrepareOptionsMenu(menu);
-    }
 
 
-    //Handle the toolbar clicks
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //Check which element was pressed
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_sort){
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 
     //Handle hamburger menu clicks
@@ -555,10 +533,10 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        mAuth.addAuthStateListener(mAuthListener);
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+
 
     }
     // [END on_start_add_listener]
@@ -687,6 +665,7 @@ public class MainActivity extends AppCompatActivity
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Log.i(TAG, "TEST MESSAGE: Location services connected.");
 
+
             if (mLastLocation == null || permissionCheck == -1) {
                 mLatitude = 0.0;
                 mLongitude = 0.0;
@@ -697,6 +676,8 @@ public class MainActivity extends AppCompatActivity
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
+                android.app.FragmentManager fn = getFragmentManager();
+                fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
             }
 
         } catch (SecurityException ex) {
@@ -729,6 +710,8 @@ public class MainActivity extends AppCompatActivity
     //Location
     @Override
     public void onLocationChanged(Location location) {
+        mLatitude = location.getLatitude();
+        mLongitude = location.getLongitude();
         Log.i(TAG, "Location changed");
     }
 

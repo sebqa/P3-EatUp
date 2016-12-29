@@ -73,6 +73,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.distance.setText((shortDouble)+" m");
 
 
+
         this.position = position;
     }
 
