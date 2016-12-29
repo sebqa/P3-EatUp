@@ -62,7 +62,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         holder.title.setText(item.getTitle());
         holder.creator.setText(item.getCreator());
-        holder.price.setText(item.getPrice());
+        if(item.getPrice().equals("10") ){
+            holder.price.setText("Free");
+        } else {
+            holder.price.setText(item.getPrice()+" kr");
+        }
         holder.amount.setText(""+item.getAmount());
         holder.timeStamp.setText(item.getCurrentTime());
         //Calculate distance between the two points
