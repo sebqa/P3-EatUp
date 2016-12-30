@@ -22,6 +22,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -164,6 +165,117 @@ public class BrowseFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main, menu);
 
+        MenuItem item = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView)item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(final String s) {
+                Log.d("SearchText",s.trim());
+                final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+                geoFire = new GeoFire(ref);
+                double radius = 1000;
+                geoQuery = geoFire.queryAtLocation(new GeoLocation(MainActivity.mLatitude,MainActivity.mLongitude), radius);
+                arrayList.clear();
+
+                GeoQueryEventListener query = new GeoQueryEventListener(){
+                    @Override
+                    public void onKeyEntered(String key, GeoLocation location) {
+                        Log.d("startgeoQuery", "1 ");
+                        Log.d("geoKeyItem", key.toString());
+                        //Load items, and constructs instances of the Item class with them
+
+                        mFirebaseDatabaseReference.child(key.toString().trim()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.d(dataSnapshot.child("title").toString(), "itemgeoKey");
+                                //Load items, and constructs instances of the Item class with them
+                                final Item item = dataSnapshot.getValue(Item.class);
+
+
+                                //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
+                                //at the top.
+                                if (item.getDownloadUrl() == null) {
+                                    item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                                }
+                                noItems.setVisibility(View.INVISIBLE);
+
+                                getTime(item);
+
+                                Log.d("Time difference", "" + diff / (1000 * 60 * 60));
+                                if (arrayList.size() < maxListSize && !arrayList.contains(item) && item.creator.toLowerCase().contains(s.toLowerCase().trim()) || item.title.toLowerCase().contains(s.toLowerCase().trim()) ){
+                                    //If time difference is more than 5 hours
+                                    arrayList.add(0, item);
+
+                                    Log.d("arrayList",arrayList.toString());
+
+                                    haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
+                                    item.setDistance(haverdistanceKM);
+                                    Collections.sort(arrayList, new Comparator<Item>() {
+                                                public int compare(Item object1, Item object2) {
+                                                    return Double.compare(object1.distance,object2.distance);
+                                                }
+                                            }
+                                    );
+
+
+                                    adapter.notifyDataSetChanged();
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+
+                    @Override
+                    public void onKeyExited(String key) {
+
+                    }
+
+                    @Override
+                    public void onKeyMoved(String key, GeoLocation location) {
+
+                    }
+
+                    @Override
+                    public void onGeoQueryReady() {
+                        adapter.notifyDataSetChanged();
+
+
+                    }
+
+                    @Override
+                    public void onGeoQueryError(DatabaseError error) {
+
+                    }
+
+                };
+                geoQuery.addGeoQueryEventListener(query);
+                adapter.notifyDataSetChanged();
+
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                arrayList.clear();
+                startgeoQuery();
+                return false;
+            }
+        });
 
     }
     //Handle the toolbar clicks
