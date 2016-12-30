@@ -3,7 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -108,9 +108,7 @@ public class BrowseFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recyclerView.smoothScrollToPosition(0);
-                startgeoQuery();
 
-                adapter.notifyDataSetChanged();
 
             }
         });
@@ -302,18 +300,116 @@ public class BrowseFragment extends Fragment {
             adapter.notifyDataSetChanged();
             return true;
         } else if (id == R.id.sortNewest){
-            Collections.sort(arrayList, new Comparator<Item>() {
-                DateFormat f = new SimpleDateFormat("HH:mm",Locale.ENGLISH);//or your pattern
+            arrayList.clear();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+            this.geoFire = new GeoFire(ref);
+            MainActivity activity = (MainActivity) getActivity();
+            double radius = 20;
+            this.geoQuery = geoFire.queryAtLocation(new GeoLocation(MainActivity.mLatitude,MainActivity.mLongitude), radius);
+
+            GeoQueryEventListener query = new GeoQueryEventListener(){
                 @Override
-                public int compare(Item o1, Item o2) {
-                    try {
-                        return f.parse(o1.getCurrentTime()).compareTo(f.parse(o2.getCurrentTime()));
-                    } catch (ParseException e) {
-                        throw new IllegalArgumentException(e);
-                    }
+                public void onKeyEntered(String key, GeoLocation location) {
+                    Log.d("startgeoQuery", "1 ");
+                    Log.d("geoKeyItem", key.toString());
+                    //Load items, and constructs instances of the Item class with them
+
+                    mFirebaseDatabaseReference.child(key.toString().trim()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d(dataSnapshot.child("title").toString(), "itemgeoKey");
+                            //Load items, and constructs instances of the Item class with them
+                            final Item item = dataSnapshot.getValue(Item.class);
+
+
+                            //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
+                            //at the top.
+                            if (item.getDownloadUrl() == null) {
+                                item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                            }
+
+                            getTime(item);
+
+                            Log.d("Time difference", "" + diff / (1000 * 60 * 60));
+                            if (arrayList.size() < maxListSize && !arrayList.contains(item)){
+                                //If time difference is more than 5 hours
+                        if (diff / (1000 * 60 * 60) < 4) {
+                                //Add item to list
+                                arrayList.add(0, item);
+
+                                Log.d("arrayList",arrayList.toString());
+
+                        } else {
+                            //Delete item from database
+                            dataSnapshot.getRef().setValue(null);
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user != null) {
+                                DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests");
+                                final Query query = mFirebaseDatabaseReference.orderByChild("requestedItem").equalTo(item.getKey());
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Log.d("Data change", "FIRST CHANGED");
+                                        for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                            Log.d("FOR", "CHANGED");
+                                            if (postSnapshot.getValue() != null) {
+                                                Log.d("sentRequests", postSnapshot.getValue().toString());
+                                                postSnapshot.getRef().setValue(null);
+
+                                            }
+
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+
+
+
+                                adapter.notifyDataSetChanged();
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-            });
-            Collections.reverse(arrayList);
+
+
+                @Override
+                public void onKeyExited(String key) {
+
+                }
+
+                @Override
+                public void onKeyMoved(String key, GeoLocation location) {
+
+                }
+
+                @Override
+                public void onGeoQueryReady() {
+                    adapter.notifyDataSetChanged();
+
+
+                }
+
+                @Override
+                public void onGeoQueryError(DatabaseError error) {
+
+                }
+
+            };
+            this.geoQuery.addGeoQueryEventListener(query);
+
 
             adapter.notifyDataSetChanged();
 
@@ -358,7 +454,7 @@ public class BrowseFragment extends Fragment {
         Log.d("startgeoQuery", "1 ");
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
         this.geoFire = new GeoFire(ref);
         MainActivity activity = (MainActivity) getActivity();
         double radius = 20;
@@ -390,7 +486,7 @@ public class BrowseFragment extends Fragment {
                         Log.d("Time difference", "" + diff / (1000 * 60 * 60));
                         if (arrayList.size() < maxListSize && !arrayList.contains(item)){
                         //If time difference is more than 5 hours
-                        /*if (diff / (1000 * 60 * 60) < 4) {*/
+                        /*if (diff / (1000 * 60 * 60) < 4 && diff > 0) {*/
                             //Add item to list
                             arrayList.add(0, item);
 
@@ -399,7 +495,8 @@ public class BrowseFragment extends Fragment {
                         /*} else {
                             //Delete item from database
                             dataSnapshot.getRef().setValue(null);
-                            //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            ref.child(dataSnapshot.getRef().getKey()).setValue(null);
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user != null) {
                                 DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests");
                                 final Query query = mFirebaseDatabaseReference.orderByChild("requestedItem").equalTo(item.getKey());

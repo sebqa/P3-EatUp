@@ -1,0 +1,136 @@
+package com.example.sebastian.appdrawer.appdrawer;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.sebastian.appdrawer.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+/**
+ * Created by Sebastian on 30-12-2016.
+ */
+
+public class SentRequestsFragment extends Fragment {
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference rootRef = database.getReference();
+    TextView txFragment;
+    String key;
+    String username;
+    String receiverSignalID;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_sentrequests, container, false);
+        setHasOptionsMenu(true);
+
+
+
+        final ArrayList<String> sentRequests = new ArrayList<String>();
+
+
+        final ListView requestedItems = (ListView) rootView.findViewById(R.id.requestedItems);
+
+
+        final DatabaseReference itemRequestsRef = rootRef.child("food");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        final DatabaseReference sentRequestsRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("sentRequests");
+        sentRequestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+
+                    for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        if (postSnapshot.getValue() != null) {
+                            String requestedItemKey = postSnapshot.child("requestedItem").getValue().toString();
+                            final String requestedAmount = postSnapshot.child("requestedAmount").getValue().toString();
+                            Log.d("sentRequests postsnap", "" + postSnapshot.child("requestedItem").getValue().toString());
+
+                            itemRequestsRef.child(requestedItemKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Log.d("Add title", "SECOND CHANGED");
+                                    Item item = dataSnapshot.getValue(Item.class);
+                                    if (item != null) {
+
+                                        sentRequests.add(item.title + " - " + requestedAmount + " serving(s)");
+                                        ArrayAdapter sentRequestsadapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sentRequests);
+                                        requestedItems.setAdapter(sentRequestsadapter);
+                                    } else {
+                                        postSnapshot.getRef().setValue(null);
+                                    }
+                                    itemRequestsRef.removeEventListener(this);
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        return rootView;
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //Detach listeners
+    }
+
+
+    Activity activity;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
+}
+

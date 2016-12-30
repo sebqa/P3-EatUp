@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        android.app.FragmentManager fn = getFragmentManager();
+        android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
 
         int id = item.getItemId();
         //Check which element was pressed
@@ -455,7 +455,10 @@ public class MainActivity extends AppCompatActivity
             fn.beginTransaction().replace(R.id.content_frame, new MapFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_favorites) {
-            fn.beginTransaction().replace(R.id.content_frame, new FavoriteFragment()).commit();
+            //fn.beginTransaction().replace(R.id.content_frame, new FavoriteFragment()).commit();
+            FavoriteFragment fragmenttab = new FavoriteFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmenttab).commit();
+
             fab.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_my_food) {
             fn.beginTransaction().replace(R.id.content_frame, new MyFoodFragment()).commit();
@@ -676,7 +679,7 @@ public class MainActivity extends AppCompatActivity
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
-                android.app.FragmentManager fn = getFragmentManager();
+                android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
                 fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
             }
 
