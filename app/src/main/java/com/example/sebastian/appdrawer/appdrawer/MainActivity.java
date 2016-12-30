@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                                                
+
                                                     postSnapshot.getRef().setValue(null);
 
                                             }
