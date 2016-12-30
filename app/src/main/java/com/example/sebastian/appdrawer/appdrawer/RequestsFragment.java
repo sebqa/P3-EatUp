@@ -65,17 +65,17 @@ public class RequestsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_requests, container, false);
 
 
         mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
 
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentb").setIndicator("Sent Requests"),
+        mTabHost.addTab(mTabHost.newTabSpec("fragmentb").setIndicator("Sent"),
                 SentRequestsFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentc").setIndicator("Received Requests"),
+        mTabHost.addTab(mTabHost.newTabSpec("fragmentc").setIndicator("Received"),
                 ReceivedRequestsFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentd").setIndicator("Confirmed Requests"),
+        mTabHost.addTab(mTabHost.newTabSpec("fragmentd").setIndicator("Confirmed"),
                 ConfirmedRequestsFragment.class, null);
 
         int tabCount = mTabHost.getTabWidget().getTabCount();

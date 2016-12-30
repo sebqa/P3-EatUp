@@ -1,66 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+<android.support.v4.app.FragmentTabHost
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/background"
-    android:clickable="true"
     >
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        <TabWidget
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"/>
 
-
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/realtabcontent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Received requests"
-        android:id="@+id/receivedText"/>
-   <ListView
-        android:id="@+id/ownItems"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:divider="@color/background"
-        android:dividerHeight="0.5dp"
-       android:background="#FFFFFF"
-       android:layout_below="@+id/receivedText"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pending requests"
-        android:id="@+id/sentText"
-        android:layout_below="@+id/ownItems"/>
-    <ListView
-        android:id="@+id/requestedItems"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:divider="@color/background"
-        android:dividerHeight="0.5dp"
-        android:background="#FFFFFF"
-        android:layout_below="@+id/sentText"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Confirmed requests"
-        android:id="@+id/confirmedListText"
-        android:layout_below="@+id/requestedItems"/>
-    <ListView
-        android:id="@+id/confirmedItems"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:divider="@color/background"
-        android:dividerHeight="0.5dp"
-        android:background="#FFFFFF"
-        android:layout_below="@+id/confirmedListText"/>
-        </LinearLayout>
-
-</RelativeLayout>
-</FrameLayout>
+    </LinearLayout>
+</android.support.v4.app.FragmentTabHost>

@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     public static double mLatitude; //Client latitude coordinate
     public static double mLongitude; //Client longitude coordinate
     TextView newNoti;
+    boolean isAdded= true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -679,8 +680,11 @@ public class MainActivity extends AppCompatActivity
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
-                android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
-                fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
+                if(isAdded) {
+                    android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
+                    fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
+                    isAdded = false;
+                }
             }
 
         } catch (SecurityException ex) {

@@ -133,7 +133,11 @@ public class ItemDetails extends AppCompatActivity {
                 if(item != null) {
                     txDescription.setText(item.getDescription());
                     txTitle.setText(item.getTitle());
-                    txPrice.setText(item.getPrice());
+                    if(item.getPrice().equals("10") ){
+                        txPrice.setText("Free");
+                    } else {
+                        txPrice.setText(item.getPrice()+" kr");
+                    }
                     txCreator.setText(item.getCreator());
                     txServingsLeft.setText(""+item.getAmount()+" serving(s) remaining");
                     haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());

@@ -41,10 +41,7 @@ import java.util.ArrayList;
 public class SentRequestsFragment extends Fragment {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
-    TextView txFragment;
-    String key;
-    String username;
-    String receiverSignalID;
+
 
     @Nullable
     @Override
@@ -125,12 +122,6 @@ public class SentRequestsFragment extends Fragment {
     }
 
 
-    Activity activity;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity = activity;
-    }
 }
 

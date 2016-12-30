@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Confirmed requests"
-        android:id="@+id/confirmedListText"
-        />
+        android:layout_height="match_parent">
     <ListView
         android:id="@+id/confirmedItems"
         android:layout_height="wrap_content"
@@ -16,4 +13,12 @@
         android:dividerHeight="0.5dp"
         android:background="#FFFFFF"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="There are no items to show"
+        android:layout_gravity="center"
+        android:id="@+id/noItemsText"
+        android:visibility="invisible"/>
+        </FrameLayout>
 </FrameLayout>

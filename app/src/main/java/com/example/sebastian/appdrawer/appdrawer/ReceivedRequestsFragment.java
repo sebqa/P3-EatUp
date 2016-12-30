@@ -41,7 +41,7 @@ import java.util.ArrayList;
 public class ReceivedRequestsFragment extends Fragment {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
-    TextView txFragment;
+
     String key;
     String username;
     String receiverSignalID;
@@ -57,12 +57,9 @@ public class ReceivedRequestsFragment extends Fragment {
         final ArrayList<String> itemList = new ArrayList<String>();
         final ArrayList<String> keys = new ArrayList<String>();
         final ArrayList<String> userRequests = new ArrayList<String>();
-        final ArrayList<String> sentRequests = new ArrayList<String>();
-        final ArrayList<String> userRequestsKeys = new ArrayList<String>();
-        final ArrayList<String> confirmedRequests = new ArrayList<String>();
 
-        final ListView requestedItems = (ListView)rootView.findViewById(R.id.requestedItems);
-        final ListView confirmedRequestsList = (ListView)rootView.findViewById(R.id.confirmedItems);
+        final ArrayList<String> userRequestsKeys = new ArrayList<String>();
+
 
 
 
@@ -276,11 +273,5 @@ public class ReceivedRequestsFragment extends Fragment {
     }
 
 
-    Activity activity;
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity=activity;
-    }
 
 }

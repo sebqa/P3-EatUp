@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
@@ -82,6 +83,7 @@ public class BrowseFragment extends Fragment {
     public double haverdistanceKM;
     long diff;
     int maxListSize = 20;
+    TextView noItems;
 
 
     @Override
@@ -100,7 +102,7 @@ public class BrowseFragment extends Fragment {
 
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
-
+        noItems = (TextView)rootView.findViewById(R.id.noItemsText);
         //Casting the button that takes the user to the top.
         toTop = (FloatingActionButton) rootView.findViewById(R.id.toTop);
         //The onClickListener that scrolls to position '0'.
@@ -112,8 +114,6 @@ public class BrowseFragment extends Fragment {
 
             }
         });
-        /*Item item = new Item("Title", "creator"+ MainActivity.mLatitude,"price",10);
-        arrayList.add(item);*/
 
         //Adds an onScrollListener.
         //Hides the 'toTop' button and the floating action button, when scrolling.
@@ -141,116 +141,7 @@ public class BrowseFragment extends Fragment {
 
 
 
-/*
-        if(isAdded()) {
-        mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
 
-                //Load items, and constructs instances of the Item class with them
-                final Item item = dataSnapshot.getValue(Item.class);
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
-
-                //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
-                //at the top.
-                if (item.getDownloadUrl() == null) {
-                    item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
-                }
-
-                //Check if item is more than 5 hours old
-                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-                Date itemDate = null;
-                try {
-                    itemDate = formatter.parse(item.getCurrentTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                SimpleDateFormat dateFormatGmt = new SimpleDateFormat("HH:mm");
-                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("CET"));
-
-                String currentTimeString = dateFormatGmt.format(new Date()) + "";
-                Date currentDate = null;
-                try {
-                    currentDate = formatter.parse(currentTimeString);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                Calendar thatDay = Calendar.getInstance();
-                thatDay.setTime(itemDate);
-                Calendar today = Calendar.getInstance();
-                today.setTime(currentDate);
-                long diff = today.getTimeInMillis() - thatDay.getTimeInMillis(); //result in millis
-
-                Log.d("Time difference", "" + diff / (1000 * 60 * 60));
-
-                //If time difference is more than 5 hours
-                if (diff/(1000 * 60 * 60) < 4) {
-                    //Add item to list
-                    arrayList.add(0, item);
-                    adapter.notifyDataSetChanged();
-
-                } else {
-                    //Delete item from database
-                    dataSnapshot.getRef().setValue(null);
-                    //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if (user != null) {
-                        DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("sentRequests");
-                        final Query query = mFirebaseDatabaseReference.orderByChild("requestedItem").equalTo(item.getKey());
-                        query.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Log.d("Data change", "FIRST CHANGED");
-                                for (final DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                    Log.d("FOR", "CHANGED");
-                                    if (postSnapshot.getValue() != null) {
-                                        Log.d("sentRequests", postSnapshot.getValue().toString());
-                                        postSnapshot.getRef().setValue(null);
-
-                                    }
-
-
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-                // ...
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                getUpdates(dataSnapshot);
-                adapter.notifyDataSetChanged();
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "Failed to load items.",
-                        Toast.LENGTH_SHORT).show();
-
-            }
-
-        });
-    }*/
 
         //New instance of our adapter class, which shows the arrayList.
         //That instance is tied to the recyclerView.
@@ -327,7 +218,6 @@ public class BrowseFragment extends Fragment {
                             if (item.getDownloadUrl() == null) {
                                 item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                             }
-
                             getTime(item);
 
                             Log.d("Time difference", "" + diff / (1000 * 60 * 60));
@@ -431,7 +321,12 @@ public class BrowseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+    if (arrayList.isEmpty()){
+        noItems.setVisibility(View.VISIBLE);
+    }else {
+        noItems.setVisibility(View.INVISIBLE);
 
+    }
 
     }
 
@@ -480,6 +375,7 @@ public class BrowseFragment extends Fragment {
                         if (item.getDownloadUrl() == null) {
                             item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                         }
+                        noItems.setVisibility(View.INVISIBLE);
 
                         getTime(item);
 
