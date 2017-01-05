@@ -3,6 +3,8 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+
+import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,13 +53,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OneSignal.NotificationReceivedHandler {
 
     Menu menu;
     private static final String TAG = "MainActivity";
@@ -86,7 +91,7 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
-        OneSignal.startInit(this).init();
+        OneSignal.startInit(this).inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None).init();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -238,10 +243,11 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
                 for (final DataSnapshot postSnapshot : dataSnapshot.child("confirmedReq").getChildren()) {
                     final Item item = dataSnapshot.getValue(Item.class);
 
-                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user != null) {
                         String snap = postSnapshot.getValue().toString();
                         String userIDcheck = user.getUid().toString();
@@ -275,6 +281,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }
+
             }
 
             @Override
@@ -723,4 +730,15 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void notificationReceived(OSNotification notification) {
+        JSONObject data = notification.payload.additionalData;
+        String customKey;
+
+        if (data != null) {
+            customKey = data.optString("customkey", null);
+            if (customKey != null)
+                Log.i("OneSignalExample", "customkey set with value: " + customKey);
+        }
+    }
 }

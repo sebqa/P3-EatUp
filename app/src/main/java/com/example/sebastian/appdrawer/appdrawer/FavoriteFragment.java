@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,20 +13,31 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.example.sebastian.appdrawer.R;
+import com.onesignal.OneSignal;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Sebastian on 02-11-2016.
  */
 
+
 public class FavoriteFragment extends Fragment {
-    private FragmentTabHost mTabHost;
 
 
+
+    Button addTagBtn;
+    EditText addNewTag;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,59 +48,28 @@ public class FavoriteFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
+        addNewTag = (EditText)rootView.findViewById(R.id.addANewTag);
+        addTagBtn = (Button)rootView.findViewById(R.id.addTagButton);
 
 
-        mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
-        mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
-
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentb").setIndicator("Sent Requests"),
-                SentRequestsFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentc").setIndicator("Received Requests"),
-                ReceivedRequestsFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentd").setIndicator("Confirmed Requests"),
-                ConfirmedRequestsFragment.class, null);
-
-        int tabCount = mTabHost.getTabWidget().getTabCount();
-        for (int i = 0; i < tabCount; i++) {
-            final View view = mTabHost.getTabWidget().getChildTabViewAt(i);
-            if (view != null) {
-                // reduce height of the tab
-                view.getLayoutParams().height *= 1;
-
-                //  get title text view
-                final View textView = view.findViewById(android.R.id.title);
-                if (textView instanceof TextView) {
-                    // just in case check the type
-
-                    // center text
-                    ((TextView) textView).setGravity(Gravity.CENTER);
-                    // wrap text
-                    ((TextView) textView).setSingleLine(false);
-                    ((TextView) textView).setAllCaps(true);
-                    ((TextView) textView).setTextColor(Color.parseColor("#FFFFFF"));
-                    // explicitly set layout parameters
-                    textView.getLayoutParams().height = ViewGroup.LayoutParams.FILL_PARENT;
-                    textView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                }
-            }
-
-        }
-        for(int i=0;i<mTabHost.getTabWidget().getChildCount();i++)
-        {
-            mTabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#b71c1c"));
-        }
-        mTabHost.getTabWidget().setCurrentTab(0);
-        mTabHost.getTabWidget().getChildAt(0).setBackgroundColor(Color.parseColor("#801212"));
-
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-
+        addTagBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabChanged(String s) {
-                for (int i = 0; i < mTabHost.getTabWidget().getChildCount(); i++) {
-                    mTabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#b71c1c"));
-                }
+            public void onClick(View view) {
+                final String newTag = addNewTag.getText().toString().toLowerCase().trim();
+                Log.d("TagString",newTag);
+                //addTagBtn.setText(newTag);
+                OneSignal.sendTag(newTag,"true");
 
-                mTabHost.getTabWidget().getChildAt(mTabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#801212"));
+
+
+            }
+        });
+        OneSignal.getTags(new OneSignal.GetTagsHandler() {
+            @Override
+            public void tagsAvailable(JSONObject tags) {
+                Log.d("debug", tags.toString());
+                JSONArray tagsList = tags.names();
+                Log.d("tagsList",tagsList.toString());
             }
         });
 
