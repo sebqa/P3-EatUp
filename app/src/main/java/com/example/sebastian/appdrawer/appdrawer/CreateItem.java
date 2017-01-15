@@ -54,6 +54,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.kosalgeek.android.photoutil.CameraPhoto;
 import com.kosalgeek.android.photoutil.ImageLoader;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -79,7 +83,7 @@ public class CreateItem extends AppCompatActivity implements
     int tagCounter;
     Bitmap bitmap;
     TextView imageCounter;
-    List<String> tags = new ArrayList<String>();
+    ArrayList<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
     TextView tvServings, tvLocation, tvPrice;
@@ -92,6 +96,7 @@ public class CreateItem extends AppCompatActivity implements
     public static final int CAMERA_REQUEST_CODE = 1;
     private StorageReference mStorage;
     private ProgressDialog mProgress;
+    String tagsToAdd;
 
     private FirebaseAuth mAuth;
 
@@ -291,8 +296,8 @@ public class CreateItem extends AppCompatActivity implements
                 }
                 else if(user != null && validateForm()) {
                     //Display the tags which are stored in an ArrayList, as a list
-                    ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
-                    tagsList.setAdapter(adapter1);
+                    //ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, tags);
+                    //tagsList.setAdapter(adapter1);
 
                     //insert data into Firebase
                     DatabaseReference foodRef = rootRef.child("food").push(); //point to food branch
@@ -328,12 +333,46 @@ public class CreateItem extends AppCompatActivity implements
                     GeoFire geoFire = new GeoFire(ref);
                     geoFire.setLocation(foodRef.getKey(),new GeoLocation(mLatitude,mLongitude));
 
+                    sendNotifications(stringItemKey);
+
+
+
                     startActivity(new Intent(CreateItem.this, MainActivity.class));
 
                 }
             }
         });
     }
+
+    private void sendNotifications(String itemKey) {
+        tags.add(0,itemKey);
+        JSONObject tagsToNotify = new JSONObject();
+        for (int i = 0; i < tags.size(); i++) {
+
+            try {
+                tagsToNotify.put("Count:" + String.valueOf(i + 1), tags.get(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        BackgroundTask backgroundTask = new BackgroundTask(this);
+
+
+        if (tags.size() == 1){
+            String method = "tagsNotiOne";
+            tagsToAdd = tags.get(0);
+            backgroundTask.execute(method,tagsToAdd);
+
+        } else if(tags.size() > 1){
+            String method = "tagsNoti";
+            tagsToAdd = tags.toString();
+            backgroundTask.execute(method,tagsToAdd);
+
+        }
+        Log.d(TAG,tagsToNotify.toString() );
+    }
+
     private boolean validateForm() {
         boolean valid = true;
 
@@ -465,28 +504,35 @@ public class CreateItem extends AppCompatActivity implements
 
         tag.setBackgroundColor(Color.parseColor("#BDBDBD"));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
+        final String newTag = itemTag.getText().toString().toLowerCase().trim();
+        tags.add(newTag);
         tag.setMaxLines(1);
         params.gravity = Gravity.CENTER_HORIZONTAL;
-        tag.setText("X      "+itemTag.getText().toString());
 
-
-        //Flexbox yo! https://github.com/google/flexbox-layout/blob/master/README.md
         final FlexboxLayout linearLayout = (FlexboxLayout) findViewById(R.id.tagsArea);
         tag.setId(tagCounter);
         linearLayout.addView(tag);
-
-        focusOnView();
-        itemTag.getText().clear();
-        tagCounter=tagCounter+1;
-        tags.add(tag.getText().toString());
+        final ArrayList<String> displayedTags = new ArrayList<>();
+        displayedTags.add(itemTag.getText().toString().toLowerCase().trim());
         tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 linearLayout.removeView(tag);
+                tags.remove(newTag);
 
             }
         });
+        tag.setText("X      "+itemTag.getText().toString());
+
+
+        //Flexbox yo! https://github.com/google/flexbox-layout/blob/master/README.md
+
+
+        focusOnView();
+        itemTag.getText().clear();
+        tagCounter=tagCounter+1;
+
+
 
 
     }

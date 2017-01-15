@@ -4,6 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 import android.content.DialogInterface;
@@ -53,10 +59,21 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity
@@ -71,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     TextView tvEmail,tvUsername;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    String username;
+    String username, oneSignalID;
     //Location
     public GoogleApiClient mGoogleApiClient;
     public LocationRequest mLocationRequest;
@@ -91,7 +108,8 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
-        OneSignal.startInit(this).inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None).init();
+        OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler()).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext()))
+                .init();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -104,6 +122,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("debug", "User:" + userId);
                 if (registrationId != null)
                     Log.d("debug", "registrationId:" + registrationId);
+                oneSignalID = userId;
             }
         });
 
@@ -236,6 +255,7 @@ public class MainActivity extends AppCompatActivity
                     Intent intent = new Intent(MainActivity.this,CreateItem.class);
                     intent.putExtra("username",username);
                     startActivity(intent);
+               //postInfo();
             }
         });
 
@@ -391,9 +411,20 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void sortDistance(){
+    public void postInfo() {
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String method = "sendNoti";
+        String user_id = "AQI9HnZxPSRUL9Lwn4RSro4nZOy1";
+        String tag = "kat";
+        String item_key = "-K_GLZI7wgczr1YQ5DOy";
+
+        BackgroundTask backgroundTask = new BackgroundTask(this);
+        backgroundTask.execute(method,user_id,tag,item_key);
+
+
 
     }
+
 
     //Override onBackPressed such that it doesn't close the app, but only the hamburger menu if it's open.
     @Override

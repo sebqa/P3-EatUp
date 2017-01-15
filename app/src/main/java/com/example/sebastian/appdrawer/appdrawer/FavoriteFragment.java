@@ -55,7 +55,7 @@ public class FavoriteFragment extends Fragment {
         addTagBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String newTag = addNewTag.getText().toString().toLowerCase().trim();
+                final String newTag = addNewTag.getText().toString().trim();
                 Log.d("TagString",newTag);
                 //addTagBtn.setText(newTag);
                 OneSignal.sendTag(newTag,"true");
@@ -67,10 +67,11 @@ public class FavoriteFragment extends Fragment {
         OneSignal.getTags(new OneSignal.GetTagsHandler() {
             @Override
             public void tagsAvailable(JSONObject tags) {
+                if(tags != null){
                 Log.d("debug", tags.toString());
                 JSONArray tagsList = tags.names();
                 Log.d("tagsList",tagsList.toString());
-            }
+            }}
         });
 
 

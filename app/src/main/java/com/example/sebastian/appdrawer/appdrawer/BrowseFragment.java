@@ -296,7 +296,7 @@ public class BrowseFragment extends Fragment {
         } else if (id == R.id.sortPrice){
             Collections.sort(arrayList, new Comparator<Item>() {
                         public int compare(Item object1, Item object2) {
-                            return object1.price.compareTo(object2.price);
+                            return Integer.parseInt(object1.price)-Integer.parseInt(object2.price);
                         }
                     }
             );
@@ -335,6 +335,7 @@ public class BrowseFragment extends Fragment {
                             Log.d("Time difference", "" + diff / (1000 * 60 * 60));
                             if (arrayList.size() < maxListSize && !arrayList.contains(item)){
                                 //If time difference is more than 5 hours
+
                         if (diff / (1000 * 60 * 60) < 4) {
                                 //Add item to list
                                 arrayList.add(0, item);
@@ -480,27 +481,28 @@ public class BrowseFragment extends Fragment {
                         Log.d(dataSnapshot.child("title").toString(), "itemgeoKey");
                         //Load items, and constructs instances of the Item class with them
                         final Item item = dataSnapshot.getValue(Item.class);
+                        if (item != null) {
 
+                            //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
+                            //at the top.
+                            if (item.getDownloadUrl() == null) {
+                                item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                            }
+                            noItems.setVisibility(View.INVISIBLE);
 
-                        //Add those instances to the arrayList shown in the Recyclerview, and makes sure it's
-                        //at the top.
-                        if (item.getDownloadUrl() == null) {
-                            item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
+                            getTime(item);
                         }
-                        noItems.setVisibility(View.INVISIBLE);
-
-                        getTime(item);
-
                         Log.d("Time difference", "" + diff / (1000 * 60 * 60));
                         if (arrayList.size() < maxListSize && !arrayList.contains(item)){
                         //If time difference is more than 5 hours
-                        /*if (diff / (1000 * 60 * 60) < 4 && diff > 0) {*/
+                        if (true) {
+                            //diff / (1000 * 60 * 60) < 4 && diff > 0
                             //Add item to list
                             arrayList.add(0, item);
 
                             Log.d("arrayList",arrayList.toString());
 
-                        /*} else {
+                        } else {
                             //Delete item from database
                             dataSnapshot.getRef().setValue(null);
                             ref.child(dataSnapshot.getRef().getKey()).setValue(null);
@@ -530,7 +532,7 @@ public class BrowseFragment extends Fragment {
                                     }
                                 });
                             }
-                        }*/
+                        }
                         haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
                         item.setDistance(haverdistanceKM);
                         Collections.sort(arrayList, new Comparator<Item>() {

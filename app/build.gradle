@@ -14,6 +14,8 @@ android {
         manifestPlaceholders = [onesignal_app_id: "d243bbe7-8946-41ca-86e2-05110261c1f8",
                                 // Project number pulled from dashboard, local value is ignored.
                                 onesignal_google_project_number: "REMOTE"]
+        useLibrary 'org.apache.http.legacy'
+
     }
     buildTypes {
         release {
@@ -42,6 +44,10 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.onesignal:OneSignal:3.+@aar'
     compile 'com.firebase:geofire-android:2.1.1'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.google.code.gson:gson:2.2.+'
+
+
 
 
     // Required for OneSignal, even if you have added FCM.

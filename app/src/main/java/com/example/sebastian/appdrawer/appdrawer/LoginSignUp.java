@@ -97,6 +97,7 @@ public class LoginSignUp extends AppCompatActivity{
                     final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
                     if(oneSignalID != null) {
                         oneSignalIDRef.setValue(oneSignalID);
+
                     }
                     Intent intent = new Intent(LoginSignUp.this,MainActivity.class);
                     startActivity(intent);
@@ -109,6 +110,17 @@ public class LoginSignUp extends AppCompatActivity{
             }
         };
     }
+    /*public void postInfo() {
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String method = "register";
+        String user_id = user.getUid();
+        String user_token = oneSignalID;
+        Log.d(user_id,user_token);
+        BackgroundTask backgroundTask = new BackgroundTask(this);
+        backgroundTask.execute(method,user_id,user_token);
+
+
+    }*/
 
     //These two methods checks whether the user is already signed in
     @Override
