@@ -1,10 +1,23 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.example.sebastian.appdrawer.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
@@ -17,10 +30,16 @@ import org.json.JSONObject;
 
 public class NotificationOpenedHandler extends Activity implements OneSignal.NotificationOpenedHandler {
     Context ctx;
-    public NotificationOpenedHandler(Context ctx){
+    Activity activity;
+    public NotificationOpenedHandler(Context ctx, Activity activity){
         this.ctx = ctx;
+        this.activity = activity;
     }
-    String customKey;
+    String itemKey;
+    String notiType;
+    TextView newNoti;
+    String itemName;
+
     @Override
     public void notificationOpened(OSNotificationOpenResult result) {
         OSNotificationAction.ActionType actionType = result.action.type;
@@ -28,22 +47,35 @@ public class NotificationOpenedHandler extends Activity implements OneSignal.Not
 
 
         if (data != null) {
-            customKey = data.optString("item_key", null);
-            if (customKey != null)
-                Log.i("OneSignalExample", "customkey set with value: " + customKey);
+            itemKey = data.optString("item_key", null);
+            notiType = data.optString("notiType", null);
+            if (itemKey != null)
+                Log.i("OneSignalExample", "customkey set with value: " + itemKey);
+
         }
+
 
         if (actionType == OSNotificationAction.ActionType.ActionTaken)
             Log.i("OneSignalExample", "Button pressed with id: " + result.action.actionID);
 
         // The following can be used to open an Activity of your choice.
         // Replace - getApplicationContext() - with any Android Context.
+        if (notiType != null) {
+            if (notiType.equals("tag")) {
+                Intent intent = new Intent(ctx, ItemDetails.class);
+                intent.putExtra("item_key", itemKey);
 
-        Intent intent = new Intent(ctx, ItemDetails.class);
-        intent.putExtra("item_key", customKey);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(intent);
+            }
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-        ctx.startActivity(intent);
+            if (notiType.equals("order")) {
+                DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
+                newNoti = (TextView) drawer.findViewById(R.id.newNoti);
+                newNoti.setVisibility(View.VISIBLE);
+                OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
+            }
+        }
     }
 }
 

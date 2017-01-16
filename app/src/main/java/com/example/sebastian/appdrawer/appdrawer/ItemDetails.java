@@ -195,11 +195,15 @@ public class ItemDetails extends AppCompatActivity {
                 if (dataSnapshot != null) {
                     Log.d("OneSignalIDsnap",dataSnapshot.getValue().toString());
                     receiverSignalID = dataSnapshot.getValue().toString().trim();
-                    try {
-                        OneSignal.postNotification(new JSONObject("{'contents': {'en':'You have received a new order'}, 'include_player_ids': ['" + receiverSignalID + "']}"), null);
+                    String method = "orderNoti";
+
+                    BackgroundTask backgroundTask = new BackgroundTask(ItemDetails.this);
+                    backgroundTask.execute(method,receiverSignalID,itemKey);
+                    /*try {
+                       OneSignal.postNotification(new JSONObject("{'contents': {'en':'You have received a new order'}, 'include_player_ids': ['" + receiverSignalID + "']}"), null);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
             }
 
@@ -208,6 +212,7 @@ public class ItemDetails extends AppCompatActivity {
 
             }
         });
+
 
 
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -72,7 +73,14 @@ public class ConfirmedRequestsFragment extends Fragment {
                 Item item = dataSnapshot.getValue(Item.class);
                 Log.d("ItemValue",item.getTitle());
                 confirmedRequests.add(item.getTitle()+": "+item.getAddress());
-                confirmedRequestsadapter.notifyDataSetChanged();
+
+                getActivity().runOnUiThread(new Runnable(){
+                    public void run(){
+                        confirmedRequestsadapter.notifyDataSetChanged();
+
+                    }
+                });
+
 
             }
 
@@ -103,6 +111,7 @@ public class ConfirmedRequestsFragment extends Fragment {
         return rootView;
 
     }
+
 
     @Override
     public void onStop() {

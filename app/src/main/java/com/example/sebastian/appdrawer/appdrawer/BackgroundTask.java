@@ -42,7 +42,9 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
 
         String reg_url = "http://10.0.2.2/android_connect/register.php";
         String login_url = "http://10.0.2.2/android_connect/retrieve.php";
-        String sendmessage_url = "http://10.0.2.2/android_connect/sendmessage.php";
+        String sendmessage_url = "https://eatup.000webhostapp.com/sendmessage.php";
+        String orderNoti_url = "https://eatup.000webhostapp.com/ordernoti.php";
+
 
         String method = params[0];
         if(method.equals("register")){
@@ -78,40 +80,7 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
             }
 
         }
-        if(method.equals("sendNoti")){
-            String user_id = params[1];
-            String tag = params[2];
-            String itemKey = params[3];
-            try {
-                URL url = new URL(sendmessage_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
 
-                httpURLConnection.setDoOutput(true);
-                OutputStream OS = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
-
-                String data = URLEncoder.encode("user","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")+"&"+URLEncoder.encode("tag","UTF-8")+"="+URLEncoder.encode(tag,"UTF-8")+"&"+URLEncoder.encode("itemkey","UTF-8")+"="+URLEncoder.encode(itemKey,"UTF-8");
-
-                bufferedWriter.write(data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                OS.close();
-                InputStream IS = httpURLConnection.getErrorStream();
-                try {
-                    if (IS!= null) IS.close();
-                } catch (IOException e) {
-                    Log.e("READER.CLOSE()", e.toString());
-                }
-
-                return "Registration success";
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
         if(method.equals("tagsNoti")) {
             ArrayList<String> tags = new ArrayList<String>(Arrays.asList(params[1].substring(1, params[1].length() - 1).split(", ")));
 
@@ -189,6 +158,39 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
                 e.printStackTrace();
             }
         }
+        if(method.equals("orderNoti")) {
+            String user_id = params[1];
+            String user_token = params[2];
+            Log.d("datadata", user_id+ " "+user_token);
+
+            try {
+                URL url = new URL(orderNoti_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+
+                String data = URLEncoder.encode("user","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")+"&"+URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(user_token,"UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+                InputStream IS = httpURLConnection.getErrorStream();
+                try {
+                    if (IS!= null) IS.close();
+                } catch (IOException e) {
+                    Log.e("READER.CLOSE()", e.toString());
+                }
+
+                return "Registration success";
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 
         return null;
@@ -201,6 +203,5 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
 
     @Override
     protected void onPostExecute(String result) {
-        Toast.makeText(ctx,result,Toast.LENGTH_LONG).show();
     }
 }

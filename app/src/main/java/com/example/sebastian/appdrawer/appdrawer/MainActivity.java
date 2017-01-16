@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
-        OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler()).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext()))
+        OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler(getApplicationContext(),this)).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext(),this))
                 .init();
         setContentView(R.layout.activity_main);
 
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity
                 oneSignalID = userId;
             }
         });
+// Here we can decide what do to -- perhaps load other parameters from the intent extras such as IDs, etc
 
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
@@ -586,9 +587,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+
 
     }
 

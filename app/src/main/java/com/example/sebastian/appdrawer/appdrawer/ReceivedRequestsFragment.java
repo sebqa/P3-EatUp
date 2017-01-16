@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -84,8 +85,13 @@ public class ReceivedRequestsFragment extends Fragment {
                             long itemCount = dataSnapshot.child("itemRequests").getChildrenCount();
                             if (item.title != null) {
 
-                                itemList.add(item.title + ": " + itemCount);
-                                ownItemsadapter.notifyDataSetChanged();
+                                itemList.add(item.title + ": " + itemCount+ " requests!");
+                                new Handler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ownItemsadapter.notifyDataSetChanged();
+                                    }
+                                });
 
                             }
                             itemRequestsRef.removeEventListener(this);
