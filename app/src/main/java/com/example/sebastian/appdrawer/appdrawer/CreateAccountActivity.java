@@ -48,16 +48,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
-        OneSignal.startInit(this).init();
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                Log.d("debug", "User:" + userId);
-                oneSignalID = userId;
-                if (registrationId != null)
-                    Log.d("debug", "registrationId:" + registrationId);
-            }
-        });
+
         //Initialize UI elements
         editTextEmail = (EditText)findViewById(R.id.editEmail);
         editTextPassword = (EditText)findViewById(R.id.editPassword);
@@ -82,18 +73,7 @@ public class CreateAccountActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    final DatabaseReference nameRef = rootRef.child("users").child(user.getUid()).child("name");
-
-                    String firstName = etFirstName.getText().toString();
-                    String lastName = etLastName.getText().toString();
-                    nameRef.setValue(firstName+" "+lastName);
-                    final DatabaseReference oneSignalIDRef = rootRef.child("users").child(user.getUid()).child("oneSignalID");
-                    if(oneSignalID != null) {
-                        oneSignalIDRef.setValue(oneSignalID);
-                    }
-                    finish();
+                   oneSignal(user);
 
                 } else {
                     // User is signed out
@@ -103,6 +83,27 @@ public class CreateAccountActivity extends AppCompatActivity {
         };
     }
 
+    public void oneSignal(FirebaseUser user){
+        OneSignal.startInit(this);
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                oneSignalID = userId;
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
+        // User is signed in
+        Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+        final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+        if(oneSignalID != null) {
+            oneSignalIDRef.setValue(oneSignalID);
+
+        }
+
+        finish();
+    }
     //Specifies that the authentication state listener has to be tied to the instance of our Firebase connection
     @Override
     public void onStart() {

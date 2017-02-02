@@ -100,4 +100,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_create_ad">CreateAd</string>
     <string name="activity_create_account">Create account</string>
+
+    <string name="spinnerstr">Choose an item</string>
+    <string-array name="spinner_array">
+        <item>apple</item>
+        <item>orange</item>
+        <item>grapes</item>
+    </string-array>
 </resources>

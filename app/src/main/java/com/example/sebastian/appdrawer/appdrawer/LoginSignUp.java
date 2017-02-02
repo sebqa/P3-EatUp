@@ -36,7 +36,6 @@ public class LoginSignUp extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_sign_up);
         Utils.getDatabase();
-        OneSignal.startInit(this);
         setTheme(R.style.AppTheme);
 
         //Initialize UI elements
@@ -77,31 +76,14 @@ public class LoginSignUp extends AppCompatActivity{
 
         //Checks whether the user is already signed in
         mAuth = FirebaseAuth.getInstance();
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                Log.d("debug", "User:" + userId);
-                oneSignalID = userId;
-                if (registrationId != null)
-                    Log.d("debug", "registrationId:" + registrationId);
-            }
-        });
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
-                    if(oneSignalID != null) {
-                        oneSignalIDRef.setValue(oneSignalID);
-
-                    }
-                    Intent intent = new Intent(LoginSignUp.this,MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    oneSignal(user);
 
                 } else {
                     // User is signed out
@@ -121,6 +103,28 @@ public class LoginSignUp extends AppCompatActivity{
 
 
     }*/
+    public void oneSignal(FirebaseUser user){
+        OneSignal.startInit(this);
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                oneSignalID = userId;
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+            }
+        });
+        // User is signed in
+        Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+        final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+        if(oneSignalID != null) {
+            oneSignalIDRef.setValue(oneSignalID);
+
+        }
+        Intent intent = new Intent(LoginSignUp.this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     //These two methods checks whether the user is already signed in
     @Override

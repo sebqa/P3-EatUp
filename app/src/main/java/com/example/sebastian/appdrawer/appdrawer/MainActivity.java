@@ -19,10 +19,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -39,6 +43,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,16 +94,20 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     String username, oneSignalID;
-    //Location
+    //FirebaseLoad
     public GoogleApiClient mGoogleApiClient;
     public LocationRequest mLocationRequest;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private final int MY_PERMISSIONS = 100;
-    public Location mLastLocation; //Location of the client
+    public Location mLastLocation; //FirebaseLoad of the client
     public static double mLatitude; //Client latitude coordinate
     public static double mLongitude; //Client longitude coordinate
     TextView newNoti;
     boolean isAdded= true;
+    RequestsFragment requestsFragment = new RequestsFragment();
+    BrowseFragment browseFragment = new BrowseFragment();
+    Fragment currentFragment = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +136,6 @@ public class MainActivity extends AppCompatActivity
         });
 // Here we can decide what do to -- perhaps load other parameters from the intent extras such as IDs, etc
 
-
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
 
         //Gets user information if the user has created an account and logged in
@@ -143,6 +151,7 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     tvEmail.setText(""+user.getEmail());
                     tvUsername.setText(""+user.getEmail());
+                    startOneSignal();
 
 
 
@@ -153,6 +162,7 @@ public class MainActivity extends AppCompatActivity
                 updateUI(user);
             }
         };
+
 
         //Hide title in the toolbar to make room for logo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -207,9 +217,9 @@ public class MainActivity extends AppCompatActivity
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == 0) {
-            Log.i(TAG, "TEST MESSAGE: Location permission has been granted.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has been granted.");
         } else if (permissionCheck == -1) {
-            Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has NOT been granted.");
         }
 
         // If permission has not been granted, ask for permission
@@ -255,7 +265,10 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                     Intent intent = new Intent(MainActivity.this,CreateItem.class);
                     intent.putExtra("username",username);
-                    startActivity(intent);
+                    final android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
+                fn.beginTransaction().remove(requestsFragment);
+
+                startActivity(intent);
                //postInfo();
             }
         });
@@ -411,6 +424,10 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    public void startOneSignal(){
+        OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler(getApplicationContext(),this)).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext(),this))
+                .init();
+    }
 
     public void postInfo() {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -482,19 +499,21 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
-
+        final android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         int id = item.getItemId();
         //Check which element was pressed
         if (id == R.id.nav_main) {
-            //Replace current fragment with MainFragment
-            fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
-            //Show floating action button
+                fn.beginTransaction().remove(currentFragment);
+
+                fn.beginTransaction().replace(R.id.content_frame, browseFragment).commit();
+
+
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_map) {
             fn.beginTransaction().replace(R.id.content_frame, new MapFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
-        } else if (id == R.id.nav_favorites) {
+        } else if (id == R.id.nav_favorites & user != null) {
             //fn.beginTransaction().replace(R.id.content_frame, new FavoriteFragment()).commit();
             FavoriteFragment fragmenttab = new FavoriteFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmenttab).commit();
@@ -505,10 +524,17 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_requests) {
 
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                        fn.beginTransaction().replace(R.id.content_frame, requestsFragment).commit();
+                        fab.setVisibility(View.INVISIBLE);
+                        newNoti.setVisibility(View.INVISIBLE);
+                    }
 
-            fn.beginTransaction().replace(R.id.content_frame, new RequestsFragment()).commit();
-            fab.setVisibility(View.INVISIBLE);
-            newNoti.setVisibility(View.INVISIBLE);
+            },250);
+
 
         } else if (id == R.id.nav_settings) {
             fn.beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
@@ -516,6 +542,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_about) {
             fn.beginTransaction().replace(R.id.content_frame, new AboutFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
+        } else {
+
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -524,9 +553,18 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public void addFragments(Fragment fragment,
+                             boolean addToBackStack, String tag) {
 
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction ft = manager.beginTransaction();
 
-
+        if (addToBackStack) {
+            ft.addToBackStack(tag);
+        }
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
+    }
 
 
 
@@ -660,9 +698,9 @@ public class MainActivity extends AppCompatActivity
                 int permissionCheck = ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (permissionCheck == 0) {
-                    Log.i(TAG, "TEST MESSAGE: Location permission has been granted after request.");
+                    Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has been granted after request.");
                 } else if (permissionCheck == -1) {
-                    Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted after request.");
+                    Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has NOT been granted after request.");
                 }
 
                 // permission was granted, yay! Do the
@@ -697,7 +735,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnected(Bundle bundle) {
 
@@ -708,7 +746,7 @@ public class MainActivity extends AppCompatActivity
 
             //Fetch client's location coordinates
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            Log.i(TAG, "TEST MESSAGE: Location services connected.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad services connected.");
 
 
             if (mLastLocation == null || permissionCheck == -1) {
@@ -723,7 +761,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
                 if(isAdded) {
                     android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
-                    fn.beginTransaction().replace(R.id.content_frame, new BrowseFragment()).commit();
+                        fn.beginTransaction().replace(R.id.content_frame, browseFragment).commit();
+
                     isAdded = false;
                 }
             }
@@ -734,13 +773,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Location services suspended. Please reconnect.");
+        Log.i(TAG, "FirebaseLoad services suspended. Please reconnect.");
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if (connectionResult.hasResolution()) {
@@ -751,16 +790,16 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else {
-            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+            Log.i(TAG, "FirebaseLoad services connection failed with code " + connectionResult.getErrorCode());
         }
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onLocationChanged(Location location) {
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
-        Log.i(TAG, "Location changed");
+        Log.i(TAG, "FirebaseLoad changed");
     }
 
 

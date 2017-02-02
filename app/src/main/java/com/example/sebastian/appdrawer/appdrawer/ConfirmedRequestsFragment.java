@@ -72,7 +72,7 @@ public class ConfirmedRequestsFragment extends Fragment {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Item item = dataSnapshot.getValue(Item.class);
                 Log.d("ItemValue",item.getTitle());
-                confirmedRequests.add(item.getTitle()+": "+item.getAddress());
+                confirmedRequests.add(0,item.getTitle()+": "+item.getAddress());
 
                 getActivity().runOnUiThread(new Runnable(){
                     public void run(){

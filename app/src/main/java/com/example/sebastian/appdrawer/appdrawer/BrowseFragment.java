@@ -30,6 +30,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +63,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EventListener;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -85,6 +88,8 @@ public class BrowseFragment extends Fragment {
     long diff;
     int maxListSize = 20;
     TextView noItems;
+    boolean hasRun = false;
+
 
 
     @Override
@@ -100,7 +105,6 @@ public class BrowseFragment extends Fragment {
         //Cast the recyclerView such that we can manipulate it
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         setHasOptionsMenu(true);
-
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
         noItems = (TextView)rootView.findViewById(R.id.noItemsText);
@@ -154,11 +158,15 @@ public class BrowseFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         Log.d(recyclerView.getAdapter().toString(),"recyclerVIew onCreate");
-        startgeoQuery();
+        if (!hasRun) {
+            startgeoQuery();
+        }
         adapter.notifyDataSetChanged();
         return rootView;
 
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -199,7 +207,15 @@ public class BrowseFragment extends Fragment {
                                 }
                                 noItems.setVisibility(View.INVISIBLE);
 
-                                getTime(item);
+                                Thread t1 = new Thread(new Runnable(){
+
+                                    @Override
+                                    public void run() {
+                                        getTime(item);
+                                    }
+                                });
+                                t1.start();
+
 
                                 Log.d("Time difference", "" + diff / (1000 * 60 * 60));
                                 if (arrayList.size() < maxListSize && !arrayList.contains(item) && item.creator.toLowerCase().contains(s.toLowerCase().trim()) || item.title.toLowerCase().contains(s.toLowerCase().trim()) ){
@@ -207,7 +223,14 @@ public class BrowseFragment extends Fragment {
                                     arrayList.add(0, item);
 
                                     Log.d("arrayList",arrayList.toString());
+                                    Thread t2 = new Thread(new Runnable(){
 
+                                        @Override
+                                        public void run() {
+                                            haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
+                                        }
+                                    });
+                                    t2.start();
                                     haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
                                     item.setDistance(haverdistanceKM);
                                     Collections.sort(arrayList, new Comparator<Item>() {
@@ -489,8 +512,14 @@ public class BrowseFragment extends Fragment {
                                 item.setDownloadUrl("https://firebasestorage.googleapis.com/v0/b/p3-eatup.appspot.com/o/placeholder-320.png?alt=media&token=a89c2343-682a-41cc-95c2-6f896faeb2c5");
                             }
                             noItems.setVisibility(View.INVISIBLE);
+                            Thread t1 = new Thread(new Runnable(){
 
-                            getTime(item);
+                                @Override
+                                public void run() {
+                                    getTime(item);
+                                }
+                            });
+                            t1.start();
                         }
                         Log.d("Time difference", "" + diff / (1000 * 60 * 60));
                         if (arrayList.size() < maxListSize && !arrayList.contains(item)){
@@ -533,6 +562,7 @@ public class BrowseFragment extends Fragment {
                                 });
                             }
                         }
+
                         haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
                         item.setDistance(haverdistanceKM);
                         Collections.sort(arrayList, new Comparator<Item>() {
@@ -581,6 +611,7 @@ public class BrowseFragment extends Fragment {
         };
         this.geoQuery.addGeoQueryEventListener(query);
         adapter.notifyDataSetChanged();
+        hasRun = true;
 
 
     }

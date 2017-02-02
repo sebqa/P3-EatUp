@@ -7,6 +7,8 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
@@ -64,6 +66,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -82,12 +85,13 @@ public class CreateItem extends AppCompatActivity implements
     Button addItemBtn,addPhotoBtn;
     int tagCounter;
     Bitmap bitmap;
+    boolean isSet = true;
     TextView imageCounter;
     ArrayList<String> tags = new ArrayList<String>();
     ListView tagsList;
     ImageView imagePlaceholder;
-    TextView tvServings, tvLocation, tvPrice;
-    EditText edNrOfServings, etTitle,etAdress;
+    TextView tvServings, tvLocation, tvPrice,tvCurrentLocation;
+    EditText edNrOfServings, etTitle;
     int maxLength = 13;
     public String downloadUrl, stringUser;
     CameraPhoto cameraPhoto;
@@ -96,16 +100,16 @@ public class CreateItem extends AppCompatActivity implements
     public static final int CAMERA_REQUEST_CODE = 1;
     private StorageReference mStorage;
     private ProgressDialog mProgress;
-    String tagsToAdd;
+    String tagsToAdd,stringAddress;
 
     private FirebaseAuth mAuth;
 
-    //Location
+    //FirebaseLoad
     public GoogleApiClient mGoogleApiClient;
     public LocationRequest mLocationRequest;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private final int MY_PERMISSIONS = 100;
-    public Location mLastLocation; //Location of the client
+    public Location mLastLocation; //FirebaseLoad of the client
     double mLatitude; //Client latitude coordinate
     double mLongitude; //Client longitude coordinate
 
@@ -125,13 +129,14 @@ public class CreateItem extends AppCompatActivity implements
         edNrOfServings = (EditText) findViewById(R.id.nrOfServings);
         etTitle = (EditText) findViewById(R.id.etTitle);
         tvLocation = (TextView) findViewById(R.id.tvLocation);
+        tvCurrentLocation = (TextView) findViewById(R.id.tvCurrentLocation);
+
         swLocation = (SwitchCompat) findViewById(R.id.swLocation);
         tvPrice = (TextView) findViewById(R.id.tvPrice);
         swPrice = (SwitchCompat) findViewById(R.id.swPrice);
         etDescription = (EditText) findViewById(R.id.etDesc);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
-        etAdress = (EditText)findViewById(R.id.etAdress);
         mProgress = new ProgressDialog(this);
 
         final MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
@@ -236,15 +241,15 @@ public class CreateItem extends AppCompatActivity implements
             }
         });
 
-        // ---- Location of the item creator ---- //
+        // ---- FirebaseLoad of the item creator ---- //
 
         //Check for location permission
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == 0) {
-            Log.i(TAG, "TEST MESSAGE: Location permission has been granted.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has been granted.");
         } else if (permissionCheck == -1) {
-            Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has NOT been granted.");
         }
 
         // If permission has not been granted, ask for permission
@@ -308,7 +313,6 @@ public class CreateItem extends AppCompatActivity implements
                     stringNrOfServings =edNrOfServings.getText().toString();
 
                     String stringItemKey = foodRef.getKey();
-                    String stringAdress = etAdress.getText().toString();
                     int intServings = Integer.parseInt(stringNrOfServings);
 
                     stringUser = getIntent().getStringExtra("username");
@@ -325,13 +329,14 @@ public class CreateItem extends AppCompatActivity implements
 
                     Item newFoodItem = new Item(stringUser, stringItemTitle,
                             stringItemDescription, "10", intServings,currentTimeString,
-                            stringItemKey,downloadUrl,mLatitude,mLongitude,userID,stringAdress);
+                            stringItemKey,downloadUrl,mLatitude,mLongitude,userID,stringAddress);
                     foodRef.setValue(newFoodItem);
                     Toast.makeText(CreateItem.this, stringItemTitle +  " was added",
                             Toast.LENGTH_LONG).show();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
                     GeoFire geoFire = new GeoFire(ref);
                     geoFire.setLocation(foodRef.getKey(),new GeoLocation(mLatitude,mLongitude));
+                    foodRef.child("tags").setValue(tags);
 
                     sendNotifications(stringItemKey);
 
@@ -340,8 +345,10 @@ public class CreateItem extends AppCompatActivity implements
                     startActivity(new Intent(CreateItem.this, MainActivity.class));
 
                 }
+
             }
         });
+
     }
 
     private void sendNotifications(String itemKey) {
@@ -536,6 +543,29 @@ public class CreateItem extends AppCompatActivity implements
 
 
     }
+
+    public void addressFromLatLng() throws IOException {
+        Geocoder geocoder;
+        List<Address> yourAddresses;
+        geocoder = new Geocoder(this, Locale.getDefault());
+        yourAddresses= geocoder.getFromLocation(mLatitude, mLongitude, 1);
+        Log.d("Adresse","");
+
+
+        if (yourAddresses.size() > 0 & isSet)
+        {
+            String yourAddress = yourAddresses.get(0).getAddressLine(0);
+            String yourCity = yourAddresses.get(0).getAddressLine(1);
+            String yourCountry = yourAddresses.get(0).getAddressLine(2);
+
+            Log.d("Adresse",yourAddress+ " "+yourCity+ " "+yourCountry);
+            stringAddress = yourAddress+ ", "+yourCity+ ", "+yourCountry;
+
+            tvCurrentLocation.append(" "+yourAddress+ ", "+yourCity+ ", "+yourCountry);
+
+        }
+    }
+
     private final void focusOnView(){
         scrollView.post(new Runnable() {
             @Override
@@ -562,9 +592,9 @@ public class CreateItem extends AppCompatActivity implements
                 int permissionCheck = ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (permissionCheck == 0) {
-                    Log.i(TAG, "TEST MESSAGE: Location permission has been granted after request.");
+                    Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has been granted after request.");
                 } else if (permissionCheck == -1) {
-                    Log.i(TAG, "TEST MESSAGE: Location permission has NOT been granted after request.");
+                    Log.i(TAG, "TEST MESSAGE: FirebaseLoad permission has NOT been granted after request.");
                 }
 
                 // permission was granted, yay! Do the
@@ -599,7 +629,7 @@ public class CreateItem extends AppCompatActivity implements
         }
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnected(Bundle bundle) {
 
@@ -610,7 +640,7 @@ public class CreateItem extends AppCompatActivity implements
 
             //Fetch client's location coordinates
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            Log.i(TAG, "TEST MESSAGE: Location services connected.");
+            Log.i(TAG, "TEST MESSAGE: FirebaseLoad services connected.");
 
             if (mLastLocation == null || permissionCheck == -1) {
                 mLatitude = 0.0;
@@ -622,21 +652,25 @@ public class CreateItem extends AppCompatActivity implements
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
+                addressFromLatLng();
+                isSet = false;
             }
 
         } catch (SecurityException ex) {
             //handler
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, "Location services suspended. Please reconnect.");
+        Log.i(TAG, "FirebaseLoad services suspended. Please reconnect.");
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if (connectionResult.hasResolution()) {
@@ -647,14 +681,14 @@ public class CreateItem extends AppCompatActivity implements
                 e.printStackTrace();
             }
         } else {
-            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+            Log.i(TAG, "FirebaseLoad services connection failed with code " + connectionResult.getErrorCode());
         }
     }
 
-    //Location
+    //FirebaseLoad
     @Override
     public void onLocationChanged(Location location) {
-        Log.i(TAG, "Location changed");
+        Log.i(TAG, "FirebaseLoad changed");
     }
 
     // ----- LOCATION METHODS END ----- //

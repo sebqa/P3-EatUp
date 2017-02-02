@@ -44,6 +44,8 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
         String login_url = "http://10.0.2.2/android_connect/retrieve.php";
         String sendmessage_url = "https://eatup.000webhostapp.com/sendmessage.php";
         String orderNoti_url = "https://eatup.000webhostapp.com/ordernoti.php";
+        String confNoti_url = "https://eatup.000webhostapp.com/confnoti.php";
+
 
 
         String method = params[0];
@@ -172,6 +174,40 @@ public class BackgroundTask extends AsyncTask<String,Void,String>{
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
 
                 String data = URLEncoder.encode("user","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")+"&"+URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(user_token,"UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+                InputStream IS = httpURLConnection.getErrorStream();
+                try {
+                    if (IS!= null) IS.close();
+                } catch (IOException e) {
+                    Log.e("READER.CLOSE()", e.toString());
+                }
+
+                return "Registration success";
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(method.equals("confNoti")) {
+            String user_id = params[1];
+            String user_token = params[2];
+            String user_address = params[3];
+            Log.d("datadata", user_id+ " "+user_token+" "+user_address);
+
+            try {
+                URL url = new URL(confNoti_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS,"UTF-8"));
+
+                String data = URLEncoder.encode("user","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")+"&"+URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(user_token,"UTF-8")+"&"+URLEncoder.encode("address","UTF-8")+"="+URLEncoder.encode(user_address,"UTF-8");
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();

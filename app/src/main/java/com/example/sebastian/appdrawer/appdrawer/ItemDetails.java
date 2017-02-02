@@ -3,6 +3,7 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.icu.text.DecimalFormat;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
@@ -11,14 +12,17 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +35,8 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 public class ItemDetails extends AppCompatActivity {
@@ -181,6 +187,7 @@ public class ItemDetails extends AppCompatActivity {
         DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
         itemRequestedRef.setValue(user.getUid());
 
+
         final DatabaseReference myRequests = FirebaseDatabase.getInstance().getReference("users")
                 .child(user.getUid()).child("sentRequests").push();
         myRequests.child("requestedItem").setValue(itemKey);
@@ -232,4 +239,47 @@ public class ItemDetails extends AppCompatActivity {
         haverdistanceKM = Rad * c;
 
     }
+
+   /* public void addTag(){
+
+
+        final TextView tag = new TextView(ItemDetails.this);
+
+        tag.setPadding(10,10, 10, 10);
+
+
+        tag.setBackgroundColor(Color.parseColor("#BDBDBD"));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final String newTag = itemTag.getText().toString().toLowerCase().trim();
+        tags.add(newTag);
+        tag.setMaxLines(1);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+
+        final FlexboxLayout linearLayout = (FlexboxLayout) findViewById(R.id.tagsArea);
+        tag.setId(tagCounter);
+        linearLayout.addView(tag);
+        final ArrayList<String> displayedTags = new ArrayList<>();
+        displayedTags.add(itemTag.getText().toString().toLowerCase().trim());
+        tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                linearLayout.removeView(tag);
+                tags.remove(newTag);
+
+            }
+        });
+        tag.setText("X      "+itemTag.getText().toString());
+
+
+        //Flexbox yo! https://github.com/google/flexbox-layout/blob/master/README.md
+
+
+        focusOnView();
+        itemTag.getText().clear();
+        tagCounter=tagCounter+1;
+
+
+
+
+    }*/
 }
