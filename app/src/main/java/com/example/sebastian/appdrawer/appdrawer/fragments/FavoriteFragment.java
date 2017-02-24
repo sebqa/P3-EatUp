@@ -1,4 +1,4 @@
-package com.example.sebastian.appdrawer.appdrawer;
+package com.example.sebastian.appdrawer.appdrawer.fragments;
 
 import android.graphics.Color;
 import android.support.v4.app.Fragment;

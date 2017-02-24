@@ -25,7 +25,11 @@ android {
     }
 }
 
-
+repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -46,7 +50,10 @@ dependencies {
     compile 'com.firebase:geofire-android:2.1.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.2.+'
-    
+    compile 'com.github.Malinskiy:SuperRecyclerView:v1.1.4'
+
+
+
 
 
 

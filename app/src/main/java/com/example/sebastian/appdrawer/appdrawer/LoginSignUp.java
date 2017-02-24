@@ -9,12 +9,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
 
 public class LoginSignUp extends AppCompatActivity{
@@ -24,6 +28,7 @@ public class LoginSignUp extends AppCompatActivity{
     Button buttonSignIn;
     TextView textSignUp;
     String oneSignalID;
+    String dbOneSignalID;
     //Firebase authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -34,10 +39,28 @@ public class LoginSignUp extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_sign_up);
-        Utils.getDatabase();
-        setTheme(R.style.AppTheme);
 
+        setContentView(R.layout.activity_login_sign_up);
+        setTheme(R.style.AppTheme);
+        Utils.getDatabase();
+
+
+
+        //Checks whether the user is already signed in
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    oneSignal(user);
+
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
         //Initialize UI elements
         buttonBrowse = (Button)findViewById(R.id.buttonBrowse);
         buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
@@ -74,23 +97,9 @@ public class LoginSignUp extends AppCompatActivity{
             }
         });
 
-        //Checks whether the user is already signed in
-        mAuth = FirebaseAuth.getInstance();
 
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    oneSignal(user);
 
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
     }
     /*public void postInfo() {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -104,26 +113,54 @@ public class LoginSignUp extends AppCompatActivity{
 
     }*/
     public void oneSignal(FirebaseUser user){
-        OneSignal.startInit(this);
+        OneSignal.init(this,"p3-eatup","d243bbe7-8946-41ca-86e2-05110261c1f8");
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             @Override
             public void idsAvailable(String userId, String registrationId) {
                 Log.d("debug", "User:" + userId);
-                oneSignalID = userId;
+                if(userId!=null){
+                    oneSignalID = userId;
+                }
+
                 if (registrationId != null)
                     Log.d("debug", "registrationId:" + registrationId);
+
             }
         });
+        Log.i("ErViHer?", "oneSignal: "+oneSignalID);
+
+        final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+
+        oneSignalIDRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dbOneSignalID = dataSnapshot.getValue().toString();
+
+                Log.d("signalIDDD", dbOneSignalID);
+                Log.d("signalIDDD", "ID ="+oneSignalID);
+                if(!oneSignalID.equals(dbOneSignalID)) {
+                    FirebaseAuth.getInstance().signOut();
+                } else{
+                    Log.d("signalMatch", "it's a match");
+                    startActivity(new Intent(LoginSignUp.this,MainActivity.class));
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+
         // User is signed in
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-        final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
-        if(oneSignalID != null) {
-            oneSignalIDRef.setValue(oneSignalID);
 
-        }
-        Intent intent = new Intent(LoginSignUp.this,MainActivity.class);
-        startActivity(intent);
-        finish();
+
+
     }
 
     //These two methods checks whether the user is already signed in
@@ -151,6 +188,15 @@ public class LoginSignUp extends AppCompatActivity{
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+
+    public boolean compareIDs(String phoneID, String dbID){
+        if (phoneID.equals(dbID)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

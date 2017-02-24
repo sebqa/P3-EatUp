@@ -1,6 +1,5 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -30,9 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -357,6 +353,12 @@ public class ReceivedRequestsFragment extends Fragment {
         if (progress != null && progress.isShowing()) {
             progress.dismiss();
         }
+    }
+    public static ReceivedRequestsFragment newInstance() {
+        ReceivedRequestsFragment fragment = new ReceivedRequestsFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
 }

@@ -68,12 +68,23 @@ public class CreateAccountActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance(); //Create reference to the authentication instance
 
         //Initialize the authentication state listener
+        mAuth = FirebaseAuth.getInstance(); //Create reference to the authentication instance
+
+        //Initialize the authentication state listener
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                   oneSignal(user);
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    final DatabaseReference userRef = rootRef.child("users").child(user.getUid()).child("name");
+                    String firstName = etFirstName.getText().toString();
+                    String lastName = etLastName.getText().toString();
+                    userRef.setValue(firstName+" "+lastName);
+                    oneSignal(user);
+
+
 
                 } else {
                     // User is signed out
@@ -138,7 +149,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             Toast.makeText(CreateAccountActivity.this, "Account creation successful",
                                     Toast.LENGTH_SHORT).show();
-                            finish();
+
 
                         }
                         // If sign in fails, display a message to the user. If sign in succeeds

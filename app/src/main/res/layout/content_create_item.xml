@@ -50,23 +50,40 @@
         android:id="@+id/etTitle"
         android:inputType="textCapSentences"
         android:maxLines="1"
+        android:layout_marginBottom="10dp"
 
-    />
 
-            <Button
+        />
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:text="Add photo"
-                android:textColor="#ffffff"
-                android:id="@+id/btnAddPhoto"
-                android:layout_gravity="center_horizontal"
-                android:padding="20dp"
-                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Add tags"
+                    android:padding="20dp"
+                    android:background="#FFFFFF"
+                    android:inputType="textCapSentences"
+                    android:layout_weight=".2"
+                    android:text="Add photo"
+
+                    />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:textColor="#ffffff"
+                    android:id="@+id/btnAddPhoto"
+                    android:padding="20dp"
+                    android:layout_weight=".9"
+                    android:text="+"
 
 
 
-                />
+                    />
+            </LinearLayout>
+
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -193,17 +210,31 @@
                     android:paddingRight="30dp"/>
 
             </LinearLayout>
-
-            <EditText
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Add tags"
-                android:textAlignment="center"
-                android:padding="20dp"
-                android:background="#FFFFFF"
-                android:id="@+id/etTags"
-                android:inputType="textCapSentences"
-                />
+                android:orientation="horizontal">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Add tags"
+                    android:padding="20dp"
+                    android:background="#FFFFFF"
+                    android:id="@+id/etTags"
+                    android:inputType="textCapSentences"
+                    android:layout_weight=".2"
+                    />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="+"
+                    android:layout_weight="0.9"
+                    android:id="@+id/addTagButton"
+                    android:background="#FFFFFF"
+
+                    />
+            </LinearLayout>
+
 
             <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"

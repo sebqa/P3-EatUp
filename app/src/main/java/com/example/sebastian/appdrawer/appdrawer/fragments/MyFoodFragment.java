@@ -1,4 +1,4 @@
-package com.example.sebastian.appdrawer.appdrawer;
+package com.example.sebastian.appdrawer.appdrawer.fragments;
 
 import android.support.v4.app.Fragment;
 import android.content.Intent;
@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.example.sebastian.appdrawer.appdrawer.Item;
+import com.example.sebastian.appdrawer.appdrawer.ItemDetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

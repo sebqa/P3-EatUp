@@ -82,7 +82,7 @@ public class CreateItem extends AppCompatActivity implements
 
     EditText itemTag, etDescription;
     ScrollView scrollView;
-    Button addItemBtn,addPhotoBtn;
+    Button addItemBtn,addPhotoBtn,addTagBtn;
     int tagCounter;
     Bitmap bitmap;
     boolean isSet = true;
@@ -130,7 +130,7 @@ public class CreateItem extends AppCompatActivity implements
         etTitle = (EditText) findViewById(R.id.etTitle);
         tvLocation = (TextView) findViewById(R.id.tvLocation);
         tvCurrentLocation = (TextView) findViewById(R.id.tvCurrentLocation);
-
+        addTagBtn = (Button)findViewById(R.id.addTagButton);
         swLocation = (SwitchCompat) findViewById(R.id.swLocation);
         tvPrice = (TextView) findViewById(R.id.tvPrice);
         swPrice = (SwitchCompat) findViewById(R.id.swPrice);
@@ -145,7 +145,12 @@ public class CreateItem extends AppCompatActivity implements
         mStorage = FirebaseStorage.getInstance().getReference();
         imagePlaceholder.setRotation(90);
         addPhotoBtn = (Button)findViewById(R.id.btnAddPhoto);
-
+        addTagBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addTag();
+            }
+        });
         addPhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -19,8 +19,9 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
+        android:theme="@style/AppTheme"
+        >
+        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="ENABLED" />
 
         <service
             android:name=".appdrawer.NotificationOverride"
@@ -33,7 +34,8 @@
         <activity
             android:name=".appdrawer.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance"/>
         <activity
             android:name=".appdrawer.CreateItem"
             android:label="@string/title_activity_create_ad"

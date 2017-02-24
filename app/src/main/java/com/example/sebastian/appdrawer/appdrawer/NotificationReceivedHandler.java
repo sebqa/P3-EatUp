@@ -37,14 +37,8 @@ public class NotificationReceivedHandler implements OneSignal.NotificationReceiv
             if (customKey != null)
                 Log.i("OneSignalExample", "customkey set with value: " + customKey);
 
-            Intent intent = new Intent(ctx, ItemDetails.class);
-            intent.putExtra("itemkey","-KaXrUyX0hIyiNcxDUJR");
-            ctx.startActivity(intent);
-            if (notiType.equals("order")) {
-                DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
-                newNoti = (TextView) drawer.findViewById(R.id.newNoti);
-                newNoti.setVisibility(View.VISIBLE);
-            }
+
+
         }
     }
 }

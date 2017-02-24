@@ -4,12 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.sebastian.appdrawer.appdrawer.fragments.AboutFragment;
+import com.example.sebastian.appdrawer.appdrawer.fragments.BrowseFragment;
+import com.example.sebastian.appdrawer.appdrawer.fragments.FavoriteFragment;
+import com.example.sebastian.appdrawer.appdrawer.fragments.MapFragment;
+import com.example.sebastian.appdrawer.appdrawer.fragments.MyFoodFragment;
+import com.example.sebastian.appdrawer.appdrawer.fragments.SettingsFragment;
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 import android.content.DialogInterface;
@@ -33,19 +33,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -62,23 +57,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity
@@ -103,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     public static double mLatitude; //Client latitude coordinate
     public static double mLongitude; //Client longitude coordinate
     TextView newNoti;
-    boolean isAdded= true;
+    boolean isAdded= false;
     RequestsFragment requestsFragment = new RequestsFragment();
     BrowseFragment browseFragment = new BrowseFragment();
     Fragment currentFragment = null;
@@ -117,23 +99,14 @@ public class MainActivity extends AppCompatActivity
         setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
-        OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler(getApplicationContext(),this)).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext(),this))
-                .init();
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
 
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                Log.d("debug", "User:" + userId);
-                if (registrationId != null)
-                    Log.d("debug", "registrationId:" + registrationId);
-                oneSignalID = userId;
-            }
-        });
+
 // Here we can decide what do to -- perhaps load other parameters from the intent extras such as IDs, etc
 
         Boolean loggedin = getIntent().getBooleanExtra("isLoggedIn",false);
@@ -149,17 +122,15 @@ public class MainActivity extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    tvEmail.setText(""+user.getEmail());
-                    tvUsername.setText(""+user.getEmail());
                     startOneSignal();
-
+                    updateUI(user);
 
 
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                updateUI(user);
+
             }
         };
 
@@ -178,7 +149,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        setDrawerLeftEdgeSize(this, drawer, 0.5f);
+        setDrawerLeftEdgeSize(this, drawer, 0.2f);
         //Set onClickListener to the menu, such that elements can be pressed independently.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -427,6 +398,16 @@ public class MainActivity extends AppCompatActivity
     public void startOneSignal(){
         OneSignal.startInit(this).setNotificationReceivedHandler(new NotificationReceivedHandler(getApplicationContext(),this)).setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext(),this))
                 .init();
+
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("debug", "User:" + userId);
+                if (registrationId != null)
+                    Log.d("debug", "registrationId:" + registrationId);
+                oneSignalID = userId;
+            }
+        });
     }
 
     public void postInfo() {
@@ -533,7 +514,7 @@ public class MainActivity extends AppCompatActivity
                         newNoti.setVisibility(View.INVISIBLE);
                     }
 
-            },250);
+            },0);
 
 
         } else if (id == R.id.nav_settings) {
@@ -759,11 +740,11 @@ public class MainActivity extends AppCompatActivity
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
-                if(isAdded) {
+                if(!isAdded) {
                     android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
                         fn.beginTransaction().replace(R.id.content_frame, browseFragment).commit();
 
-                    isAdded = false;
+                    isAdded = true;
                 }
             }
 

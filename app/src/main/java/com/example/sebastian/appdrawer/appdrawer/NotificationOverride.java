@@ -33,6 +33,6 @@ public class NotificationOverride extends NotificationExtenderService {
             OSNotificationDisplayedResult displayedResult = displayNotification(overrideSettings);
             Log.d("OneSignalExample", "Notification displayed with id: " + displayedResult.androidNotificationId);
 
-            return false;
+            return true;
         }
 }

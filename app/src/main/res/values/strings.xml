@@ -1,98 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EatUp</string>
-    <string-array name="itemTitles">
-        <item>"Hjemmelavet hamburger"</item>
-        <item>"Hakkebøffer med kartofler og løg"</item>
-        <item>"Flæskesteg"</item>
-        <item>"Lasagne"</item>
-        <item>"Hjemmelavet hamburger"</item>
-        <item>"Hakkebøffer med kartofler og løg"</item>
-        <item>"Flæskesteg"</item>
-        <item>"Lasagne"</item>
-        <item>"Hjemmelavet hamburger"</item>
-        <item>"Hakkebøffer med kartofler og løg"</item>
-        <item>"Flæskesteg"</item>
-        <item>"Lasagne"</item>
-        <item>"Hjemmelavet hamburger"</item>
-        <item>"Hakkebøffer med kartofler og løg"</item>
-        <item>"Flæskesteg"</item>
-        <item>"Lasagne"</item>
-        <item>"Hjemmelavet hamburger"</item>
-        <item>"Hakkebøffer med kartofler og løg"</item>
-        <item>"Flæskesteg"</item>
-        <item>"Lasagne"</item>
-    </string-array>
-
-
-    <string-array name="itemCreators">
-        <item>"Henning-Frank"</item>
-        <item>"farmor56"</item>
-        <item>"frank"</item>
-        <item>"lotte"</item>
-        <item>"Henning-Frank"</item>
-        <item>"farmor56"</item>
-        <item>"frank"</item>
-        <item>"lotte"</item>
-        <item>"Henning-Frank"</item>
-        <item>"farmor56"</item>
-        <item>"frank"</item>
-        <item>"lotte"</item>
-        <item>"Henning-Frank"</item>
-        <item>"farmor56"</item>
-        <item>"frank"</item>
-        <item>"lotte"</item>
-        <item>"Henning-Frank"</item>
-        <item>"farmor56"</item>
-        <item>"frank"</item>
-        <item>"lotte"</item>
-    </string-array>
-
-    <string-array name="itemPrices">
-        <item>"0 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"20 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"20 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"20 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"0 DKK/ea."</item>
-        <item>"40 DKK/ea."</item>
-        <item>"20 DKK/ea."</item>
-    </string-array>
-
-    <integer-array name="itemdistance">
-        <item>900</item>
-        <item>234</item>
-        <item>21</item>
-        <item>1900</item>
-        <item>900</item>
-        <item>234</item>
-        <item>21</item>
-        <item>1900</item>
-        <item>900</item>
-        <item>234</item>
-        <item>21</item>
-        <item>1900</item>
-        <item>900</item>
-        <item>234</item>
-        <item>21</item>
-        <item>1900</item>
-        <item>900</item>
-        <item>234</item>
-        <item>21</item>
-        <item>1900</item>
-
-    </integer-array>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -101,10 +9,5 @@
     <string name="title_activity_create_ad">CreateAd</string>
     <string name="activity_create_account">Create account</string>
 
-    <string name="spinnerstr">Choose an item</string>
-    <string-array name="spinner_array">
-        <item>apple</item>
-        <item>orange</item>
-        <item>grapes</item>
-    </string-array>
+
 </resources>

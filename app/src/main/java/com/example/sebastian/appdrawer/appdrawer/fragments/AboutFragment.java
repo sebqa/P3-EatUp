@@ -1,4 +1,4 @@
-package com.example.sebastian.appdrawer.appdrawer;
+package com.example.sebastian.appdrawer.appdrawer.fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
