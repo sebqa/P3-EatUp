@@ -5,11 +5,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/shadow" />
         <FrameLayout
             android:id="@+id/realtabcontent"
             android:layout_width="match_parent"
@@ -27,5 +26,9 @@
                     android:layout_height="0dp"
                     android:layout_weight="0" />
         </android.support.v4.app.FragmentTabHost>
-
+        <View
+    android:layout_width="match_parent"
+    android:layout_height="4dp"
+    android:background="@drawable/shadow" />
+</FrameLayout>
 </LinearLayout>

@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 // user is now signed out
-                                startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+                                //startActivity(new Intent(MainActivity.this, LoginSignUp.class));
 
                             }
                         });
@@ -609,23 +609,36 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 if (user != null) {
-
+                    signOutBtn.setVisibility(View.VISIBLE);
                     tvEmail.setText(""+user.getEmail());
-                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-                    userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            username = dataSnapshot.getValue().toString();
-                            tvUsername.setText(username);
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {}
-                    });
+                    String pname = user.getDisplayName();
+                    if(pname != null){
+                        tvUsername.setText(""+pname);
+                    }else {
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                        userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                username = dataSnapshot.getValue().toString();
+                                tvUsername.setText(username);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+
+                        });
+                    }
                     Uri profileUri = user.getPhotoUrl();
 
                     // If the above were null, iterate the provider data
                     // and set with the first non null data
                     for (UserInfo userInfo : user.getProviderData()) {
+                        if (pname == null && userInfo.getDisplayName() != null){
+                            pname = userInfo.getDisplayName();
+                            tvUsername.setText(pname);
+
+                        }
                         if (profileUri == null && userInfo.getPhotoUrl() != null) {
                             profileUri = userInfo.getPhotoUrl();
                         }
@@ -633,8 +646,10 @@ public class MainActivity extends AppCompatActivity
                     if (profileUri != null) {
                         Picasso.with(MainActivity.this)
                                 .load(profileUri)
+                                .transform(new CircleTransform(50,0))
                                 .into(userIcon);
                     }
+
 
                     //tvUsername.setText(""+user.getUid());
                     signOutBtn.setVisibility(View.VISIBLE);

@@ -25,9 +25,10 @@
         android:layout_height="200dp"
         app:srcCompat="@drawable/eatupsplashscreen2"
         android:id="@+id/imageViewEatUpSplash"
-        android:layout_marginTop="59dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/buttonBrowse"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="12dp" />
 
     <Button
         android:text="Sign In"

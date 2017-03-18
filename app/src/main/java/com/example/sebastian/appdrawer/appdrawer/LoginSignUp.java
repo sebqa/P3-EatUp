@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
+
+import java.util.Arrays;
 
 public class LoginSignUp extends AppCompatActivity{
 
@@ -34,7 +39,7 @@ public class LoginSignUp extends AppCompatActivity{
     //Firebase authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    int RC_SIGN_IN = 9999;
 
     //Log entries tag for debugging
     private static final String TAG = "LoginSignUp";
@@ -54,6 +59,8 @@ public class LoginSignUp extends AppCompatActivity{
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null) {
                             Log.i("CHECK USER", "Før");
+                            OneSignal.init(LoginSignUp.this,"p3-eatup","d243bbe7-8946-41ca-86e2-05110261c1f8");
+
                             oneSignal(user);
 
 
@@ -92,7 +99,6 @@ public class LoginSignUp extends AppCompatActivity{
 
     }*/
     public void oneSignal(FirebaseUser user){
-        OneSignal.init(this,"p3-eatup","d243bbe7-8946-41ca-86e2-05110261c1f8");
         OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
             @Override
             public void idsAvailable(String userId, String registrationId) {
@@ -119,6 +125,16 @@ public class LoginSignUp extends AppCompatActivity{
                 Log.d("signalIDDD", "ID ="+oneSignalID);
                 if(false/*!oneSignalID.equals(dbOneSignalID)*/) {
                     FirebaseAuth.getInstance().signOut();
+                    OneSignal.setSubscription(false);
+                    AuthUI.getInstance()
+                            .signOut(LoginSignUp.this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // user is now signed out
+                                    //startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+                                }
+                            });
                 } else{
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -179,10 +195,20 @@ public class LoginSignUp extends AppCompatActivity{
                 buttonSignIn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(LoginSignUp.this, LogInActivity.class);
-                        startActivity(intent);
+                        /*Intent intent = new Intent(LoginSignUp.this, LogInActivity.class);
+                        startActivity(intent);*/
                         //finish();
+                        startActivityForResult(
+                                AuthUI.getInstance()
+                                        .createSignInIntentBuilder()
+                                        .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                                new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                        .setTheme(R.style.AppTheme)
+                                        .build(),
+                                RC_SIGN_IN);
                     }
+
                 });
 
                 //When the user taps the Create account text at the bottom, the sign up activity is initialized

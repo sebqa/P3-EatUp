@@ -11,6 +11,9 @@
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
     >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -178,4 +181,10 @@ android:layout_marginTop="20dp"
 
         </LinearLayout>
     </ScrollView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow" />
+
+    </FrameLayout>
 </LinearLayout>
