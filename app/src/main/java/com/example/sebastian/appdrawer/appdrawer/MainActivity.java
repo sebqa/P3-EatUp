@@ -70,6 +70,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity
     BrowseFragment browseFragment = new BrowseFragment();
     Fragment currentFragment = null;
     ImageView userIcon;
-
+    int RC_SIGN_IN = 9999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +136,17 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     updateUI(user);
                     startOneSignal();
+                    final DatabaseReference oneSignalIDRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).child("oneSignalID");
+                    if(oneSignalID != null) {
+                        oneSignalIDRef.setValue(oneSignalID);
+
+                    }
 
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                     userIcon.setImageResource(R.drawable.usericon);
+
 
                 }
 
@@ -178,10 +185,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(MainActivity.this, LogInActivity.class));
-
-
+                startActivityForResult(
+                        AuthUI.getInstance()
+                                .createSignInIntentBuilder()
+                                .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                .setTheme(R.style.AppTheme)
+                                .build(),
+                        RC_SIGN_IN);
             }
+
+
         });
         signOutBtn = (Button)headerview.findViewById(R.id.signOutBtn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
