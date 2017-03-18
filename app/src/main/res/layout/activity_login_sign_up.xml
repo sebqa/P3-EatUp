@@ -8,22 +8,9 @@
     android:background="@color/colorPrimary"
     tools:context="com.example.sebastian.appdrawer.appdrawer.LoginSignUp">
 
-
-    <Button
-        android:text="Sign In"
-        android:textSize="15dp"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:id="@+id/buttonSignIn"
-        android:background="@color/darkRed"
-        android:textColor="@color/background"
-        android:layout_marginTop="5dp"
-        android:layout_below="@+id/buttonBrowse"
-        android:layout_alignParentStart="true" />
-
     <TextView
         android:text="Not already a user? Create an account here"
-        android:textColor="#660E0E"
+        android:textColor="#FFF"
         android:textSize="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,18 +20,6 @@
         android:id="@+id/textSignUp"
         android:textStyle=""/>
 
-    <Button
-        android:text="Browse"
-        android:textSize="15dp"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:background="@color/darkRed"
-        android:textColor="@color/background"
-        android:id="@+id/buttonBrowse"
-        android:layout_below="@+id/imageViewEatUpSplash"
-        android:layout_alignParentStart="true" />
-
     <ImageView
         android:layout_width="150dp"
         android:layout_height="200dp"
@@ -53,4 +28,32 @@
         android:layout_marginTop="59dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Sign In"
+        android:textSize="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/buttonSignIn"
+        android:background="@color/darkRed"
+        android:textColor="@color/background"
+        android:layout_marginBottom="60dp"
+        android:layout_above="@+id/textSignUp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Browse"
+        android:textSize="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/darkRed"
+        android:textColor="@color/background"
+        android:id="@+id/buttonBrowse"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/buttonSignIn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
+
+

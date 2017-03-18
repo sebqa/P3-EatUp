@@ -23,8 +23,10 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -54,6 +56,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.hannesdorfmann.swipeback.Position;
+import com.hannesdorfmann.swipeback.SwipeBack;
 import com.kosalgeek.android.photoutil.CameraPhoto;
 import com.kosalgeek.android.photoutil.ImageLoader;
 
@@ -112,14 +116,17 @@ public class CreateItem extends AppCompatActivity implements
     public Location mLastLocation; //FirebaseLoad of the client
     double mLatitude; //Client latitude coordinate
     double mLongitude; //Client longitude coordinate
-
+    GestureDetector mGestureDetector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_item);
+        SwipeBack.attach(this, Position.LEFT)
+                .setDrawOverlay(true)
+                .setContentView(R.layout.activity_create_item)
+                .setSwipeBackView(R.layout.swipeback_default);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_action_close); //Exit button
+        toolbar.setNavigationIcon(R.drawable.ic_action_return); //Exit button
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //ui elements
@@ -138,6 +145,9 @@ public class CreateItem extends AppCompatActivity implements
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         itemTag = (EditText) findViewById(R.id.etTags);
         mProgress = new ProgressDialog(this);
+
+
+
 
         final MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
 
@@ -540,7 +550,7 @@ public class CreateItem extends AppCompatActivity implements
         //Flexbox yo! https://github.com/google/flexbox-layout/blob/master/README.md
 
 
-        focusOnView();
+        focusOnView(linearLayout);
         itemTag.getText().clear();
         tagCounter=tagCounter+1;
 
@@ -571,14 +581,15 @@ public class CreateItem extends AppCompatActivity implements
         }
     }
 
-    private final void focusOnView(){
+    private final void focusOnView(final FlexboxLayout linearlayout){
         scrollView.post(new Runnable() {
             @Override
-            public void run() {
-                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                public void run() {
+                scrollView.smoothScrollTo(0, linearlayout.getTop());
             }
         });
     }
+
 
 
     // ---- LOCATION METHODS START ---- //
@@ -698,4 +709,10 @@ public class CreateItem extends AppCompatActivity implements
 
     // ----- LOCATION METHODS END ----- //
 
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        overridePendingTransition(R.anim.swipeback_stack_to_front,
+                R.anim.swipeback_stack_right_out);
+    }
 }

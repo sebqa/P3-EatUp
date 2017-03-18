@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.example.sebastian.appdrawer"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -26,31 +26,41 @@ android {
 }
 
 repositories {
+    mavenCentral()
     maven {
         url "https://jitpack.io"
     }
+    maven { url 'https://maven.fabric.io/public' }
+
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.google.android.gms:play-services-location:9.8.0' //'com.google.android.gms:play-services:9.8.0'
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
-    compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.google.firebase:firebase-database:9.8.0'
-    compile 'com.google.firebase:firebase-auth:9.8.0'
+    compile 'com.google.android.gms:play-services-location:10.2.0' //'com.google.android.gms:play-services:9.8.0'
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:design:25.3.0'
+    compile 'com.android.support:recyclerview-v7:25.3.0'
+    compile 'com.android.support:support-v4:25.3.0'
+    compile 'com.google.firebase:firebase-database:10.2.0'
+    compile 'com.google.firebase:firebase-invites:10.2.0'
+    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.google.firebase:firebase-auth:10.2.0'
     compile 'com.google.android:flexbox:0.2.3'
+    compile 'cc.cloudist.acplibrary:library:1.2.1'
     compile 'com.android.support:multidex:1.0.0'
-    compile 'com.google.firebase:firebase-storage:9.8.0'
+    compile 'com.google.firebase:firebase-storage:10.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.onesignal:OneSignal:3.+@aar'
     compile 'com.firebase:geofire-android:2.1.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.2.+'
-    compile 'com.github.Malinskiy:SuperRecyclerView:v1.1.4'
+    compile 'com.hannesdorfmann:swipeback:1.0.4'
+    compile 'me.imid.swipebacklayout.lib:library:1.0.0'
+    compile 'com.github.jrvansuita:MaterialAbout:+'
+
 
 
 
@@ -60,7 +70,7 @@ dependencies {
 
 
     // Required for OneSignal, even if you have added FCM.
-    compile 'com.google.android.gms:play-services-gcm:9.8.0'
+    compile 'com.google.android.gms:play-services-gcm:10.2.0'
 
     // Required for geotagging
 

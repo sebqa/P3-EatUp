@@ -104,18 +104,7 @@ android:layout_marginTop="20dp"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="15dp" />
 
-        <TextView
-            android:text="REPORT"
-            android:textColor="#FFFFFF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnReport"
-            android:padding="20dp"
-            android:gravity="end"
 
-            android:layout_alignBottom="@+id/txCreator"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
 
         <TextView
             android:text="100 KM"
@@ -127,8 +116,8 @@ android:layout_marginTop="20dp"
             android:gravity="end"
 
             android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/btnReport"
-            android:layout_toStartOf="@+id/btnReport" />
+            android:layout_toLeftOf="@+id/ivHeart"
+            android:layout_toStartOf="@+id/ivHeart" />
 
 
     </RelativeLayout>

@@ -3,26 +3,20 @@ package com.example.sebastian.appdrawer.appdrawer;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.icu.text.DecimalFormat;
-import android.media.Image;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
-import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,16 +24,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.onesignal.OneSignal;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
+import me.imid.swipebacklayout.lib.SwipeBackLayout;
 
 
-public class ItemDetails extends AppCompatActivity {
+public class ItemDetails extends SwipeBackActivityNew {
     ImageView d_imageView;
     TextView txTitle,txPrice,txCreator, txServingsLeft, txDescription, btnOrder,txDistance;
     public static final String FOOD = "food";
@@ -48,25 +39,32 @@ public class ItemDetails extends AppCompatActivity {
     Item item;
     String receiverSignalID;
     public double haverdistanceKM;
+    SwipeBackLayout swipeBackLayout;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
-    @Override
+   @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+         /*SwipeBack.attach(this, Position.LEFT)
+                .setDrawOverlay(true)
+                .setContentView(R.layout.activity_item_details)
+                .setSwipeBackView(R.layout.swipeback_default);
+                */
         setContentView(R.layout.activity_item_details);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_action_close);
+        toolbar.setNavigationIcon(R.drawable.ic_action_return); //Exit button
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
+
             }
         });
-        d_imageView = (ImageView)findViewById(R.id.imagePlaceholderDetails);
+
+       d_imageView = (ImageView)findViewById(R.id.imagePlaceholderDetails);
         txTitle = (TextView) findViewById(R.id.txTitleDetails);
         txCreator = (TextView) findViewById(R.id.txCreator);
         txPrice = (TextView) findViewById(R.id.txPrice);
@@ -74,6 +72,11 @@ public class ItemDetails extends AppCompatActivity {
         txDescription = (TextView) findViewById(R.id.txDescriptionDetails);
         btnOrder = (TextView) findViewById(R.id.btnOrder);
         txDistance = (TextView) findViewById(R.id.txDistance);
+
+
+        swipeBackLayout = getSwipeBackLayout();
+        swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        swipeBackLayout.setScrollThresHold(0.9f);
 
 
         itemKey = getIntent().getStringExtra("item_key");
@@ -151,6 +154,8 @@ public class ItemDetails extends AppCompatActivity {
                     int temp = (int)(haverdistanceKM*1000.0);
                     int shortDouble = (temp);
                     txDistance.setText((shortDouble)+" m");
+
+
 
 
                     if(item.getDownloadUrl() == null){
@@ -282,4 +287,11 @@ public class ItemDetails extends AppCompatActivity {
 
 
     }*/
+
+   @Override
+   public void onBackPressed() {
+       super.onBackPressed();
+       overridePendingTransition(0,R.anim.slideout);
+
+   }
 }

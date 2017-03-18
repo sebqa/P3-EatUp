@@ -10,17 +10,24 @@ import com.example.sebastian.appdrawer.appdrawer.fragments.FavoriteFragment;
 import com.example.sebastian.appdrawer.appdrawer.fragments.MapFragment;
 import com.example.sebastian.appdrawer.appdrawer.fragments.MyFoodFragment;
 import com.example.sebastian.appdrawer.appdrawer.fragments.SettingsFragment;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserInfo;
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -57,10 +64,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 
 
 public class MainActivity extends AppCompatActivity
@@ -89,6 +98,7 @@ public class MainActivity extends AppCompatActivity
     RequestsFragment requestsFragment = new RequestsFragment();
     BrowseFragment browseFragment = new BrowseFragment();
     Fragment currentFragment = null;
+    ImageView userIcon;
 
 
     @Override
@@ -106,6 +116,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         signOutBtn = (Button)findViewById(R.id.signOutBtn);
 
+        OneSignal.setSubscription(true);
 
 // Here we can decide what do to -- perhaps load other parameters from the intent extras such as IDs, etc
 
@@ -122,13 +133,14 @@ public class MainActivity extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    startOneSignal();
                     updateUI(user);
-
+                    startOneSignal();
 
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
+                    userIcon.setImageResource(R.drawable.usericon);
+
                 }
 
             }
@@ -159,9 +171,8 @@ public class MainActivity extends AppCompatActivity
         View headerview = navigationView.getHeaderView(0);
         tvEmail = (TextView)headerview.findViewById(R.id.tvEmail);
         tvUsername = (TextView)headerview.findViewById(R.id.tvUsername);
-        ImageView userIcon = (ImageView)headerview.findViewById(R.id.userIcon);
+        userIcon = (ImageView)headerview.findViewById(R.id.userIcon);
 
-       userIcon.setBackgroundResource(R.drawable.usericon);
         signInBtn = (Button)headerview.findViewById(R.id.signInBtn);
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,7 +189,16 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 mAuth = FirebaseAuth.getInstance();
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+                OneSignal.setSubscription(false);
+                AuthUI.getInstance()
+                        .signOut(MainActivity.this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // user is now signed out
+                                startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+                            }
+                        });
                 updateUI(null);
 
             }
@@ -485,6 +505,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         //Check which element was pressed
         if (id == R.id.nav_main) {
+            if (mGoogleApiClient != null) {
+                mGoogleApiClient.connect();
+            }
                 fn.beginTransaction().remove(currentFragment);
 
                 fn.beginTransaction().replace(R.id.content_frame, browseFragment).commit();
@@ -495,12 +518,14 @@ public class MainActivity extends AppCompatActivity
             fn.beginTransaction().replace(R.id.content_frame, new MapFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_favorites & user != null) {
+            gpsdisconnect();
             //fn.beginTransaction().replace(R.id.content_frame, new FavoriteFragment()).commit();
             FavoriteFragment fragmenttab = new FavoriteFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmenttab).commit();
 
             fab.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_my_food) {
+            gpsdisconnect();
             fn.beginTransaction().replace(R.id.content_frame, new MyFoodFragment()).commit();
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_requests) {
@@ -509,6 +534,7 @@ public class MainActivity extends AppCompatActivity
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                        gpsdisconnect();
                         fn.beginTransaction().replace(R.id.content_frame, requestsFragment).commit();
                         fab.setVisibility(View.INVISIBLE);
                         newNoti.setVisibility(View.INVISIBLE);
@@ -518,9 +544,11 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_settings) {
+            gpsdisconnect();
             fn.beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_about) {
+            gpsdisconnect();
             fn.beginTransaction().replace(R.id.content_frame, new AboutFragment()).commit();
             fab.setVisibility(View.INVISIBLE);
         } else {
@@ -560,35 +588,54 @@ public class MainActivity extends AppCompatActivity
         fab.hide();
     }
 
-    private void updateUI(FirebaseUser user) {
+    private void updateUI(final FirebaseUser user) {
 
-        if (user != null) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (user != null) {
 
-            tvEmail.setText(""+user.getEmail());
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-            userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    username = dataSnapshot.getValue().toString();
-                    tvUsername.setText(username);
+                    tvEmail.setText(""+user.getEmail());
+                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                    userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            username = dataSnapshot.getValue().toString();
+                            tvUsername.setText(username);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+                    Uri profileUri = user.getPhotoUrl();
+
+                    // If the above were null, iterate the provider data
+                    // and set with the first non null data
+                    for (UserInfo userInfo : user.getProviderData()) {
+                        if (profileUri == null && userInfo.getPhotoUrl() != null) {
+                            profileUri = userInfo.getPhotoUrl();
+                        }
+                    }
+                    if (profileUri != null) {
+                        Picasso.with(MainActivity.this)
+                                .load(profileUri)
+                                .into(userIcon);
+                    }
+
+                    //tvUsername.setText(""+user.getUid());
+                    signOutBtn.setVisibility(View.VISIBLE);
+                    signInBtn.setVisibility(View.INVISIBLE);
+
+
+
+                } else {
+                    tvEmail.setText("Not logged in");
+                    tvUsername.setVisibility(View.INVISIBLE);
+                    signOutBtn.setVisibility(View.INVISIBLE);
+                    signInBtn.setVisibility(View.VISIBLE);
                 }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });
+            }
+        });
 
-
-            //tvUsername.setText(""+user.getUid());
-            signOutBtn.setVisibility(View.VISIBLE);
-            signInBtn.setVisibility(View.INVISIBLE);
-
-
-
-        } else {
-            tvEmail.setText("Not logged in");
-            tvUsername.setVisibility(View.INVISIBLE);
-            signOutBtn.setVisibility(View.INVISIBLE);
-            signInBtn.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -610,8 +657,32 @@ public class MainActivity extends AppCompatActivity
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+        gpsdelay();
 
 
+    }
+
+    public void gpsdelay(){
+        Log.d("fgpsdelay","fær");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                gpsdisconnect();
+                Log.d("egpsdelay", "efter");
+            }
+
+        },10000);
+
+
+    }
+
+    public void gpsdisconnect(){
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
+        }
     }
 
     @Override
@@ -701,8 +772,8 @@ public class MainActivity extends AppCompatActivity
                 // Create the LocationRequest object
                 mLocationRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                        .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                        .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+                        .setInterval(30 * 1000)        // 10 seconds, in milliseconds
+                        .setFastestInterval(10 * 1000); // 1 second, in milliseconds
 
             } else {
 
@@ -726,26 +797,32 @@ public class MainActivity extends AppCompatActivity
                     Manifest.permission.ACCESS_FINE_LOCATION);
 
             //Fetch client's location coordinates
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
             Log.i(TAG, "TEST MESSAGE: FirebaseLoad services connected.");
 
 
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation == null || permissionCheck == -1) {
                 mLatitude = 0.0;
                 mLongitude = 0.0;
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
             } else {
                 mLatitude = mLastLocation.getLatitude();
                 mLongitude = mLastLocation.getLongitude();
                 Log.i(TAG, "Client latitude: " + mLatitude); //debugging
                 Log.i(TAG, "Client longitude: " + mLongitude); //debugging
                 if(!isAdded) {
+                    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     android.support.v4.app.FragmentManager fn = getSupportFragmentManager();
                         fn.beginTransaction().replace(R.id.content_frame, browseFragment).commit();
 
                     isAdded = true;
                 }
+
             }
 
         } catch (SecurityException ex) {
@@ -780,8 +857,10 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
-        Log.i(TAG, "FirebaseLoad changed");
+        Log.i(TAG, "Location changed");
+
     }
+
 
 
     @Override

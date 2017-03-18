@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sebastian.appdrawer.R;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -21,6 +22,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.onesignal.OneSignal;
+
+import java.util.Arrays;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -32,6 +35,7 @@ public class LogInActivity extends AppCompatActivity {
     String oneSignalID;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener; //Tracks user sign in/out
+    int RC_SIGN_IN = 9999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,15 @@ public class LogInActivity extends AppCompatActivity {
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                    .setTheme(R.style.AppTheme)
+                                    .build(),
+                            RC_SIGN_IN);
                 }
                 // ...
             }
@@ -99,7 +112,7 @@ public class LogInActivity extends AppCompatActivity {
 
         }
 
-        finish();
+
     }
 
     private void signIn(String email, String password) {
@@ -117,6 +130,8 @@ public class LogInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                             Toast.makeText(LogInActivity.this, "Login successful",
                                     Toast.LENGTH_SHORT).show();
+                            OneSignal.setSubscription(true);
+
                         }
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -167,10 +182,8 @@ public class LogInActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-    @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-        finish();
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d("Back", "TEST");
     }
 }

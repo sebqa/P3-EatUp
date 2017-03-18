@@ -1,5 +1,8 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +33,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 
+import cc.cloudist.acplibrary.ACProgressConstant;
+import cc.cloudist.acplibrary.ACProgressFlower;
+
 /**
  * Created by Sebastian on 02-02-2017.
  */
@@ -39,16 +45,18 @@ public class FirebaseLoad {
     public static final String FOOD = "food";
     GeoQuery geoQuery;
     GeoFire geoFire;
-    public double haverdistanceKM;
     long diff;
     int maxListSize = 20;
     boolean hasRun,isEmpty = true;
+    ArrayList arrayList;
 
 
     public void getClosestItems(final ArrayList arrayList, final RecyclerView.Adapter adapter){
+
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
         Log.d("startgeoQuery", "1 ");
 
+        this.arrayList = arrayList;
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
         this.geoFire = new GeoFire(ref);
@@ -80,7 +88,7 @@ public class FirebaseLoad {
 
                                 @Override
                                 public void run() {
-                                    getTime(item);
+                                    diff = getTime(item);
                                 }
                             });
                             t1.start();
@@ -126,18 +134,23 @@ public class FirebaseLoad {
                                     });
                                 }
                             }
+                            final Handler handler = new Handler();
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    item.setDistance(haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude()));
+                                    Collections.sort(arrayList, new Comparator<Item>() {
+                                                public int compare(Item object1, Item object2) {
+                                                    return Double.compare(object1.distance,object2.distance);
+                                                }
+                                            }
+                                    );
+                                    adapter.notifyDataSetChanged();
 
-                            haversine(MainActivity.mLatitude,MainActivity.mLongitude,item.getLatitude(),item.getLongitude());
-                            item.setDistance(haverdistanceKM);
-                            Collections.sort(arrayList, new Comparator<Item>() {
-                                        public int compare(Item object1, Item object2) {
-                                            return Double.compare(object1.distance,object2.distance);
-                                        }
-                                    }
-                            );
+                                    ;
+                                }
+                            });
 
-
-                            adapter.notifyDataSetChanged();
 
                         }
                     }
@@ -179,7 +192,10 @@ public class FirebaseLoad {
 
 
     }
-    public void haversine(double lat1, double lon1, double lat2, double lon2) {
+
+
+    public double haversine(double lat1, double lon1, double lat2, double lon2) {
+        double haverdistanceKM;
         double Rad = 6372.8; //Earth's Radius In kilometers
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -188,10 +204,11 @@ public class FirebaseLoad {
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.asin(Math.sqrt(a));
         haverdistanceKM = Rad * c;
+        return haverdistanceKM;
 
 
     }
-    public void getTime(Item item){
+    public long getTime(Item item){
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         Date itemDate = null;
         try {
@@ -215,6 +232,7 @@ public class FirebaseLoad {
         Calendar today = Calendar.getInstance();
         today.setTime(currentDate);
         diff = today.getTimeInMillis() - thatDay.getTimeInMillis(); //result in millis
+        return  diff;
     }
     public boolean isEmpty (){
         return isEmpty;

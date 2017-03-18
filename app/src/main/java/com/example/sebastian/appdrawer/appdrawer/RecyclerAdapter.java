@@ -1,5 +1,6 @@
 package com.example.sebastian.appdrawer.appdrawer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -146,6 +147,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
                 //Start the new activity.
                 this.ctx.startActivity(intent);
+                ((Activity) ctx).overridePendingTransition(R.anim.slidein, 0);
+
             }else{
                 Toast.makeText(view.getContext(), "Item no longer exists",
                         Toast.LENGTH_SHORT).show();

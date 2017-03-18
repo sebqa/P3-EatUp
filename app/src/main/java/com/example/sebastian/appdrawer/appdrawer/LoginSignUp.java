@@ -2,12 +2,14 @@ package com.example.sebastian.appdrawer.appdrawer;
 
 import android.content.Intent;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,71 +35,48 @@ public class LoginSignUp extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+
     //Log entries tag for debugging
     private static final String TAG = "LoginSignUp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        setTheme(R.style.splashTheme);
+        Thread splashThread = new Thread()
+        {
+            @Override
+            public void run() {
+                Utils.getDatabase();
+                mAuth = FirebaseAuth.getInstance();
+                mAuthListener = new FirebaseAuth.AuthStateListener() {
+                    @Override
+                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        if (user != null) {
+                            Log.i("CHECK USER", "Før");
+                            oneSignal(user);
 
-        setContentView(R.layout.activity_login_sign_up);
-        setTheme(R.style.AppTheme);
-        Utils.getDatabase();
+
+                        } else {
+                            // User is signed out
+                            Log.i("CHECK USER", "IKKE LOGGET IND");
+
+                            uiElements();
+                            Log.d(TAG, "onAuthStateChanged:signed_out");
+
+                        }
+                    }
+
+                };
+
+            }
+        };
+        splashThread.start();
+        super.onCreate(savedInstanceState);
 
 
 
         //Checks whether the user is already signed in
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    oneSignal(user);
-
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
-        //Initialize UI elements
-        buttonBrowse = (Button)findViewById(R.id.buttonBrowse);
-        buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
-        //buttonSignUp = (Button)findViewById(R.id.buttonSignUp);
-        textSignUp = (TextView)findViewById(R.id.textSignUp);
-        textSignUp.setPaintFlags(textSignUp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-        //When the user taps the BROWSE button, he is taken to the main screen
-        //Define that the user is NOT  logged in when he clicks the BROWSE button
-        buttonBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginSignUp.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        //When the user taps the SIGN IN button, he is taken to the sign in activity
-        buttonSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginSignUp.this, LogInActivity.class);
-                startActivity(intent);
-                //finish();
-            }
-        });
-
-        //When the user taps the Create account text at the bottom, the sign up activity is initialized
-        textSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginSignUp.this, CreateAccountActivity.class));
-            }
-        });
-
-
 
 
     }
@@ -138,12 +117,20 @@ public class LoginSignUp extends AppCompatActivity{
 
                 Log.d("signalIDDD", dbOneSignalID);
                 Log.d("signalIDDD", "ID ="+oneSignalID);
-                if(!oneSignalID.equals(dbOneSignalID)) {
+                if(false/*!oneSignalID.equals(dbOneSignalID)*/) {
                     FirebaseAuth.getInstance().signOut();
                 } else{
-                    Log.d("signalMatch", "it's a match");
-                    startActivity(new Intent(LoginSignUp.this,MainActivity.class));
-                    finish();
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startActivity(new Intent(LoginSignUp.this,MainActivity.class));
+                            finish();
+                            Toast.makeText(LoginSignUp.this, "Logged in!", Toast.LENGTH_LONG).show();
+                        }
+
+                    },0);Log.i("CHECK USER", "EFTER");
+
                 }
 
             }
@@ -163,11 +150,57 @@ public class LoginSignUp extends AppCompatActivity{
 
     }
 
+    public void uiElements(){
+        Log.i("UIELEMENTS", "Før");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setContentView(R.layout.activity_login_sign_up);
+
+                //Initialize UI elements
+                buttonBrowse = (Button)findViewById(R.id.buttonBrowse);
+                buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
+                //buttonSignUp = (Button)findViewById(R.id.buttonSignUp);
+                textSignUp = (TextView)findViewById(R.id.textSignUp);
+                textSignUp.setPaintFlags(textSignUp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+                //When the user taps the BROWSE button, he is taken to the main screen
+                //Define that the user is NOT  logged in when he clicks the BROWSE button
+                buttonBrowse.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(LoginSignUp.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+                //When the user taps the SIGN IN button, he is taken to the sign in activity
+                buttonSignIn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(LoginSignUp.this, LogInActivity.class);
+                        startActivity(intent);
+                        //finish();
+                    }
+                });
+
+                //When the user taps the Create account text at the bottom, the sign up activity is initialized
+                textSignUp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(LoginSignUp.this, CreateAccountActivity.class));
+                    }
+                });            Log.i("UIELEMENTS", "EFTER");
+
+            }
+        });
+
+    }
     //These two methods checks whether the user is already signed in
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
 
     }
 

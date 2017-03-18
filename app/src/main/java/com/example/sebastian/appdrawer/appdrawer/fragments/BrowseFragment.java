@@ -3,7 +3,10 @@ package com.example.sebastian.appdrawer.appdrawer.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -25,14 +28,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +80,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import cc.cloudist.acplibrary.ACProgressConstant;
+import cc.cloudist.acplibrary.ACProgressFlower;
+
 /**
  * Created by Sebastian on 02-11-2016.
  */
@@ -88,25 +97,19 @@ public class BrowseFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<Item> arrayList = new ArrayList<Item>();
     FloatingActionButton toTop;
-    GeoQuery geoQuery;
-    GeoFire geoFire;
-    boolean allowRefresh;
     Activity mActivity;
-    public double haverdistanceKM;
-    long diff;
-    int maxListSize = 20;
-    TextView noItems;
     boolean hasRun = false;
     int currentOrdering;
-
     FirebaseLoad firebaseLoad = new FirebaseLoad();
+    FrameLayout frameLayout;
+
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;
     }
-    
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,14 +117,16 @@ public class BrowseFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         //Cast the recyclerView such that we can manipulate it
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        noItems = (TextView)rootView.findViewById(R.id.noItemsText);
         setHasOptionsMenu(true);
         Utils.getDatabase();
+
+
 
         addItemsOnSpinner2(rootView);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
         //Casting the button that takes the user to the top.
         toTop = (FloatingActionButton) rootView.findViewById(R.id.toTop);
+        frameLayout = (FrameLayout)rootView.findViewById(R.id.browse_list);
         //The onClickListener that scrolls to position '0'.
         toTop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +181,6 @@ public class BrowseFragment extends Fragment {
         Log.d(recyclerView.getAdapter().toString(),"recyclerVIew onCreate");
 
         adapter.notifyDataSetChanged();
-
 
 
         return rootView;
@@ -326,14 +330,17 @@ public class BrowseFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Log.d("CurrentLOC", "" + MainActivity.mLongitude + MainActivity.mLatitude);
+
+
         if (!hasRun) {
-            noItems.setVisibility(View.VISIBLE);
-            firebaseLoad.getClosestItems(arrayList,adapter);
+
+
+            firebaseLoad.getClosestItems(arrayList, adapter);
+
             currentOrdering = 2;
             hasRun = true;
 
         }
-
 
 
     }
@@ -350,7 +357,7 @@ public class BrowseFragment extends Fragment {
         spinner2 = (Spinner) view.findViewById(R.id.sortSpinner);
         List<String> list = new ArrayList<String>();
         list.add("Nearest");
-        list.add("Newest");
+        list.add("Recent");
         list.add("Cost");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, list);

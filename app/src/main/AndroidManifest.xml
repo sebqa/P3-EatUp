@@ -42,14 +42,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".appdrawer.ItemDetails"
             android:label="ItemDetails"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".appdrawer.MainActivity"
+        />
         <activity
             android:name=".appdrawer.CreateAccountActivity"
             android:label="@string/activity_create_account"></activity>
         <activity
             android:name=".appdrawer.LoginSignUp"
             android:label="EatUp"
-            android:theme="@style/AppTheme.Launcher">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
