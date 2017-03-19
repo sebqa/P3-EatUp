@@ -6,7 +6,6 @@
     android:background="#FFFFFF"
 
     android:clickable="true"
-    android:id="@+id/item_container"
     >
 <RelativeLayout
     android:layout_width="match_parent"

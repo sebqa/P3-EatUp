@@ -38,13 +38,16 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.google.android.gms:play-services-location:10.2.0' //'com.google.android.gms:play-services:9.8.0'
+    compile 'com.google.android.gms:play-services-location:10.2.0'
+    //'com.google.android.gms:play-services:9.8.0'
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:recyclerview-v7:25.3.0'
     compile 'com.android.support:support-v4:25.3.0'
     compile 'com.google.firebase:firebase-database:10.2.0'
-    compile 'com.google.firebase:firebase-invites:10.2.0'
+    compile('io.branch.sdk.android:library:2.+') {
+        exclude module: 'answers-shim'
+    }
     compile 'com.firebaseui:firebase-ui-auth:1.2.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.google.firebase:firebase-auth:10.2.0'
@@ -62,23 +65,16 @@ dependencies {
     compile 'com.github.jrvansuita:MaterialAbout:+'
 
 
-
-
-
-
-
-
-
     // Required for OneSignal, even if you have added FCM.
     compile 'com.google.android.gms:play-services-gcm:10.2.0'
-
     // Required for geotagging
 
-
     // play-services-analytics is only needed when using 8.1.0 or older.
+
     // compile 'com.google.android.gms:play-services-analytics:+'
     testCompile 'junit:junit:4.12'
     compile files('libs/PhotoUtil-master/PhotoUtil.jar')
+    compile 'io.branch.sdk.android:library:2.5.9'
 }
 
 

@@ -9,10 +9,15 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 
+import org.json.JSONObject;
+
+import io.branch.indexing.BranchUniversalObject;
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.SharingHelper;
+import io.branch.referral.util.LinkProperties;
+import io.branch.referral.util.ShareSheetStyle;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 
 
@@ -40,6 +53,7 @@ public class ItemDetails extends SwipeBackActivityNew {
     String receiverSignalID;
     public double haverdistanceKM;
     SwipeBackLayout swipeBackLayout;
+    boolean isImageFitToScreen;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference rootRef = database.getReference();
@@ -51,6 +65,21 @@ public class ItemDetails extends SwipeBackActivityNew {
                 .setContentView(R.layout.activity_item_details)
                 .setSwipeBackView(R.layout.swipeback_default);
                 */
+
+       Branch.getAutoInstance(this);
+       Branch branch = Branch.getInstance(getApplicationContext());
+       branch.initSession(new Branch.BranchReferralInitListener(){
+           @Override
+           public void onInitFinished(JSONObject referringParams, BranchError error) {
+               if (error == null) {
+                   // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
+                   // params will be empty if no data found
+                   // ... insert custom logic here ...
+               } else {
+                   Log.i("MyApp", error.getMessage());
+               }
+           }
+       }, this.getIntent().getData(), this);
         setContentView(R.layout.activity_item_details);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,12 +117,23 @@ public class ItemDetails extends SwipeBackActivityNew {
         Utils.getDatabase();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(FOOD);
 
+       d_imageView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               d_imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+
+
+
+           }
+       });
 
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user == null) {
+                    createDeepLink();
                     Toast.makeText(ItemDetails.this, "Please login or sign up before ordering an item",
                             Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ItemDetails.this, LogInActivity.class));
@@ -165,7 +205,6 @@ public class ItemDetails extends SwipeBackActivityNew {
                             .load(item.getDownloadUrl())
                             .centerCrop()
                             .resize(width,width)
-                            .rotate(90)
                             .error(R.drawable.placeholder)
                             .placeholder(R.drawable.progress_animation )
                             .into(d_imageView);
@@ -187,6 +226,24 @@ public class ItemDetails extends SwipeBackActivityNew {
 
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detailsmenu, menu);
+
+        MenuItem item = menu.findItem(R.id.action_share);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+                createDeepLink();
+                return false;
+            }
+        });
+
+        return true;
     }
     public void placeOrder(FirebaseUser user){
         DatabaseReference itemRequestedRef = rootRef.child("food").child(itemKey).child("itemRequests").push();
@@ -293,5 +350,67 @@ public class ItemDetails extends SwipeBackActivityNew {
        super.onBackPressed();
        overridePendingTransition(0,R.anim.slideout);
 
+   }
+
+
+   public void createDeepLink(){
+       BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
+
+               // The identifier is what Branch will use to de-dupe the content across many different Universal Objects
+               .setCanonicalIdentifier("item/"+item.getKey())
+
+               // The canonical URL for SEO purposes (optional)
+               .setCanonicalUrl("https://branch.io/deepviews")
+
+               // This is where you define the open graph structure and how the object will appear on Facebook or in a deepview
+               .setTitle(item.getTitle())
+               .setContentDescription(item.getDescription())
+               .setContentImageUrl(item.getDownloadUrl())
+
+               // You use this to specify whether this content can be discovered publicly - default is public
+               .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+
+               // Here is where you can add custom keys/values to the deep link data
+               .addContentMetadata("itemKey", item.getKey());
+
+
+       LinkProperties linkProperties = new LinkProperties()
+               .setChannel("facebook")
+               .setFeature("sharing")
+               .addControlParameter("$desktop_url", "http://example.com/home")
+               .addControlParameter("$ios_url", "http://example.com/ios");
+
+       branchUniversalObject.generateShortUrl(this, linkProperties, new Branch.BranchLinkCreateListener() {
+           @Override
+           public void onLinkCreate(String url, BranchError error) {
+               if (error == null) {
+                   Log.i("MyApp", "got my Branch link to share: " + url);
+               }
+           }
+       });
+       ShareSheetStyle shareSheetStyle = new ShareSheetStyle(ItemDetails.this, "","")
+               .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
+               .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
+               .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+               .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
+               .setAsFullWidthStyle(true)
+               .setSharingTitle("Share With");
+       branchUniversalObject.showShareSheet(this,
+               linkProperties,
+               shareSheetStyle,
+               new Branch.BranchLinkShareListener() {
+                   @Override
+                   public void onShareLinkDialogLaunched() {
+                   }
+                   @Override
+                   public void onShareLinkDialogDismissed() {
+                   }
+                   @Override
+                   public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
+                   }
+                   @Override
+                   public void onChannelSelected(String channelName) {
+                   }
+               });
    }
 }

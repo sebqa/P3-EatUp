@@ -90,7 +90,7 @@ import cc.cloudist.acplibrary.ACProgressFlower;
 public class BrowseFragment extends Fragment {
 
     private Spinner spinner2;
-    RecyclerView.Adapter adapter;
+    RecyclerAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     public static final String FOOD = "food";
     private DatabaseReference mFirebaseDatabaseReference;

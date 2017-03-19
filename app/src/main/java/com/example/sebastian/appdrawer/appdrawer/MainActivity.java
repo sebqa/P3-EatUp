@@ -11,8 +11,12 @@ import com.example.sebastian.appdrawer.appdrawer.fragments.MapFragment;
 import com.example.sebastian.appdrawer.appdrawer.fragments.MyFoodFragment;
 import com.example.sebastian.appdrawer.appdrawer.fragments.SettingsFragment;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.UserInfo;
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
@@ -66,11 +70,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Arrays;
+
+import io.branch.indexing.BranchUniversalObject;
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.util.LinkProperties;
 
 
 public class MainActivity extends AppCompatActivity
@@ -101,6 +111,8 @@ public class MainActivity extends AppCompatActivity
     Fragment currentFragment = null;
     ImageView userIcon;
     int RC_SIGN_IN = 9999;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,10 +120,10 @@ public class MainActivity extends AppCompatActivity
 
         //Set theme to the one that shows splash screen before the super.onCreate
         setTheme(R.style.AppTheme_NoActionBar);
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -671,6 +683,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
+        Branch branch = Branch.getInstance(getApplicationContext());
+        branch.initSession(new Branch.BranchUniversalReferralInitListener(){
+            @Override
+            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError branchError) {
+                if (branchUniversalObject == null) {
+                    Log.i("BRANCHDATA","DEN ER NULL");
+
+                }
+                /* In case the clicked link has $android_deeplink_path the Branch will launch the MonsterViewer automatically since AutoDeeplinking feature is enabled.
+                 * Launch Monster viewer activity if a link clicked without $android_deeplink_path
+                 */
+                else if (branchUniversalObject.getMetadata().containsKey("itemKey")) {
+                    Log.i("BRANCHDATA",branchUniversalObject.getMetadata().get("itemKey"));
+
+                    Intent intent = new Intent(MainActivity.this, ItemDetails.class);
+                    intent.putExtra("item_key",branchUniversalObject.getMetadata().get("itemKey"));
+                    startActivity(intent);
+                }
+            }
+        }, this.getIntent().getData(), this);
+
+
         mAuth.addAuthStateListener(mAuthListener);
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
@@ -683,7 +717,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        if (Branch.isAutoDeepLinkLaunch(this)) {
+            try {
 
+                Log.e("BRANCHITEMKEY",Branch.getInstance().getLatestReferringParams().getString("itemKey"));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.e("nondeeplink", "Launched by normal application flow");
+        }
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
@@ -902,6 +946,66 @@ public class MainActivity extends AppCompatActivity
             customKey = data.optString("customkey", null);
             if (customKey != null)
                 Log.i("OneSignalExample", "customkey set with value: " + customKey);
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            // Successfully signed in
+            if (resultCode == ResultCodes.OK) {
+                return;
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    AuthUI.getInstance()
+                            .signOut(MainActivity.this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // user is now signed out
+                                    //startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+                                }
+                            });
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    AuthUI.getInstance()
+                            .signOut(MainActivity.this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // user is now signed out
+                                    //startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+                                }
+                            });
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    AuthUI.getInstance()
+                            .signOut(MainActivity.this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // user is now signed out
+                                    //startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+
+                                }
+                            });
+                    return;
+                }
+            }
+
         }
     }
 }

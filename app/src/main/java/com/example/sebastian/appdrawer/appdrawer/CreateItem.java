@@ -7,6 +7,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -459,12 +460,12 @@ public class CreateItem extends AppCompatActivity implements
             try {
 
                 bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+
                 DisplayMetrics metrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
+                bitmap = RotateBitmap(bitmap,90);
                 final int width = metrics.widthPixels;
                 Bitmap displayImage = ThumbnailUtils.extractThumbnail(bitmap,width,width);
-                imagePlaceholder.setRotation(90);
                 imagePlaceholder.setImageBitmap(displayImage);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -508,6 +509,12 @@ public class CreateItem extends AppCompatActivity implements
                 }
             });*/
         }
+    }
+    public static Bitmap RotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
     private static int exifToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
