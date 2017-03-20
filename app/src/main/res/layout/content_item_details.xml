@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.sebastian.appdrawer.appdrawer.ItemDetails"
+    tools:context=".ItemDetails"
     tools:showIn="@layout/activity_item_details"
     android:orientation="vertical"
     android:descendantFocusability="beforeDescendants"
@@ -51,7 +51,7 @@
 
         <TextView
             android:textSize="11sp"
-            android:text="Creator"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txCreator"
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
         android:id="@+id/txTitleDetails"
             android:paddingLeft="20dp"
-            android:text="Title"
+            android:text="Loading..."
 android:layout_marginTop="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
@@ -80,7 +80,7 @@ android:layout_marginTop="20dp"
             android:id="@+id/txPrice"
             android:textColor="#FFFFFF"
             android:paddingLeft="20dp"
-            android:text="10 kr."
+            android:text=""
             android:layout_below="@id/txCreator"
             android:paddingTop="5dp" />
 
@@ -110,7 +110,7 @@ android:layout_marginTop="20dp"
 
 
         <TextView
-            android:text="100 KM"
+            android:text=""
             android:textColor="#FFFFFF"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -143,7 +143,7 @@ android:layout_marginTop="20dp"
             android:padding="10dp"/>
 -->
         <TextView
-            android:text="3 Servings left"
+            android:text=""
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/txServingsLeft"
@@ -154,10 +154,7 @@ android:layout_marginTop="20dp"
             android:padding="10dp"/>
 
         <TextView
-            android:text="aksjhdfjkalshnflkjashflksjhfalkjsdkaljsdflkjashdfljhasdkfhasdlkhlkasdjhlkasdjlkajsdfhlkajsdlkajsdh   lakjshdfklajshf  akljsdfasdkfjhasdflk h aslkdjf  asdlkjfhaskdljh asdfkjhasdlkf asdf klajshf asdklfj
-            sdakjlaskldjlkasdjlkajsd asdkjfh lkasdjf
-            asdf
-            sadf"
+            android:text=""
             android:singleLine="false"
             android:id="@+id/txDescriptionDetails"
             android:layout_width="fill_parent"
