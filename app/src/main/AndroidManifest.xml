@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/apk/res-auto"
     package="com.example.sebastian.appdrawer">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-
-
-
 
     <application
         android:name="io.branch.referral.BranchApp"
@@ -19,63 +17,84 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-
-        >
-        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="ENABLED" />
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="ENABLED" />
 
         <service
-            android:name=".NotificationOverride"
-            android:exported="false">
+            android:name="com.example.sebastian.eatup.NotificationOverride"
+            android:exported="false"
+            >
             <intent-filter>
                 <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:name="com.example.sebastian.eatup.LoginSignUp"
+            android:label="EatUp"
             android:launchMode="singleTask"
-            android:screenOrientation="sensor">
+            android:theme="@style/splashTheme"
+            >
+
+        </activity>
+        <activity
+            android:name="com.example.sebastian.eatup.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="sensor"
+            android:theme="@style/splashTheme">
             <intent-filter>
-                <data android:scheme="eatupuri" android:host="open" />
+                <data
+                    android:host="open"
+                    android:scheme="eatupuri" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-            </activity>
-        <activity
-            android:name=".CreateItem"
-            android:label="@string/title_activity_create_ad"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ItemDetails"
-            android:label="ItemDetails"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity"
-        />
-        <activity
-            android:name=".CreateAccountActivity"
-            android:label="@string/activity_create_account"></activity>
-        <activity
-            android:name=".LoginSignUp"
-            android:label="EatUp"
-            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LogInActivity"></activity>
+        <activity
+            android:name="com.example.sebastian.eatup.CreateItem"
+            android:label="@string/title_activity_create_ad"
+            android:launchMode="singleTask"
+            android:parentActivityName="com.example.sebastian.eatup.MainActivity"
+            android:theme="@style/TranslucentTheme" />
+        <activity
+            android:name="com.example.sebastian.eatup.ItemDetails"
+            android:label="ItemDetails"
+            android:launchMode="singleTask"
+            android:parentActivityName="com.example.sebastian.eatup.MainActivity"
+            android:theme="@style/TranslucentTheme" />
+        <activity
+            android:name="com.example.sebastian.eatup.CreateAccountActivity"
+            android:label="@string/activity_create_account" />
+        <activity android:name="com.example.sebastian.eatup.LogInActivity" />
 
-        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_nhyAcJGh1f89BYudPDLPNfabEsdLx6GC" />
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="key_live_nhyAcJGh1f89BYudPDLPNfabEsdLx6GC" />
 
-        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.example.sebastian.eatup.ImageDialog"
+            android:theme="@style/myDialogTheme">
+
+        </activity>
     </application>
 
 </manifest>

@@ -6,29 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".LoginSignUp">
+    tools:context="com.example.sebastian.eatup.LoginSignUp">
 
-    <TextView
-        android:text="Not already a user? Create an account here"
-        android:textColor="#FFF"
-        android:textSize="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:id="@+id/textSignUp"
-        android:textStyle=""/>
-
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        app:srcCompat="@drawable/eatupsplashscreen2"
-        android:id="@+id/imageViewEatUpSplash"
-        android:layout_above="@+id/buttonBrowse"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="12dp" />
 
     <Button
         android:text="Sign In"
@@ -38,8 +17,8 @@
         android:id="@+id/buttonSignIn"
         android:background="@color/darkRed"
         android:textColor="@color/background"
-        android:layout_marginBottom="60dp"
-        android:layout_above="@+id/textSignUp"
+        android:layout_marginBottom="206dp"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

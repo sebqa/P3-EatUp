@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId "com.example.sebastian.appdrawer"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        manifestPlaceholders = [onesignal_app_id: "d243bbe7-8946-41ca-86e2-05110261c1f8",
+        manifestPlaceholders = [onesignal_app_id               : "d243bbe7-8946-41ca-86e2-05110261c1f8",
                                 // Project number pulled from dashboard, local value is ignored.
                                 onesignal_google_project_number: "REMOTE"]
         useLibrary 'org.apache.http.legacy'
@@ -19,8 +19,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
         }
     }
 }
@@ -30,53 +31,76 @@ repositories {
     maven {
         url "https://jitpack.io"
     }
-    maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://maven.fabric.io/public'}
+    maven { url "https://maven.google.com" }
 
 }
 dependencies {
+    
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.google.android.gms:play-services-location:10.2.0'
+
     //'com.google.android.gms:play-services:9.8.0'
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:design:25.3.0'
-    compile 'com.android.support:recyclerview-v7:25.3.0'
-    compile 'com.android.support:support-v4:25.3.0'
-    compile 'com.google.firebase:firebase-database:10.2.0'
-    compile('io.branch.sdk.android:library:2.+') {
+    compile('io.branch.sdk.android:library:2.5.9') {
         exclude module: 'answers-shim'
     }
-    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
-    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    compile 'com.google.firebase:firebase-auth:10.2.0'
-    compile 'com.google.android:flexbox:0.2.3'
-    compile 'cc.cloudist.acplibrary:library:1.2.1'
-    compile 'com.android.support:multidex:1.0.0'
-    compile 'com.google.firebase:firebase-storage:10.2.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.onesignal:OneSignal:3.+@aar'
-    compile 'com.firebase:geofire-android:2.1.1'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.google.code.gson:gson:2.2.+'
-    compile 'com.hannesdorfmann:swipeback:1.0.4'
-    compile 'me.imid.swipebacklayout.lib:library:1.0.0'
-    compile 'com.github.jrvansuita:MaterialAbout:+'
-
 
     // Required for OneSignal, even if you have added FCM.
-    compile 'com.google.android.gms:play-services-gcm:10.2.0'
     // Required for geotagging
 
     // play-services-analytics is only needed when using 8.1.0 or older.
 
     // compile 'com.google.android.gms:play-services-analytics:+'
-    testCompile 'junit:junit:4.12'
+    
+
     compile files('libs/PhotoUtil-master/PhotoUtil.jar')
-    compile 'io.branch.sdk.android:library:2.5.9'
+    
+
+    compile 'com.airbnb.android:lottie:2.0.0-beta4'
+    compile 'jp.wasabeef:recyclerview-animators:2.2.6'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.4'
+    compile 'se.emilsjolander:StickyScrollViewItems:1.1.0'
+    compile 'com.google.android.gms:play-services-location:11.4.2'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.google.firebase:firebase-database:11.4.2'
+    compile 'com.firebaseui:firebase-ui-auth:3.1.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.27.0'
+    compile 'com.google.firebase:firebase-auth:11.4.2'
+    compile 'com.google.android:flexbox:0.3.1'
+    compile 'cc.cloudist.acplibrary:library:1.2.1'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.google.firebase:firebase-storage:11.4.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.onesignal:OneSignal:3.+@aar'
+    compile 'com.firebase:geofire-android:2.1.1'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.hannesdorfmann:swipeback:1.0.4'
+    compile 'me.imid.swipebacklayout.lib:library:1.0.0'
+    compile 'com.github.jrvansuita:MaterialAbout:+'
+    compile 'com.google.android.gms:play-services-gcm:11.4.2'
+    compile 'io.branch.sdk.android:library:2.6.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.github.jd-alexander:LikeButton:0.2.0'
+    testCompile 'junit:junit:4.12'
 }
 
 
 
 apply plugin: 'com.google.gms.google-services'
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '25.3.0'
+            }
+        }
+    }
+}

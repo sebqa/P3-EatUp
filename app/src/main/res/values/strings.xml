@@ -10,6 +10,7 @@
     <string name="activity_create_account">Create account</string>
     <string name="facebook_application_id" translatable="false">1866987293575868</string>
     <string name="testDeviceID">6BA3752AF66F8D8553248A71886E648D</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 
 </resources>
